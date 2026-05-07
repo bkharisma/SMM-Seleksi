@@ -2,12 +2,12 @@
 
 namespace App\Pdf;
 
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Mpdf\Mpdf;
 
 class ProfilePdf
 {
-    public function generate(Peserta $peserta): string
+    public function generate(Pendaftar $peserta): string
     {
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
@@ -19,8 +19,8 @@ class ProfilePdf
         ]);
 
         $peserta->load([
-            'pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'pil4Prodi',
-            'ruang', 'lulusProdi', 'survey', 'provinsi', 'kabupaten',
+            'pil1Prodi', 'pil2Prodi', 'pil3Prodi',
+            'ruang', 'lulusProdi',
         ]);
 
         $html = view('pdf.profile', [
@@ -30,15 +30,15 @@ class ProfilePdf
 
         $mpdf->WriteHTML($html);
 
-        return $mpdf->Output('profile-'.$peserta->nup.'.pdf', 'S');
+        return $mpdf->Output('profile-'.$peserta->kode_pendaftar.'.pdf', 'S');
     }
 
-    public function download(Peserta $peserta)
+    public function download(Pendaftar $peserta)
     {
         $pdf = $this->generate($peserta);
 
         return response($pdf)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="profile-'.$peserta->nup.'.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="profile-'.$peserta->kode_pendaftar.'.pdf"');
     }
 }

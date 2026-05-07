@@ -3,8 +3,7 @@
 namespace App\Services;
 
 use App\Models\KriteriaKelulusan;
-use App\Models\Peminat;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
 use Illuminate\Support\Collection;
@@ -28,9 +27,9 @@ class SelectionService
 
     public function getPesertaForSelection(int $tahapId, ?int $prodiId = null, ?int $pilihan = null): Collection
     {
-        $query = Peserta::with(['nilai', 'pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'pil4Prodi', 'lulusProdi'])
-            ->where('status', true)
-            ->whereNotNull('noujian');
+        $query = Pendaftar::with(['nilai', 'pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'lulusProdi'])
+            ->whereNotNull('noujian')
+            ->whereNull('lulus');
 
         if ($prodiId) {
             $pilihanCol = $pilihan ? 'pil'.$pilihan : null;
@@ -40,8 +39,7 @@ class SelectionService
                 $query->where(function ($q) use ($prodiId) {
                     $q->where('pil1', $prodiId)
                         ->orWhere('pil2', $prodiId)
-                        ->orWhere('pil3', $prodiId)
-                        ->orWhere('pil4', $prodiId);
+                        ->orWhere('pil3', $prodiId);
                 });
             }
         }
@@ -49,17 +47,38 @@ class SelectionService
         return $query->orderBy('nama')->get();
     }
 
-    public function evaluatePeserta(Peserta $peserta, KriteriaKelulusan $kriteria, ?int $pilihan = null): array
+    public function evaluatePeserta(Pendaftar $peserta, KriteriaKelulusan $kriteria, ?int $pilihan = null): array
     {
         $nilaiList = $peserta->nilai;
         $result = [
-            'nup' => $peserta->nup,
+            'nup' => $peserta->kode_pendaftar,
             'nama' => $peserta->nama,
             'noujian' => $peserta->noujian,
             'lulus' => true,
             'reasons' => [],
             'scores' => [],
+            'total_skor' => 0,
         ];
+
+        if ($peserta->is_referensi) {
+            $result['lulus'] = true;
+            $result['reasons'][] = 'Peserta Referensi (auto-lulus)';
+
+            foreach ($kriteria->kriteriaUjian as $ku) {
+                $ujianId = $ku->ujian_id;
+                $nilai = $nilaiList->firstWhere('ujian_id', $ujianId);
+
+                if ($ku->jenis === 'tes' && $ku->nilai_standar !== null) {
+                    $skor = $nilai?->skor_akhir;
+                    $result['scores'][$ku->ujian->nama ?? $ujianId] = $skor;
+                    $result['total_skor'] += (float) ($skor ?? 0);
+                }
+            }
+
+            $result['total_skor'] += 99999;
+
+            return $result;
+        }
 
         foreach ($kriteria->kriteriaUjian as $ku) {
             $ujianId = $ku->ujian_id;
@@ -68,6 +87,7 @@ class SelectionService
             if ($ku->jenis === 'tes' && $ku->nilai_standar !== null) {
                 $skor = $nilai?->skor_akhir;
                 $result['scores'][$ku->ujian->nama ?? $ujianId] = $skor;
+                $result['total_skor'] += (float) ($skor ?? 0);
 
                 if ($skor === null || (float) $skor < (float) $ku->nilai_standar) {
                     $result['lulus'] = false;
@@ -91,23 +111,53 @@ class SelectionService
             return ['error' => 'Kriteria kelulusan belum dikonfigurasi untuk prodi ini'];
         }
 
+        $prodi = Prodi::find($prodiId);
+        $kuota = $prodi?->kuota_smm;
+
         $pesertaList = $this->getPesertaForSelection($tahapId, $prodiId, $pilihan);
 
         $results = [];
-        $lulusCount = 0;
-        $tidakLulusCount = 0;
+        $memenuhiKriteria = [];
+        $tidakMemenuhi = [];
 
         foreach ($pesertaList as $peserta) {
             $eval = $this->evaluatePeserta($peserta, $kriteria, $pilihan);
-            $results[] = $eval;
+
             if ($eval['lulus']) {
-                $lulusCount++;
+                $memenuhiKriteria[] = $eval;
             } else {
-                $tidakLulusCount++;
+                $tidakMemenuhi[] = $eval;
             }
         }
 
-        $prodi = Prodi::find($prodiId);
+        if ($kuota && $kuota > 0) {
+            usort($memenuhiKriteria, fn ($a, $b) => $b['total_skor'] <=> $a['total_skor']);
+
+            $rank = 1;
+            foreach ($memenuhiKriteria as &$item) {
+                $item['peringkat'] = $rank;
+
+                if ($rank > $kuota) {
+                    $item['lulus'] = false;
+                    $item['reasons'][] = "Melebihi kuota (kuota: {$kuota}, peringkat: {$rank})";
+                }
+
+                $rank++;
+            }
+            unset($item);
+        } elseif ($kuota !== null && $kuota <= 0) {
+            foreach ($memenuhiKriteria as &$item) {
+                $item['lulus'] = false;
+                $item['reasons'][] = 'Kuota belum ditentukan';
+            }
+            unset($item);
+        }
+
+        $results = array_merge($memenuhiKriteria, $tidakMemenuhi);
+
+        usort($results, fn ($a, $b) => $b['total_skor'] <=> $a['total_skor']);
+
+        $lulusCount = count(array_filter($results, fn ($r) => $r['lulus']));
 
         return [
             'tahap' => $tahap,
@@ -116,7 +166,8 @@ class SelectionService
             'pilihan' => $pilihan,
             'total' => count($results),
             'lulus' => $lulusCount,
-            'tidak_lulus' => $tidakLulusCount,
+            'tidak_lulus' => count($results) - $lulusCount,
+            'kuota' => $kuota,
             'results' => $results,
         ];
     }
@@ -139,7 +190,7 @@ class SelectionService
         DB::beginTransaction();
         try {
             foreach ($selectedNup as $nup) {
-                $peserta = Peserta::where('nup', $nup)->first();
+                $peserta = Pendaftar::where('kode_pendaftar', $nup)->first();
                 if (! $peserta) {
                     $errors[] = "NUP {$nup} tidak ditemukan";
 
@@ -151,12 +202,13 @@ class SelectionService
                 if ($eval['lulus']) {
                     $updateData = [
                         'lulus' => $prodiId,
-                        'lulus_tahap' => $tahap->nama,
+                        'lulus_tahap' => $tahapId,
                         'param_lulus' => json_encode([
                             'tahap_id' => $tahapId,
                             'prodi_id' => $prodiId,
                             'pilihan' => $pilihan,
                             'scores' => $eval['scores'],
+                            'total_skor' => $eval['total_skor'],
                         ]),
                     ];
                     $peserta->update($updateData);
@@ -181,7 +233,7 @@ class SelectionService
 
     public function getRekapKelulusan(?int $prodiId = null): array
     {
-        $query = Peserta::with(['lulusProdi', 'pil1Prodi'])
+        $query = Pendaftar::with(['lulusProdi', 'pil1Prodi'])
             ->whereNotNull('lulus');
 
         if ($prodiId) {
@@ -200,7 +252,6 @@ class SelectionService
                 'pil1' => $lulusKeProdi->where('pil1', $prodi->id)->count(),
                 'pil2' => $lulusKeProdi->where('pil2', $prodi->id)->count(),
                 'pil3' => $lulusKeProdi->where('pil3', $prodi->id)->count(),
-                'pil4' => $lulusKeProdi->where('pil4', $prodi->id)->count(),
             ];
 
             $rekapPerProdi[] = [
@@ -212,26 +263,26 @@ class SelectionService
                 'pilihan_1' => $pilCounts['pil1'],
                 'pilihan_2' => $pilCounts['pil2'],
                 'pilihan_3' => $pilCounts['pil3'],
-                'pilihan_4' => $pilCounts['pil4'],
-                'tersisa' => $prodi->kuota_smm ? max(0, $prodi->kuota_smm - $lulusKeProdi->count()) : null,
+                'pilihan_4' => 0,
+                'tersisa' => $prodi->kuota_smm ? $prodi->kuota_smm - $lulusKeProdi->count() : null,
             ];
         }
 
         $totalLulus = $pesertaLulus->count();
-        $totalPeserta = Peserta::count();
+        $totalPeserta = Pendaftar::count();
 
         return [
             'rekap_per_prodi' => $rekapPerProdi,
             'total_lulus' => $totalLulus,
             'total_peserta' => $totalPeserta,
-            'total_peminat' => Peminat::count(),
+            'total_peminat' => 0,
         ];
     }
 
     public function getGraduationDetails(string $nup): ?array
     {
-        $peserta = Peserta::with(['lulusProdi', 'nilai.ujian'])
-            ->where('nup', $nup)
+        $peserta = Pendaftar::with(['lulusProdi', 'nilai.ujian'])
+            ->where('kode_pendaftar', $nup)
             ->first();
 
         if (! $peserta) {
@@ -280,14 +331,75 @@ class SelectionService
         }
 
         return [
-            'nup' => $peserta->nup,
+            'nup' => $peserta->kode_pendaftar,
             'nama' => $peserta->nama,
             'foto' => $peserta->foto,
             'lulus' => $peserta->is_lulus,
             'lulus_prodi' => $peserta->lulusProdi?->nama_prodi,
             'lulus_tahap' => $peserta->lulus_tahap,
             'details_per_tahap' => $detailsPerTahap,
-            'tgl_cek_lulus' => $peserta->tgl_cek_lulus,
         ];
+    }
+
+    public function getLulusByProdi(int $prodiId): array
+    {
+        $prodi = Prodi::withCount(['pendaftarPil1', 'pendaftarPil2', 'pendaftarPil3'])->find($prodiId);
+        if (! $prodi) {
+            return ['error' => 'Program studi tidak ditemukan'];
+        }
+
+        $peserta = Pendaftar::with(['lulusTahap', 'lulusProdi', 'nilai'])
+            ->where('lulus', $prodiId)
+            ->orderBy('nama')
+            ->get()
+            ->map(function ($p) {
+                $paramLulus = is_string($p->param_lulus) ? json_decode($p->param_lulus, true) : $p->param_lulus;
+                $totalSkor = $paramLulus['total_skor'] ?? 0;
+                $pilLabel = $paramLulus['pilihan'] ? "Pilihan {$paramLulus['pilihan']}" : '-';
+
+                return [
+                    'id' => $p->id,
+                    'nup' => $p->kode_pendaftar,
+                    'nama' => $p->nama,
+                    'noujian' => $p->noujian,
+                    'pilihan' => $pilLabel,
+                    'tahap_lulus' => $p->lulusTahap?->nama,
+                    'total_skor' => $totalSkor,
+                    'status' => 'Lulus',
+                    'lulus_prodi' => $p->lulusProdi?->nama_prodi,
+                ];
+            });
+
+        return [
+            'prodi' => [
+                'id' => $prodi->id,
+                'kode_prodi' => $prodi->kode_prodi,
+                'nama_prodi' => $prodi->nama_prodi,
+                'kuota_smm' => $prodi->kuota_smm,
+            ],
+            'total_peserta' => $prodi->pendaftar_pil1_count + $prodi->pendaftar_pil2_count + $prodi->pendaftar_pil3_count,
+            'total_lulus' => $peserta->count(),
+            'peserta' => $peserta,
+        ];
+    }
+
+    public function revokeLulus(int $pendaftarId): array
+    {
+        $peserta = Pendaftar::find($pendaftarId);
+        if (! $peserta) {
+            return ['success' => false, 'message' => 'Pendaftar tidak ditemukan'];
+        }
+
+        if (! $peserta->lulus) {
+            return ['success' => false, 'message' => 'Pendaftar ini belum diluluskan'];
+        }
+
+        $peserta->update([
+            'lulus' => null,
+            'lulus_tahap' => null,
+            'param_lulus' => null,
+        ]);
+
+        return ['success' => true, 'message' => "Kelulusan {$peserta->nama} berhasil dibatalkan."];
     }
 }

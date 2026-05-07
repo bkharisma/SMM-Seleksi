@@ -15,24 +15,21 @@ class PesertaTemplateExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+            'kode_pendaftar',
             'nama',
-            'nik',
-            'tempatlahir',
-            'tgllahir',
-            'goldarah',
-            'sex',
-            'agama',
+            'tanggal_lahir',
             'email',
-            'hp',
+            'no_hp',
+            'jenis_kelamin',
+            'agama',
             'alamat',
-            'kodepos',
-            'provinsi',
-            'kabupaten',
             'pil1',
             'pil2',
             'pil3',
-            'pil4',
-            'ruang',
+            'nama_sekolah',
+            'npsn',
+            'akreditasi',
+            'tahun_lulus',
         ];
     }
 }

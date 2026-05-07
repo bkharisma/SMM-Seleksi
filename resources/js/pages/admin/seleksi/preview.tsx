@@ -26,6 +26,8 @@ interface PreviewResult {
     lulus: boolean;
     reasons: string[];
     scores: Record<string, number | null>;
+    total_skor: number;
+    peringkat?: number;
 }
 
 interface PreviewData {
@@ -35,6 +37,7 @@ interface PreviewData {
     total?: number;
     lulus?: number;
     tidak_lulus?: number;
+    kuota?: number | null;
     results?: PreviewResult[];
 }
 
@@ -179,7 +182,7 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                     <option value="1">Pilihan 1</option>
                                     <option value="2">Pilihan 2</option>
                                     <option value="3">Pilihan 3</option>
-                                    <option value="4">Pilihan 4</option>
+                                    <option value="3">Pilihan 3</option>
                                 </select>
                             </div>
                         </div>
@@ -193,7 +196,7 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                     <Alert type="error" message={hasError} />
                 ) : preview?.results ? (
                     <>
-                        <div className="grid gap-4 md:grid-cols-4">
+                        <div className="grid gap-4 md:grid-cols-5">
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-gray-900 dark:text-white">{preview.total}</div>
@@ -203,13 +206,19 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-green-600">{preview.lulus}</div>
-                                    <div className="text-sm text-gray-500">Memenuhi Kriteria</div>
+                                    <div className="text-sm text-gray-500">Lulus Seleksi</div>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-red-600">{preview.tidak_lulus}</div>
-                                    <div className="text-sm text-gray-500">Tidak Memenuhi</div>
+                                    <div className="text-sm text-gray-500">Tidak Lulus</div>
+                                </div>
+                            </Card>
+                            <Card>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-purple-600">{preview.kuota ?? '-'}</div>
+                                    <div className="text-sm text-gray-500">Kuota Prodi</div>
                                 </div>
                             </Card>
                             <Card>
@@ -254,6 +263,8 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                                     {key.toUpperCase()}
                                                 </th>
                                             ))}
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nilai Akhir</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Peringkat</th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
                                         </tr>
@@ -269,6 +280,12 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                                         {val !== null ? val : '-'}
                                                     </td>
                                                 ))}
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm font-semibold">
+                                                    {result.total_skor}
+                                                </td>
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-500">
+                                                    {result.peringkat ? `#${result.peringkat}` : '-'}
+                                                </td>
                                                 <td className="whitespace-nowrap px-4 py-2 text-sm">
                                                     <Badge variant={result.lulus ? 'success' : 'danger'}>
                                                         {result.lulus ? 'LULUS' : 'TIDAK LULUS'}

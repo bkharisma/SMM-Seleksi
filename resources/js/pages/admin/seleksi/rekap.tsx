@@ -4,6 +4,7 @@ import AdminLayout from '@/components/layout/admin-layout';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Badge from '@/components/ui/badge';
+import Alert from '@/components/ui/alert';
 
 interface Prodi {
     id: number;
@@ -54,10 +55,11 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
 
     const getKuotaStatus = (item: RekapProdi) => {
         if (!item.kuota) return null;
-        const pct = (item.total_lulus / item.kuota) * 100;
-        if (pct >= 100) return { label: 'Penuh', variant: 'success' as const };
-        if (pct >= 75) return { label: `${Math.round(pct)}%`, variant: 'warning' as const };
-        return { label: `${Math.round(pct)}%`, variant: 'danger' as const };
+        const pct = Math.round((item.total_lulus / item.kuota) * 100);
+        if (pct > 100) return { label: `Overload (${pct}%)`, variant: 'danger' as const };
+        if (pct === 100) return { label: 'Penuh', variant: 'success' as const };
+        if (pct >= 75) return { label: `${pct}%`, variant: 'warning' as const };
+        return { label: `${pct}%`, variant: 'danger' as const };
     };
 
     return (
@@ -93,6 +95,19 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                         </div>
                     </Card>
                 </div>
+
+                {(() => {
+                    const overloaded = rekap.rekap_per_prodi.filter((item) => item.kuota && item.total_lulus > item.kuota);
+                    if (overloaded.length > 0) {
+                        return (
+                            <Alert
+                                type="error"
+                                message={`Peringatan: ${overloaded.length} prodi kelebihan kuota (${overloaded.map((p) => p.nama_prodi).join(', ')}). Silakan buka detail prodi untuk membatalkan kelulusan yang berlebih.`}
+                            />
+                        );
+                    }
+                    return null;
+                })()}
 
                 <Card
                     title="Rekapitulasi Kelulusan per Program Studi"
@@ -137,17 +152,22 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {rekap.rekap_per_prodi.map((item) => {
                                     const status = getKuotaStatus(item);
+                                    const isOverload = item.kuota && item.total_lulus > item.kuota;
                                     return (
-                                        <tr key={item.prodi_id}>
+                                        <tr
+                                            key={item.prodi_id}
+                                            className={`cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/10 ${isOverload ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
+                                            onClick={() => router.get(`/admin/seleksi/rekap/${item.prodi_id}`)}
+                                        >
                                             <td className="whitespace-nowrap px-4 py-2 text-sm font-medium">{item.kode_prodi}</td>
-                                            <td className="whitespace-nowrap px-4 py-2 text-sm">{item.nama_prodi}</td>
-                                            <td className="whitespace-nowrap px-4 py-2 text-center text-sm font-bold text-green-600">{item.total_lulus}</td>
+                                            <td className="whitespace-nowrap px-4 py-2 text-sm text-blue-600 hover:underline">{item.nama_prodi}</td>
+                                            <td className={`whitespace-nowrap px-4 py-2 text-center text-sm font-bold ${isOverload ? 'text-red-600' : 'text-green-600'}`}>{item.total_lulus}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.kuota ?? '-'}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.pilihan_1}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.pilihan_2}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.pilihan_3}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.pilihan_4}</td>
-                                            <td className="whitespace-nowrap px-4 py-2 text-center text-sm">{item.tersisa ?? '-'}</td>
+                                            <td className={`whitespace-nowrap px-4 py-2 text-center text-sm ${isOverload ? 'font-semibold text-red-600' : ''}`}>{item.tersisa ?? '-'}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">
                                                 {status ? (
                                                     <Badge variant={status.variant}>{status.label}</Badge>

@@ -10,7 +10,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ label, error,
     return (
         <div className="w-full">
             {label && (
-                <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor={id} className="mb-1 block text-sm font-medium text-on-surface-container">
                     {label}
                 </label>
             )}
@@ -18,13 +18,13 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ label, error,
                 ref={ref}
                 id={id}
                 className={cn(
-                    'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400',
-                    error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+                    'w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background placeholder:text-on-surface-container/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50',
+                    error && 'border-error focus:border-error focus:ring-error',
                     className
                 )}
                 {...props}
             />
-            {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="mt-1 text-sm text-error">{error}</p>}
         </div>
     );
 });

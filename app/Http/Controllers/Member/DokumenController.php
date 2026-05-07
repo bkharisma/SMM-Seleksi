@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Member;
 use App\Http\Controllers\Controller;
 use App\Models\FileKesehatan;
 use App\Models\FileRaport;
-use App\Models\Kesehatan;
-use App\Models\Peserta;
-use App\Models\Raport;
+use App\Models\Pendaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,13 +17,13 @@ class DokumenController extends Controller
     public function raport(Request $request): Response
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        $raport = Raport::where('noujian', $peserta->noujian)->first();
-        $files = FileRaport::where('noujian', $peserta->noujian)->get();
+        $raport = $pendaftar->raport;
+        $files = $pendaftar->fileRaport;
 
         return Inertia::render('member/upload/raport', [
-            'peserta' => $peserta,
+            'peserta' => $pendaftar,
             'raport' => $raport,
             'files' => $files,
         ]);
@@ -34,9 +32,9 @@ class DokumenController extends Controller
     public function storeRaport(Request $request): RedirectResponse
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        if (! $peserta->noujian) {
+        if (! $pendaftar->noujian) {
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
@@ -59,8 +57,8 @@ class DokumenController extends Controller
             'xii_2ket' => 'nullable|numeric',
         ]);
 
-        $raport = Raport::updateOrCreate(
-            ['noujian' => $peserta->noujian],
+        $pendaftar->raport()->updateOrCreate(
+            [],
             array_merge($validated, ['status' => 'Belum Diperiksa'])
         );
 
@@ -70,9 +68,9 @@ class DokumenController extends Controller
     public function uploadRaportFile(Request $request): RedirectResponse
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        if (! $peserta->noujian) {
+        if (! $pendaftar->noujian) {
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
@@ -82,8 +80,7 @@ class DokumenController extends Controller
 
         $path = $validated['file']->store('raport', 'public');
 
-        FileRaport::create([
-            'noujian' => $peserta->noujian,
+        $pendaftar->fileRaport()->create([
             'file_loc' => $path,
         ]);
 
@@ -103,13 +100,13 @@ class DokumenController extends Controller
     public function kesehatan(Request $request): Response
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        $kesehatan = Kesehatan::where('noujian', $peserta->noujian)->first();
-        $files = FileKesehatan::where('noujian', $peserta->noujian)->get();
+        $kesehatan = $pendaftar->kesehatan;
+        $files = $pendaftar->fileKesehatan;
 
         return Inertia::render('member/upload/kesehatan', [
-            'peserta' => $peserta,
+            'peserta' => $pendaftar,
             'kesehatan' => $kesehatan,
             'files' => $files,
         ]);
@@ -118,9 +115,9 @@ class DokumenController extends Controller
     public function storeKesehatan(Request $request): RedirectResponse
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        if (! $peserta->noujian) {
+        if (! $pendaftar->noujian) {
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
@@ -146,8 +143,8 @@ class DokumenController extends Controller
             'kehamilan' => 'nullable|integer',
         ]);
 
-        $kesehatan = Kesehatan::updateOrCreate(
-            ['noujian' => $peserta->noujian],
+        $pendaftar->kesehatan()->updateOrCreate(
+            [],
             array_merge($validated, ['status' => 'Belum Diperiksa'])
         );
 
@@ -157,9 +154,9 @@ class DokumenController extends Controller
     public function uploadKesehatanFile(Request $request): RedirectResponse
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
 
-        if (! $peserta->noujian) {
+        if (! $pendaftar->noujian) {
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
@@ -169,8 +166,7 @@ class DokumenController extends Controller
 
         $path = $validated['file']->store('kesehatan', 'public');
 
-        FileKesehatan::create([
-            'noujian' => $peserta->noujian,
+        $pendaftar->fileKesehatan()->create([
             'file_lockes' => $path,
         ]);
 

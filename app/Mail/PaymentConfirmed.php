@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -12,7 +12,7 @@ class PaymentConfirmed extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Peserta $peserta
+        public Pendaftar $peserta
     ) {}
 
     public function build(): static

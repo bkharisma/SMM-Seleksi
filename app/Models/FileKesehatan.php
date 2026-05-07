@@ -11,10 +11,10 @@ class FileKesehatan extends Model
 
     protected $table = 'file_kesehatan';
 
-    protected $fillable = ['noujian', 'file_lockes'];
+    protected $fillable = ['pendaftar_id', 'file_lockes'];
 
-    public function peserta()
+    public function pendaftar()
     {
-        return $this->belongsTo(Peserta::class, 'noujian', 'noujian');
+        return $this->belongsTo(Pendaftar::class);
     }
 }

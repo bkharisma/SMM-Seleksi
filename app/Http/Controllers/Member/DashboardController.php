@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Member;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\KriteriaKelulusan;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\TahapSeleksi;
 use App\Services\SelectionService;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class DashboardController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $peserta = Peserta::where('user_id', $user->id)
+        $peserta = Pendaftar::where('user_id', $user->id)
             ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian', 'raport', 'kesehatan'])
             ->first();
 
@@ -33,14 +33,13 @@ class DashboardController extends Controller
 
         if ($peserta) {
             $fields = [
-                ['key' => 'nik', 'label' => 'NIK', 'check' => ! empty($peserta->nik)],
-                ['key' => 'tempatlahir', 'label' => 'Tempat Lahir', 'check' => ! empty($peserta->tempatlahir)],
-                ['key' => 'tgllahir', 'label' => 'Tanggal Lahir', 'check' => ! empty($peserta->tgllahir)],
-                ['key' => 'sex', 'label' => 'Jenis Kelamin', 'check' => ! empty($peserta->sex)],
+                ['key' => 'tempat_lahir', 'label' => 'Tempat Lahir', 'check' => ! empty($peserta->tempat_lahir)],
+                ['key' => 'tanggal_lahir', 'label' => 'Tanggal Lahir', 'check' => ! empty($peserta->tanggal_lahir)],
+                ['key' => 'jenis_kelamin', 'label' => 'Jenis Kelamin', 'check' => ! empty($peserta->jenis_kelamin)],
                 ['key' => 'agama', 'label' => 'Agama', 'check' => ! empty($peserta->agama)],
-                ['key' => 'hp', 'label' => 'No. HP', 'check' => ! empty($peserta->hp)],
+                ['key' => 'no_hp', 'label' => 'No. HP', 'check' => ! empty($peserta->no_hp)],
                 ['key' => 'alamat', 'label' => 'Alamat', 'check' => ! empty($peserta->alamat)],
-                ['key' => 'nm_ibu', 'label' => 'Nama Ibu', 'check' => ! empty($peserta->nm_ibu)],
+                ['key' => 'nama_ibu', 'label' => 'Nama Ibu', 'check' => ! empty($peserta->nama_ibu)],
                 ['key' => 'nama_sekolah', 'label' => 'Nama Sekolah', 'check' => ! empty($peserta->nama_sekolah)],
                 ['key' => 'foto', 'label' => 'Foto', 'check' => ! empty($peserta->foto)],
             ];
@@ -105,19 +104,19 @@ class DashboardController extends Controller
             'peserta' => $peserta ? [
                 'id' => $peserta->id,
                 'nama' => $peserta->nama,
-                'nup' => $peserta->nup,
+                'nup' => $peserta->kode_pendaftar,
                 'noujian' => $peserta->noujian,
-                'status' => $peserta->status,
+                'status' => (bool) $peserta->noujian,
                 'lulus' => $peserta->lulus,
                 'lulus_prodi' => $peserta->lulusProdi?->nama_prodi,
                 'lulus_tahap' => $peserta->lulus_tahap,
                 'pil1_prodi' => $peserta->pil1Prodi?->nama_prodi,
                 'foto' => $peserta->foto,
                 'nilai' => [
-                    'psikotes' => $peserta->nil_psikotes,
-                    'inggris' => $peserta->nil_bhsinggris,
-                    'wawancara' => $peserta->nil_wawancara,
-                    'kesehatan' => $peserta->nil_kesehatan,
+                    'psikotes' => $peserta->nilai?->firstWhere('type', 'psikotes')?->skor_akhir,
+                    'inggris' => $peserta->nilai?->firstWhere('type', 'bhs_inggris')?->skor_akhir,
+                    'wawancara' => $peserta->nilai?->firstWhere('type', 'wawancara')?->skor_akhir,
+                    'kesehatan' => $peserta->nilai?->firstWhere('type', 'kesehatan')?->skor_akhir,
                 ],
                 'raport_status' => $peserta->raport?->status,
                 'kesehatan_status' => $peserta->kesehatan?->status,

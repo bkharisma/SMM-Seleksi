@@ -15,7 +15,7 @@ class PesertaNilai extends Model
         'nup', 'nus', 'ujian_id', 'psi_iq', 'psi_bobot', 'bing_nil',
         'waw_nil', 'kes_tb', 'kes_bw', 'kes_obe', 'kes_nark',
         'kes_hml', 'kes_tato', 'kes_tindik', 'kes_paru', 'kes_stra',
-        'kes_scol', 'type', 'skor_akhir',
+        'kes_scol', 'kes_hamil', 'kes_hasil', 'type', 'skor_akhir',
     ];
 
     protected $casts = [
@@ -27,6 +27,8 @@ class PesertaNilai extends Model
         'kes_paru' => 'boolean',
         'kes_stra' => 'boolean',
         'kes_scol' => 'boolean',
+        'kes_hamil' => 'boolean',
+        'kes_hasil' => 'boolean',
     ];
 
     public function ujian()

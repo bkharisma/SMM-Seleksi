@@ -2,8 +2,8 @@
 
 use App\Models\BsiPembayaran;
 use App\Models\Peminat;
+use App\Models\Pendaftar;
 use App\Models\Periode;
-use App\Models\Peserta;
 use App\Models\Prodi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -97,7 +97,7 @@ test('bsi callback promotes peminat to peserta', function () {
         'virtual_account' => '9901000000000002',
     ]);
 
-    $peserta = Peserta::where('nup', '250001')->first();
+    $peserta = Pendaftar::where('kode_pendaftar', '250001')->first();
     expect($peserta)->not->toBeNull();
     expect($peserta->nama)->toBe('Test User');
     expect($peserta->email)->toBe('test@example.com');

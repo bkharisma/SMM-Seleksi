@@ -13,8 +13,8 @@ interface Prodi {
     nama_prodi: string;
 }
 
-interface Peserta {
-    nup: string;
+interface Pendaftar {
+    kode_pendaftar: string;
     noujian: string | null;
     nama: string;
     pil1_prodi: Prodi | null;
@@ -39,7 +39,7 @@ interface NilaiRecord {
     kes_stra: number | null;
     kes_scol: number | null;
     skor_akhir: number | null;
-    peserta: Peserta | null;
+    pendaftar: Pendaftar | null;
 }
 
 interface Ujian {
@@ -67,24 +67,19 @@ interface NilaiIndexProps {
 }
 
 const FIELD_LABELS: Record<string, string> = {
-    psi_iq: 'IQ',
-    psi_bobot: 'Bobot',
-    bing_nil: 'Nilai Inggris',
-    waw_nil: 'Nilai Wawancara',
-    kes_tb: 'TB',
-    kes_bw: 'BW',
-    kes_obe: 'Obesitas',
-    kes_nark: 'Narkoba',
-    kes_hml: 'Hermes',
-    kes_tato: 'Tato',
-    kes_tindik: 'Tindik',
-    kes_paru: 'Paru',
-    kes_stra: 'Strabismus',
-    kes_scol: 'Scoliosis',
+    psi_iq: 'Bakat Skolastik',
+    psi_bobot: 'Psikotes',
+    bing_nil: 'Literasi Bahasa Inggris',
+    waw_nil: 'Wawancara',
+    kes_hasil: 'Tes Kesehatan',
+    kes_tb: 'Tinggi Badan',
+    kes_bw: 'Buta Warna',
+    kes_scol: 'Skoliosis',
+    kes_hamil: 'Kehamilan',
     skor_akhir: 'Skor Akhir',
 };
 
-const BOOL_FIELDS = ['kes_bw', 'kes_nark', 'kes_hml', 'kes_tato', 'kes_tindik', 'kes_paru', 'kes_stra', 'kes_scol'];
+const BOOL_FIELDS = ['kes_hasil', 'kes_bw', 'kes_scol', 'kes_hamil'];
 
 function getNilaiDisplay(val: number | null | undefined, isBool: boolean): React.ReactNode {
     if (val === null || val === undefined) {
@@ -109,6 +104,9 @@ export default function NilaiIndex({ nilai, ujian, filters }: NilaiIndexProps) {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editItem, setEditItem] = useState<NilaiRecord | null>(null);
     const [editData, setEditData] = useState<Record<string, string>>({});
+    const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
+    const [deleteAllConfirm, setDeleteAllConfirm] = useState('');
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fields = ujian.fields_config?.fields || [];
@@ -179,18 +177,60 @@ return;
         }
     };
 
+    const handleToggle = (id: number) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
+    };
+
+    const handleToggleAll = () => {
+        const allIds = new Set(nilai.data.map((item) => item.id));
+        if (allIds.size > 0 && selectedIds.size === allIds.size) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(allIds);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedIds.size === 0) return;
+        if (!confirm(`Hapus ${selectedIds.size} data nilai terpilih?`)) return;
+        router.delete('/admin/nilai-bulk', {
+            data: { ids: Array.from(selectedIds) },
+            onSuccess: () => setSelectedIds(new Set()),
+        });
+    };
+
+    const handleDeleteAll = () => {
+        if (deleteAllConfirm !== 'YA') return;
+        router.delete('/admin/nilai-bulk', {
+            data: { all: true, ujian_id: ujian.id },
+            onSuccess: () => {
+                setDeleteAllModalOpen(false);
+                setDeleteAllConfirm('');
+                setSelectedIds(new Set());
+            },
+        });
+    };
+
     const baseColumns = [
         { key: 'nup', label: 'NUP', sortable: true },
         { key: 'nus', label: 'No. Ujian' },
         {
-            key: 'peserta',
+            key: 'pendaftar',
             label: 'Nama',
-            render: (item: NilaiRecord) => item.peserta?.nama || '-',
+            render: (item: NilaiRecord) => item.pendaftar?.nama || '-',
         },
         {
-            key: 'peserta_prodi',
+            key: 'pendaftar_prodi',
             label: 'Pilihan 1',
-            render: (item: NilaiRecord) => item.peserta?.pil1_prodi?.nama_prodi || '-',
+            render: (item: NilaiRecord) => item.pendaftar?.pil1_prodi?.nama_prodi || '-',
         },
     ];
 
@@ -220,7 +260,7 @@ return;
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder="Cari nama, NUP, no ujian..."
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        className="rounded-lg border border-outline-variant px-3 py-2 text-sm text-on-background bg-surface-container-lowest focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                     <input
@@ -242,6 +282,26 @@ return;
                     <Link href="/admin/nilai">
                         <Button variant="secondary" size="sm">Kembali</Button>
                     </Link>
+                    <div className="ml-auto flex gap-2">
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            disabled={selectedIds.size === 0}
+                            onClick={handleBulkDelete}
+                        >
+                            Hapus Terpilih ({selectedIds.size})
+                        </Button>
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => {
+                                setDeleteAllConfirm('');
+                                setDeleteAllModalOpen(true);
+                            }}
+                        >
+                            Hapus Semua
+                        </Button>
+                    </div>
                 </div>
 
                 <DataTable
@@ -249,6 +309,11 @@ return;
                     columns={columns}
                     pagination={nilai}
                     emptyMessage="Belum ada data nilai"
+                    selectable
+                    selectedIds={selectedIds}
+                    onToggle={handleToggle}
+                    onToggleAll={handleToggleAll}
+                    idKey="id"
                     actions={(item: NilaiRecord) => (
                         <>
                             <button
@@ -272,13 +337,13 @@ return;
                 {editItem && (
                     <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                <span className="text-xs text-gray-500 dark:text-gray-400">NUP</span>
+                            <div className="rounded-lg bg-surface-container p-3">
+                                <span className="text-xs text-on-surface-container">NUP</span>
                                 <p className="font-medium">{editItem.nup}</p>
                             </div>
-                            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                <span className="text-xs text-gray-500 dark:text-gray-400">Nama</span>
-                                <p className="font-medium">{editItem.peserta?.nama || '-'}</p>
+                            <div className="rounded-lg bg-surface-container p-3">
+                                <span className="text-xs text-on-surface-container">Nama</span>
+                                <p className="font-medium">{editItem.pendaftar?.nama || '-'}</p>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -286,13 +351,13 @@ return;
                                 <div key={field}>
                                     {BOOL_FIELDS.includes(field) ? (
                                         <div className="flex items-center gap-3">
-                                            <label className="w-40 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <label className="w-40 text-sm font-medium text-on-surface-container">
                                                 {FIELD_LABELS[field] || field}
                                             </label>
                                             <select
                                                 value={editData[field] || ''}
                                                 onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
-                                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                                             >
                                                 <option value="">-</option>
                                                 <option value="1">Ya</option>
@@ -318,6 +383,35 @@ return;
                         </div>
                     </div>
                 )}
+            </Modal>
+
+            <Modal isOpen={deleteAllModalOpen} onClose={() => setDeleteAllModalOpen(false)} title="Hapus Semua Nilai">
+                <div className="space-y-4">
+                    <p className="text-sm text-on-surface-container">
+                        Anda akan menghapus <strong className="text-error">semua data nilai</strong> untuk ujian <strong>{ujian.nama}</strong>.
+                    </p>
+                    <p className="text-sm text-on-surface-variant">
+                        Total data: <strong>{nilai.total}</strong>
+                    </p>
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-on-surface-container">
+                            Ketik <strong>YA</strong> untuk mengonfirmasi
+                        </label>
+                        <input
+                            type="text"
+                            value={deleteAllConfirm}
+                            onChange={(e) => setDeleteAllConfirm(e.target.value)}
+                            placeholder="YA"
+                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-error focus:outline-none focus:ring-1 focus:ring-error"
+                        />
+                    </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                        <Button variant="secondary" onClick={() => setDeleteAllModalOpen(false)}>Batal</Button>
+                        <Button variant="danger" disabled={deleteAllConfirm !== 'YA'} onClick={handleDeleteAll}>
+                            Hapus Semua
+                        </Button>
+                    </div>
+                </div>
             </Modal>
         </AdminLayout>
     );

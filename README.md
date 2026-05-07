@@ -1,123 +1,180 @@
-# SMMPTP - Seleksi Mandiri Masuk Politeknik Pariwisata Palembang
+# SMMPTP — Seleksi Mandiri Masuk Politeknik Pariwisata Palembang
 
-Sistem informasi pendaftaran, seleksi, dan manajemen peserta Seleksi Mandiri Masuk Politeknik Pariwisata Palembang (SMMPTP).
+Sistem informasi pendaftaran, seleksi, dan manajemen peserta Seleksi Mandiri Masuk
+Politeknik Pariwisata Palembang (SMMPTP).
 
 ## Teknologi
 
-- **Backend**: Laravel 13, PHP 8.4
-- **Frontend**: React 19 + TypeScript via Inertia.js (SPA)
-- **Database**: MySQL/MariaDB (`smm_poltekpar`)
-- **Authentication**: Laravel Sanctum (SPA cookie-based)
-- **Authorization**: Spatie Laravel Permission
-- **UI**: Tailwind CSS 4
-- **Pembayaran**: BSI Virtual Account (sandbox/production configurable)
-- **Testing**: Pest PHP
+| Layer      | Tech                          |
+|------------|-------------------------------|
+| Backend    | Laravel 13, PHP 8.3+          |
+| Frontend   | React 19 + TypeScript (Inertia SPA) |
+| SSR        | Inertia SSR + Vite (Node)     |
+| Database   | MySQL / MariaDB (`smm_poltekpar`) |
+| Auth       | Laravel Sanctum (cookie SPA)  |
+| RBAC       | Spatie Laravel Permission     |
+| UI         | Tailwind CSS 4 + Material Symbols |
+| Excel      | Maatwebsite/Laravel-Excel      |
+| QR Code    | SimpleSoftwareIO               |
+| Testing    | Pest PHP                       |
+| Payments   | BSI Virtual Account (sandbox/production) |
 
 ## Prasyarat
 
 - PHP 8.3+
 - Node.js 20+
-- MySQL/MariaDB 5.7+
-- Composer
+- MySQL / MariaDB
+- Composer 2
 
 ## Setup Development
 
 ```bash
-# Clone dan masuk ke direktori
-cd laravel-smm
+# Clone
+git clone <repo-url> && cd seleksi
 
-# Install dependencies
+# Install
 composer install
 npm install
 
-# Setup environment
+# Environment
 cp .env.example .env
 php artisan key:generate
 
-# Konfigurasi database di .env
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=smm_poltekpar
-# DB_USERNAME=root
-# DB_PASSWORD=yourpassword
-
-# Jalankan migrasi dan seeder
+# Database (pastikan DB_DATABASE, DB_USERNAME, DB_PASSWORD di .env sudah benar)
 php artisan migrate --seed
 
-# Build frontend
+# Build frontend + jalankan SSR development
 npm run build
-
-# Jalankan development server
 composer run dev
 ```
 
+> `composer run dev` menjalankan 4 proses secara paralel: `php artisan serve`,
+> `php artisan queue:listen`, `php artisan pail` (log viewer), dan `npm run dev` (Vite + SSR hot reload).
+
 ## Akun Default
 
-| Role | Username | Password |
-|------|----------|----------|
-| Superadmin | superadmin | password |
-| Admin | admin | password |
-| Operator | operator | password |
+| Role        | Username     | Password   |
+|-------------|-------------|------------|
+| Superadmin  | superadmin  | password   |
+| Admin       | admin       | password   |
+| Operator    | operator    | password   |
+| Mahasiswa   | (terdaftar via registrasi publik) | `ddmmyyyy` (format tanggal lahir) |
 
-## Struktur Direktori Utama
+## Halaman Publik
+
+| URL               | Deskripsi                     |
+|-------------------|-------------------------------|
+| `/`               | Portal home / beranda         |
+| `/registrasi`     | Form pendaftaran peserta baru |
+| `/login`          | Login admin/operator          |
+| `/login-member`   | Login peserta (NUP + password)|
+| `/forgot-password`| Lupa password admin           |
+| `/kelulusan`      | Cek pengumuman kelulusan      |
+| `/verifikasi/{noujian}` | Verifikasi peserta via QR   |
+
+## Struktur Direktori
 
 ```
 app/
-├── Http/Controllers/   # Controller per modul
-├── Models/             # Eloquent Models
-├── Services/           # Business logic
-├── Exports/            # Excel exports
-├── Imports/            # Excel imports
-├── Mail/               # Mailables
-└── Pdf/                # PDF generators
+├── Http/Controllers/
+│   ├── Admin/           # Admin panel (dashboard, CRUD, seleksi, nilai, referensi, …)
+│   ├── Api/             # API referensi (kabupaten, prodi)
+│   ├── Auth/            # Login, forgot/reset password
+│   ├── Callback/        # BSI payment callback
+│   ├── Member/          # Member dashboard, profile, dokumen
+│   └── Public/          # Portal, registrasi, kelulusan
+├── Models/              # Eloquent models
+├── Services/            # Business logic (SelectionService, ExamNumberService)
+├── Exports/             # Excel exports (PendaftarTemplate, NilaiExport, Prodi/Jalur ref)
+├── Imports/             # Excel imports (PendaftarImport, NilaiImport)
+├── Mail/                # Mailables
+└── Pdf/                 # PDF generators (kartu peserta, profil)
+
 database/
-├── migrations/         # Database migrations
-└── seeders/            # Database seeders
-resources/js/           # React frontend (TypeScript)
-routes/                 # Web, API, console routes
-tests/                  # Pest PHP tests
+├── migrations/
+└── seeders/             # RolePermission, Setup, Prodi, Ujian, AdminUser, Survey, …
+
+resources/js/
+├── components/          # layout/, ui/ (DataTable, Modal, Button, Card, Alert, …)
+├── pages/               # auth/, admin/, member/, public/
+└── types/               # Global Inertia shared types
+
+routes/
+├── web.php              # Public + admin + member + API routes
+└── …
+
+tests/
+├── Unit/
+└── Feature/
 ```
 
 ## Roles & Permissions
 
-| Role | Deskripsi |
-|------|-----------|
-| `superadmin` | Full access semua modul |
-| `admin` | Manajemen data master & peserta |
-| `operator` | Manajemen PTP, absensi, jadwal, input nilai |
-| `mahasiswa` | Lihat status, upload dokumen, cek kelulusan |
+| Role        | Deskripsi                                         |
+|-------------|---------------------------------------------------|
+| superadmin  | Full access semua modul (settings, users, …)      |
+| admin       | Manajemen data master, pendaftar, seleksi, dokumen |
+| operator    | Absensi, jadwal, input & upload nilai             |
+| mahasiswa   | Dashboard pribadi, upload dokumen, cek kelulusan  |
+
+## Fitur Utama
+
+### Admin Panel (`/admin`)
+
+| Menu          | Sub-menu                                      |
+|---------------|-----------------------------------------------|
+| Dashboard     | Statistik pendaftar, chart, notifikasi        |
+| Data Master   | Prodi, Periode, Ruang, Jadwal, Jenis Ujian, Tahap Seleksi, Sumber Informasi, Jenjang Pendidikan, Jalur Pendaftaran |
+| Konten        | Berita, Dokumen                               |
+| Pendaftar     | List, import/export Excel, kartu, generate No. Ujian, upload foto |
+| Dokumen       | Verifikasi Raport, Verifikasi Kesehatan        |
+| Seleksi       | Kriteria Kelulusan, Nilai Ujian, **Seleksi**, Rekap Kelulusan, **Referensi**, Absensi |
+| Pengaturan    | Setup aplikasi                                |
+| Users         | Manajemen user admin/operator (superadmin only)|
+
+### Bulk Delete Nilai
+Di halaman `Nilai Ujian > Kelola Nilai` tersedia 2 tombol merah di kanan toolbar:
+- **Hapus Terpilih** — centang baris lalu klik tombol
+- **Hapus Semua** — modal konfirmasi ketik "YA" untuk menghapus seluruh nilai ujian tersebut
+
+### Template Upload Pendaftar
+Download template menghasilkan Excel 3 sheet:
+1. **Template Import Pendaftar** — format isian (NUP, nama, prodi, jalur, …)
+2. **Referensi Prodi** — daftar kode & nama prodi yang tersedia
+3. **Referensi Jalur Pendaftaran** — daftar kode & nama jalur pendaftaran
+
+### Fitur Referensi (Override Lulus)
+Halaman **Seleksi > Referensi** memungkinkan admin menandai peserta sebagai "Referensi"
+(`is_referensi`). Peserta yang ditandai akan **otomatis lulus** pada proses seleksi
+tanpa memperhitungkan nilai ujian. Terdapat catatan opsional untuk setiap penandaan.
+
+### Excel Import
+Pendaftar dan Nilai Ujian dapat di-import via Excel (`.xlsx`, `.xls`, `.csv`).
+- Import pendaftar menggunakan `updateOrCreate` berdasarkan `kode_pendaftar`
+- Import nilai mendukung kolom dinamis sesuai `fields_config` pada jenis ujian
+- Error import ditampilkan dan tersedia download error report
+
+### Kartu Peserta
+Peserta yang telah memiliki No. Ujian dapat mencetak kartu peserta (PDF)
+lengkap dengan QR code untuk verifikasi.
 
 ## Menjalankan Tests
 
 ```bash
-# Semua tests
 php artisan test
 
-# Unit tests saja
+# Spesifik suite
 php artisan test --testsuite=Unit
-
-# Feature tests saja
 php artisan test --testsuite=Feature
 
-# Menggunakan Pest
+# Via Pest CLI
 ./vendor/bin/pest
 ./vendor/bin/pest tests/Unit/
 ./vendor/bin/pest tests/Feature/
+
+# Filter test
+./vendor/bin/pest --filter=nama_test
 ```
-
-## Konfigurasi BSI Virtual Account
-
-Tambahkan di `.env`:
-
-```env
-BSI_CLIENT_ID=
-BSI_SECRET_KEY=
-BSI_API_URL=https://sandbox.api.bpi.co.id/ext/bnis/
-BSI_ENVIRONMENT=sandbox
-```
-
-Di environment `local` dan `testing`, BSI VA menggunakan mock response tanpa koneksi ke API BSI.
 
 ## Konfigurasi Email
 
@@ -132,42 +189,30 @@ MAIL_FROM_ADDRESS=youremail@gmail.com
 MAIL_FROM_NAME="SMMPTP Poltekpar Palembang"
 ```
 
-Email dikirim melalui queue. Pastikan queue worker berjalan:
+Email dikirim melalui queue database. Queue worker otomatis berjalan dengan `composer run dev`.
 
-```bash
-php artisan queue:work
+## Konfigurasi BSI Virtual Account
+
+```env
+BSI_CLIENT_ID=
+BSI_SECRET_KEY=
+BSI_API_URL=https://sandbox.api.bpi.co.id/ext/bnis/
+BSI_ENVIRONMENT=sandbox
 ```
+
+Di environment `local` dan `testing`, BSI VA menggunakan response mock tanpa koneksi API BSI live.
+
+**Callback webhook:** `POST /api/callback/bsi` (tanpa CSRF protection).
 
 ## Deployment
 
 ```bash
-# Production build
 npm run build
-
-# Optimize
 php artisan optimize
-
-# Jalankan migrasi
 php artisan migrate --force
-
-# Restart queue worker
 php artisan queue:restart
 ```
 
-## BSI Callback Webhook
+---
 
-**URL:** `POST /api/callback/bsi`
-
-Endpoint ini menerima callback pembayaran dari BSI setelah pembayaran VA dilakukan. CSRF protection dinonaktifkan untuk endpoint ini.
-
-Response sukses:
-```json
-{
-  "statusCode": "2000000",
-  "statusMessage": "Success"
-}
-```
-
-## License
-
-Proprietary - Politeknik Pariwisata Palembang
+Proprietary — Politeknik Pariwisata Palembang

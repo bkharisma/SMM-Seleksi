@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Mail\PaymentConfirmed;
 use App\Models\BsiPembayaran;
 use App\Models\Peminat;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +23,7 @@ class PaymentService
             ];
         }
 
-        if (Peserta::where('nup', $peminat->nup)->exists()) {
+        if (Pendaftar::where('kode_pendaftar', $peminat->nup)->exists()) {
             return [
                 'success' => false,
                 'message' => 'Peminat sudah menjadi peserta.',
@@ -46,22 +46,17 @@ class PaymentService
                 $user->assignRole('mahasiswa');
             }
 
-            $peserta = Peserta::create([
+            $peserta = Pendaftar::create([
                 'user_id' => $user->id,
-                'nup' => $peminat->nup,
-                'tgldaftar' => $peminat->tgldaftar ?? now(),
+                'kode_pendaftar' => $peminat->nup,
                 'nama' => $peminat->nama,
                 'email' => $peminat->email,
-                'hp' => $peminat->hp,
-                'tgllahir' => $peminat->tgllahir,
-                'kwng' => $peminat->kwng ?? 'WNI',
+                'no_hp' => $peminat->hp,
+                'tanggal_lahir' => $peminat->tgllahir,
                 'pil1' => $peminat->pil1,
                 'pil2' => $peminat->pil2,
                 'pil3' => $peminat->pil3,
-                'pil4' => $peminat->pil4,
-                'taustp' => $peminat->taustp,
                 'nama_sekolah' => $peminat->nama_sekolah,
-                'status' => 1,
             ]);
 
             try {

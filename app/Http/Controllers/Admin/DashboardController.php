@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BsiPembayaran;
-use App\Models\Counter;
-use App\Models\Peminat;
-use App\Models\Peserta;
+use App\Models\Notification;
+use App\Models\Pendaftar;
 use App\Models\Prodi;
-use App\Models\Survey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -19,39 +16,29 @@ class DashboardController extends Controller
     public function index(): Response
     {
         $stats = [
-            'total_peminat' => Peminat::count(),
-            'total_peserta' => Peserta::count(),
-            'total_pembayaran' => BsiPembayaran::whereNotNull('payment_amount')->count(),
-            'total_pengunjung' => Counter::getCounter('visitors'),
-            'total_lulus' => Peserta::whereNotNull('lulus')->count(),
-            'total_belum_lulus' => Peserta::whereNull('lulus')->count(),
+            'total_pendaftar' => Pendaftar::count(),
+            'total_pengunjung' => 0,
+            'total_lulus' => Pendaftar::whereNotNull('lulus')->count(),
+            'total_belum_lulus' => Pendaftar::whereNull('lulus')->count(),
+            'total_dengan_noujian' => Pendaftar::whereNotNull('noujian')->count(),
+            'total_tanpa_noujian' => Pendaftar::whereNull('noujian')->count(),
         ];
 
         $prodiDistribution = Prodi::active()
-            ->withCount(['pesertaPil1'])
+            ->withCount(['pendaftarPil1'])
             ->get()
             ->map(function ($prodi) {
                 return [
                     'name' => $prodi->singkatan_prodi ?? $prodi->nama_prodi,
-                    'value' => $prodi->peserta_pil1_count,
+                    'value' => $prodi->pendaftar_pil1_count,
                 ];
             });
 
-        $surveyData = Survey::withCount(['peminat'])
-            ->orderByDesc('peminat_count')
-            ->get()
-            ->map(function ($survey) {
-                return [
-                    'name' => $survey->keterangan,
-                    'value' => $survey->peminat_count,
-                ];
-            });
-
-        $monthlyRegistration = Peminat::select(
-            DB::raw('DATE_FORMAT(tgldaftar, "%Y-%m") as month'),
+        $monthlyRegistration = Pendaftar::select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
             DB::raw('COUNT(*) as count')
         )
-            ->whereNotNull('tgldaftar')
+            ->whereNotNull('created_at')
             ->groupBy('month')
             ->orderBy('month')
             ->limit(12)
@@ -66,7 +53,6 @@ class DashboardController extends Controller
         return Inertia::render('admin/dashboard', [
             'stats' => $stats,
             'prodi_distribution' => $prodiDistribution,
-            'survey_data' => $surveyData,
             'monthly_registration' => $monthlyRegistration,
         ]);
     }
@@ -75,28 +61,19 @@ class DashboardController extends Controller
     {
         return match ($jenis) {
             'prodi' => Prodi::active()
-                ->withCount(['pesertaPil1'])
+                ->withCount(['pendaftarPil1'])
                 ->get()
                 ->map(function ($prodi) {
                     return [
                         'name' => $prodi->singkatan_prodi ?? $prodi->nama_prodi,
-                        'value' => $prodi->peserta_pil1_count,
+                        'value' => $prodi->pendaftar_pil1_count,
                     ];
                 }),
-            'survey' => Survey::withCount(['peminat'])
-                ->orderByDesc('peminat_count')
-                ->get()
-                ->map(function ($survey) {
-                    return [
-                        'name' => $survey->keterangan,
-                        'value' => $survey->peminat_count,
-                    ];
-                }),
-            'monthly' => Peminat::select(
-                DB::raw('DATE_FORMAT(tgldaftar, "%Y-%m") as month'),
+            'monthly' => Pendaftar::select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
                 DB::raw('COUNT(*) as count')
             )
-                ->whereNotNull('tgldaftar')
+                ->whereNotNull('created_at')
                 ->groupBy('month')
                 ->orderBy('month')
                 ->limit(12)

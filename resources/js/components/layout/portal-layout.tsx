@@ -7,35 +7,35 @@ interface PortalLayoutProps {
 
 export default function PortalLayout({ children, title }: PortalLayoutProps) {
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <header className="border-b bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                    <Link href="/" className="text-xl font-bold text-blue-600">
+        <div className="min-h-screen bg-background">
+            <header className="border-b bg-surface-container-lowest shadow-sm border-outline-variant">
+                <div className="mx-auto flex max-w-[1200px] items-center justify-between px-gutter h-20">
+                    <Link href="/" className="text-h3 font-h3 text-primary">
                         SMMPTP Poltekpar
                     </Link>
-                    <nav className="flex items-center gap-4">
-                        <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+                    <nav className="flex items-center gap-sm">
+                        <Link href="/" className="text-label-md text-secondary hover:text-primary transition-colors">
                             Beranda
                         </Link>
-                        <Link href="/kelulusan" className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+                        <Link href="/kelulusan" className="text-label-md text-secondary hover:text-primary transition-colors">
                             Cek Kelulusan
                         </Link>
-                        <Link href="/registrasi" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                        <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">
                             Daftar Sekarang
                         </Link>
                     </nav>
                 </div>
             </header>
-            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <main className="mx-auto max-w-[1200px] px-gutter py-cl">
                 {title && (
-                    <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                    <div className="mb-cl text-center">
+                        <h1 className="text-h2 font-h2 text-on-surface">{title}</h1>
                     </div>
                 )}
                 {children}
             </main>
-            <footer className="mt-16 border-t bg-white py-8 dark:border-gray-700 dark:bg-gray-800">
-                <div className="mx-auto max-w-7xl px-4 text-center text-sm text-gray-500 dark:text-gray-400 sm:px-6 lg:px-8">
+            <footer className="mt-cxl pt-cl border-t border-outline-variant">
+                <div className="mx-auto max-w-[1200px] px-gutter py-cl text-center text-label-md text-secondary">
                     <p>&copy; {new Date().getFullYear()} SMMPTP Politeknik Pariwisata Palembang. All rights reserved.</p>
                 </div>
             </footer>

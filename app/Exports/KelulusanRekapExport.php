@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\Prodi;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -22,28 +22,27 @@ class KelulusanRekapExport implements FromCollection, WithHeadings, WithMapping,
 
     public function collection()
     {
-        $query = Prodi::active()->withCount(['pesertaLulus']);
+        $query = Prodi::active()->withCount(['pendaftarLulus']);
 
         if ($this->prodiId) {
             $query->where('id', $this->prodiId);
         }
 
         return $query->get()->map(function ($prodi) {
-            $lulusPil1 = Peserta::where('lulus', $prodi->id)->where('pil1', $prodi->id)->count();
-            $lulusPil2 = Peserta::where('lulus', $prodi->id)->where('pil2', $prodi->id)->count();
-            $lulusPil3 = Peserta::where('lulus', $prodi->id)->where('pil3', $prodi->id)->count();
-            $lulusPil4 = Peserta::where('lulus', $prodi->id)->where('pil4', $prodi->id)->count();
+            $lulusPil1 = Pendaftar::where('lulus', $prodi->id)->where('pil1', $prodi->id)->count();
+            $lulusPil2 = Pendaftar::where('lulus', $prodi->id)->where('pil2', $prodi->id)->count();
+            $lulusPil3 = Pendaftar::where('lulus', $prodi->id)->where('pil3', $prodi->id)->count();
 
             return (object) [
                 'kode_prodi' => $prodi->kode_prodi,
                 'nama_prodi' => $prodi->nama_prodi,
-                'total_lulus' => $prodi->peserta_lulus_count,
+                'total_lulus' => $prodi->pendaftar_lulus_count,
                 'kuota' => $prodi->kuota_smm,
                 'pilihan_1' => $lulusPil1,
                 'pilihan_2' => $lulusPil2,
                 'pilihan_3' => $lulusPil3,
-                'pilihan_4' => $lulusPil4,
-                'tersisa' => $prodi->kuota_smm ? max(0, $prodi->kuota_smm - $prodi->peserta_lulus_count) : null,
+                'pilihan_4' => 0,
+                'tersisa' => $prodi->kuota_smm ? max(0, $prodi->kuota_smm - $prodi->pendaftar_lulus_count) : null,
             ];
         });
     }

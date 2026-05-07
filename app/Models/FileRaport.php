@@ -11,10 +11,10 @@ class FileRaport extends Model
 
     protected $table = 'file_raport';
 
-    protected $fillable = ['noujian', 'file_loc'];
+    protected $fillable = ['pendaftar_id', 'file_loc'];
 
-    public function peserta()
+    public function pendaftar()
     {
-        return $this->belongsTo(Peserta::class, 'noujian', 'noujian');
+        return $this->belongsTo(Pendaftar::class);
     }
 }

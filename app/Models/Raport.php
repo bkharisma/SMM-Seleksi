@@ -19,13 +19,13 @@ class Raport extends Model
         'status', 'catatan',
     ];
 
-    public function peserta()
+    public function pendaftar()
     {
-        return $this->belongsTo(Peserta::class, 'noujian', 'noujian');
+        return $this->belongsTo(Pendaftar::class);
     }
 
     public function fileRaport()
     {
-        return $this->hasMany(FileRaport::class, 'noujian', 'noujian');
+        return $this->hasMany(FileRaport::class, 'pendaftar_id');
     }
 }

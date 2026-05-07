@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Peserta;
-use App\Models\User;
+use App\Models\Pendaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +25,7 @@ class LoginMemberController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $peserta = Peserta::where('nup', $credentials['nup'])->first();
+        $peserta = Pendaftar::where('kode_pendaftar', $credentials['nup'])->first();
 
         if (! $peserta) {
             return back()->withErrors([
@@ -34,7 +33,7 @@ class LoginMemberController extends Controller
             ])->onlyInput('nup');
         }
 
-        $user = User::where('username', $credentials['nup'])->first();
+        $user = $peserta->user;
 
         if (! $user) {
             return back()->withErrors([

@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\Peserta;
-use App\Models\PesertaNilai;
+use App\Models\Pendaftar;
+use App\Models\PendaftarNilai;
 use App\Models\Ujian;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -14,20 +14,15 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class NilaiExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     const FIELD_META = [
-        'psi_iq' => ['label' => 'IQ', 'type' => 'int'],
-        'psi_bobot' => ['label' => 'Bobot', 'type' => 'int'],
-        'bing_nil' => ['label' => 'Nilai Inggris', 'type' => 'int'],
-        'waw_nil' => ['label' => 'Nilai Wawancara', 'type' => 'int'],
-        'kes_tb' => ['label' => 'TB', 'type' => 'int'],
-        'kes_bw' => ['label' => 'BW', 'type' => 'bool'],
-        'kes_obe' => ['label' => 'Obesitas', 'type' => 'float'],
-        'kes_nark' => ['label' => 'Narkoba', 'type' => 'bool'],
-        'kes_hml' => ['label' => 'Hermes', 'type' => 'bool'],
-        'kes_tato' => ['label' => 'Tato', 'type' => 'bool'],
-        'kes_tindik' => ['label' => 'Tindik', 'type' => 'bool'],
-        'kes_paru' => ['label' => 'Paru', 'type' => 'bool'],
-        'kes_stra' => ['label' => 'Strabismus', 'type' => 'bool'],
-        'kes_scol' => ['label' => 'Scoliosis', 'type' => 'bool'],
+        'psi_iq' => ['label' => 'Bakat Skolastik', 'type' => 'int'],
+        'psi_bobot' => ['label' => 'Psikotes', 'type' => 'int'],
+        'bing_nil' => ['label' => 'Literasi Bahasa Inggris', 'type' => 'int'],
+        'waw_nil' => ['label' => 'Wawancara', 'type' => 'int'],
+        'kes_hasil' => ['label' => 'Tes Kesehatan', 'type' => 'bool'],
+        'kes_tb' => ['label' => 'Tinggi Badan', 'type' => 'int'],
+        'kes_bw' => ['label' => 'Buta Warna', 'type' => 'bool'],
+        'kes_scol' => ['label' => 'Skoliosis', 'type' => 'bool'],
+        'kes_hamil' => ['label' => 'Kehamilan', 'type' => 'bool'],
         'skor_akhir' => ['label' => 'Skor Akhir', 'type' => 'float'],
     ];
 
@@ -49,14 +44,14 @@ class NilaiExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     public function collection()
     {
         if ($this->isTemplate) {
-            $pesertas = Peserta::with('pil1Prodi')->orderBy('nama')->get();
+            $pendaftars = Pendaftar::with('pil1Prodi')->orderBy('nama')->get();
 
-            return $pesertas->map(function ($peserta) {
+            return $pendaftars->map(function ($pendaftar) {
                 $row = new \stdClass;
-                $row->nup = $peserta->nup;
-                $row->noujian = $peserta->noujian;
-                $row->nama = $peserta->nama;
-                $row->pil1_prodi = $peserta->pil1Prodi?->nama_prodi;
+                $row->nup = $pendaftar->kode_pendaftar;
+                $row->noujian = $pendaftar->noujian;
+                $row->nama = $pendaftar->nama;
+                $row->pil1_prodi = $pendaftar->pil1Prodi?->nama_prodi;
                 foreach ($this->fields() as $field) {
                     $row->$field = null;
                 }
@@ -65,7 +60,7 @@ class NilaiExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             });
         }
 
-        return PesertaNilai::with(['peserta' => function ($q) {
+        return PendaftarNilai::with(['pendaftar' => function ($q) {
             $q->with('pil1Prodi');
         }])
             ->where('ujian_id', $this->ujian->id)
@@ -87,9 +82,9 @@ class NilaiExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     {
         $data = [
             $row->nup,
-            $row->noujian ?? $row->nus ?? $row->peserta?->noujian ?? '',
-            $row->nama ?? $row->peserta?->nama ?? '',
-            $row->pil1_prodi ?? $row->peserta?->pil1Prodi?->nama_prodi ?? '',
+            $row->noujian ?? $row->nus ?? $row->pendaftar?->noujian ?? '',
+            $row->nama ?? $row->pendaftar?->nama ?? '',
+            $row->pil1_prodi ?? $row->pendaftar?->pil1Prodi?->nama_prodi ?? '',
         ];
 
         foreach ($this->fields() as $field) {

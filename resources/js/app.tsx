@@ -1,5 +1,5 @@
 import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react';
-import { createRoot } from 'react-dom/client';
+import { hydrateRoot } from 'react-dom/client';
 
 const appName = import.meta.env.VITE_APP_NAME || 'SMMPTP Poltekpar Palembang';
 
@@ -14,7 +14,9 @@ createInertiaApp({
         return page;
     },
     setup({ el, App, props }) {
-        createRoot(el).render(<App {...props} />);
+        if (el) {
+            hydrateRoot(el, <App {...props} />);
+        }
     },
     progress: {
         color: '#4B5563',

@@ -20,9 +20,24 @@ class Prodi extends Model
         'active' => 'boolean',
     ];
 
-    public function peminatPil1()
+    public function pendaftarPil1()
     {
-        return $this->hasMany(Peminat::class, 'pil1');
+        return $this->hasMany(Pendaftar::class, 'pil1');
+    }
+
+    public function pendaftarPil2()
+    {
+        return $this->hasMany(Pendaftar::class, 'pil2');
+    }
+
+    public function pendaftarPil3()
+    {
+        return $this->hasMany(Pendaftar::class, 'pil3');
+    }
+
+    public function pendaftarLulus()
+    {
+        return $this->hasMany(Pendaftar::class, 'lulus');
     }
 
     public function pesertaPil1()
@@ -33,6 +48,11 @@ class Prodi extends Model
     public function pesertaLulus()
     {
         return $this->hasMany(Peserta::class, 'lulus');
+    }
+
+    public function peminatPil1()
+    {
+        return $this->hasMany(Peminat::class, 'pil1');
     }
 
     public function kriteriaKelulusan()

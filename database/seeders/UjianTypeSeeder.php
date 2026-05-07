@@ -10,14 +10,40 @@ class UjianTypeSeeder extends Seeder
     public function run(): void
     {
         $ujian = [
-            ['nama' => 'Psikotes', 'kode' => 'psikotes', 'deskripsi' => 'Tes Psikologi'],
-            ['nama' => 'English Test', 'kode' => 'bhsinggris', 'deskripsi' => 'Tes Bahasa Inggris'],
-            ['nama' => 'Wawancara', 'kode' => 'wawancara', 'deskripsi' => 'Tes Wawancara'],
-            ['nama' => 'Cek Kesehatan', 'kode' => 'kesehatan', 'deskripsi' => 'Pemeriksaan Kesehatan'],
+            [
+                'nama' => 'Tes Bakat Skolastik',
+                'kode' => 'TBS',
+                'deskripsi' => 'Tes Bakat dan Skolastik',
+                'fields_config' => ['fields' => ['psi_iq']],
+            ],
+            [
+                'nama' => 'Literasi Bahasa Inggris',
+                'kode' => 'LBI',
+                'deskripsi' => 'Tes Literasi Bahasa Inggris',
+                'fields_config' => ['fields' => ['bing_nil']],
+            ],
+            [
+                'nama' => 'Psikotes',
+                'kode' => 'PSI',
+                'deskripsi' => 'Tes Psikotes',
+                'fields_config' => ['fields' => ['psi_bobot']],
+            ],
+            [
+                'nama' => 'Wawancara',
+                'kode' => 'WW',
+                'deskripsi' => 'Tes Wawancara',
+                'fields_config' => ['fields' => ['waw_nil']],
+            ],
+            [
+                'nama' => 'Cek Kesehatan',
+                'kode' => 'KSH',
+                'deskripsi' => 'Tes Pemeriksaan Kesehatan',
+                'fields_config' => ['fields' => ['kes_hasil', 'kes_tb', 'kes_bw', 'kes_scol', 'kes_hamil']],
+            ],
         ];
 
         foreach ($ujian as $u) {
-            Ujian::firstOrCreate(['kode' => $u['kode']], $u);
+            Ujian::updateOrCreate(['kode' => $u['kode']], $u);
         }
     }
 }

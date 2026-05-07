@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\KriteriaKelulusan;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\TahapSeleksi;
 use App\Services\SelectionService;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class KelulusanController extends Controller
             'password' => 'required|string',
         ]);
 
-        $peserta = Peserta::where('nup', $validated['nup'])
+        $peserta = Pendaftar::where('kode_pendaftar', $validated['nup'])
             ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian'])
             ->first();
 
@@ -46,36 +46,39 @@ class KelulusanController extends Controller
             return back()->withErrors(['password' => 'Password salah.']);
         }
 
-        // Track check time
-        $peserta->update([
-            'tgl_cek_lulus' => now()->toISOString(),
-        ]);
+        $peserta->touch();
 
-        // Get per-tahap details
         $detailsPerTahap = $this->getDetailsPerTahap($peserta);
 
         return Inertia::render('public/kelulusan', [
             'peserta' => [
-                'nup' => $peserta->nup,
+                'nup' => $peserta->kode_pendaftar,
                 'nama' => $peserta->nama,
                 'foto' => $peserta->foto,
                 'pil1' => $peserta->pil1Prodi?->nama_prodi,
                 'lulus' => $peserta->lulus,
                 'lulus_prodi' => $peserta->lulusProdi?->nama_prodi,
                 'lulus_tahap' => $peserta->lulus_tahap,
-                'nilai' => [
-                    'psikotes' => $peserta->nil_psikotes,
-                    'inggris' => $peserta->nil_bhsinggris,
-                    'wawancara' => $peserta->nil_wawancara,
-                    'kesehatan' => $peserta->nil_kesehatan,
-                ],
+                'nilai' => $this->getNilaiSummary($peserta),
                 'details_per_tahap' => $detailsPerTahap,
-                'tgl_cek_lulus' => $peserta->tgl_cek_lulus,
+                'tgl_cek_lulus' => $peserta->updated_at,
             ],
         ]);
     }
 
-    protected function getDetailsPerTahap(Peserta $peserta): array
+    protected function getNilaiSummary(Pendaftar $peserta): array
+    {
+        $nilaiList = $peserta->nilai;
+
+        return [
+            'psikotes' => $nilaiList->firstWhere('type', 'psikotes')?->skor_akhir,
+            'inggris' => $nilaiList->firstWhere('type', 'bhs_inggris')?->skor_akhir,
+            'wawancara' => $nilaiList->firstWhere('type', 'wawancara')?->skor_akhir,
+            'kesehatan' => $nilaiList->firstWhere('type', 'kesehatan')?->skor_akhir,
+        ];
+    }
+
+    protected function getDetailsPerTahap(Pendaftar $peserta): array
     {
         $tahapList = TahapSeleksi::active()->orderBy('urutan')->get();
         $details = [];

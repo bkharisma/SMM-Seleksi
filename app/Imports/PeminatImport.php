@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Peminat;
 use App\Models\Prodi;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
@@ -73,7 +74,7 @@ class PeminatImport implements ToModel, WithHeadingRow, WithStartRow
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+            return Carbon::parse($value)->format('Y-m-d');
         } catch (\Exception) {
             return null;
         }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\KelulusanDetailExport;
 use App\Exports\KelulusanRekapExport;
 use App\Http\Controllers\Controller;
+use App\Models\Pendaftar;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
 use App\Services\SelectionService;
@@ -39,7 +41,7 @@ class SeleksiController extends Controller
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
             'prodi_id' => 'required|exists:prodi,id',
-            'pilihan' => 'nullable|integer|min:1|max:4',
+            'pilihan' => 'nullable|integer|min:1|max:3',
         ]);
 
         $result = $this->selectionService->previewSelection(
@@ -64,7 +66,7 @@ class SeleksiController extends Controller
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
             'prodi_id' => 'required|exists:prodi,id',
-            'pilihan' => 'nullable|integer|min:1|max:4',
+            'pilihan' => 'nullable|integer|min:1|max:3',
             'selected_nup' => 'required|array|min:1',
             'selected_nup.*' => 'required|string',
         ]);
@@ -103,5 +105,34 @@ class SeleksiController extends Controller
         $filename = 'rekap_kelulusan_'.date('Y-m-d_His').'.xlsx';
 
         return Excel::download(new KelulusanRekapExport($prodiId), $filename);
+    }
+
+    public function rekapDetail(Prodi $prodi): Response
+    {
+        $result = $this->selectionService->getLulusByProdi($prodi->id);
+
+        return Inertia::render('admin/seleksi/rekap-detail', [
+            'detail' => $result,
+        ]);
+    }
+
+    public function rekapDetailExport(Prodi $prodi)
+    {
+        $result = $this->selectionService->getLulusByProdi($prodi->id);
+        $data = collect($result['peserta'] ?? []);
+        $filename = 'detail_lulus_'.$prodi->kode_prodi.'_'.date('Y-m-d_His').'.xlsx';
+
+        return Excel::download(new KelulusanDetailExport($data, $prodi), $filename);
+    }
+
+    public function revokeLulus(Pendaftar $pendaftar): RedirectResponse
+    {
+        $result = $this->selectionService->revokeLulus($pendaftar->id);
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
     }
 }

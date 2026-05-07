@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             EducationLevelSeeder::class,
             SurveySeeder::class,
             ProdiSeeder::class,
+            JalurPendaftaranSeeder::class,
             UjianTypeSeeder::class,
             TahapSeleksiSeeder::class,
             AdminUserSeeder::class,

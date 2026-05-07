@@ -36,8 +36,8 @@ export default function Pagination({ links, from, to, total, current_page, last_
     if (last_page <= 1) return null;
 
     return (
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-200 px-4 py-3 dark:border-gray-700 sm:flex-row">
-            <div className="text-sm text-gray-700 dark:text-gray-300">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-outline-variant px-4 py-3 sm:flex-row">
+            <div className="text-sm text-on-surface-container">
                 Menampilkan <span className="font-medium">{from}</span> sampai{' '}
                 <span className="font-medium">{to}</span> dari{' '}
                 <span className="font-medium">{total}</span> data
@@ -51,10 +51,10 @@ export default function Pagination({ links, from, to, total, current_page, last_
                             disabled={!link.url}
                             className={`relative inline-flex items-center px-3 py-2 text-sm font-semibold transition-colors first:rounded-l-md last:rounded-r-md focus:z-20 focus:outline-offset-0 ${
                                 !link.url
-                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800'
+                                    ? 'cursor-not-allowed bg-surface-container text-on-surface-container/50'
                                     : link.active
-                                        ? 'bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600'
-                                        : 'bg-white text-gray-900 ring-1 ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700'
+                                        ? 'bg-primary text-on-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary'
+                                        : 'bg-surface-container-lowest text-on-background ring-1 ring-outline-variant hover:bg-surface-container'
                             }`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
@@ -67,13 +67,13 @@ export default function Pagination({ links, from, to, total, current_page, last_
                         onChange={(e) => setGoToPage(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleGoToPage()}
                         placeholder="Halaman"
-                        className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        className="w-20 rounded-md border border-outline-variant px-2 py-1 text-sm text-on-background bg-surface-container-lowest"
                         min={1}
                         max={last_page}
                     />
                     <button
                         onClick={handleGoToPage}
-                        className="rounded-md bg-gray-200 px-2 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+                        className="rounded-md bg-surface-container px-2 py-1 text-sm hover:bg-surface-container-high text-on-surface"
                     >
                         Go
                     </button>

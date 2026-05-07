@@ -53,20 +53,16 @@ export default function UjianForm({ ujian, tahap }: UjianFormProps) {
     };
 
     const availableFields = [
-        { name: 'psi_iq', label: 'IQ (Psikotes)' },
-        { name: 'psi_bobot', label: 'Bobot (Psikotes)' },
-        { name: 'bing_nil', label: 'Nilai Bahasa Inggris' },
-        { name: 'waw_nil', label: 'Nilai Wawancara' },
+        { name: 'psi_iq', label: 'Bakat Skolastik' },
+        { name: 'psi_bobot', label: 'Psikotes' },
+        { name: 'bing_nil', label: 'Literasi Bahasa Inggris' },
+        { name: 'waw_nil', label: 'Wawancara' },
+        { name: 'kes_hasil', label: 'Tes Kesehatan' },
         { name: 'kes_tb', label: 'Tinggi Badan' },
         { name: 'kes_bw', label: 'Buta Warna' },
-        { name: 'kes_obe', label: 'Obesitas' },
-        { name: 'kes_nark', label: 'Narkoba' },
-        { name: 'kes_hml', label: 'Hermes' },
-        { name: 'kes_tato', label: 'Tato' },
-        { name: 'kes_tindik', label: 'Tindik' },
-        { name: 'kes_paru', label: 'Paru' },
-        { name: 'kes_stra', label: 'Strabismus' },
-        { name: 'kes_scol', label: 'Scoliosis' },
+        { name: 'kes_scol', label: 'Skoliosis' },
+        { name: 'kes_hamil', label: 'Kehamilan' },
+        { name: 'skor_akhir', label: 'Skor Akhir' },
     ];
 
     useEffect(() => {

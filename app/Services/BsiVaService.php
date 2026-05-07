@@ -31,12 +31,12 @@ class BsiVaService
         $expiredTime = now()->addHours(24);
 
         if ($this->isMockMode()) {
-            $trxId = (int) (time() . $peminat->id);
+            $trxId = (int) (time().$peminat->id);
 
             return $this->mockVaResponse($trxId, $vaNumber, $amount, $expiredTime, $peminat);
         }
 
-        $trxId = time() . $peminat->id;
+        $trxId = time().$peminat->id;
 
         $data = [
             'type' => 'createbilling',
@@ -49,7 +49,7 @@ class BsiVaService
             'customer_phone' => $peminat->hp ?? '',
             'virtual_account' => $vaNumber,
             'datetime_expired' => $expiredTime->format('Y-m-d\TH:i:sP'),
-            'description' => 'Pendaftaran SMMPTP - ' . $peminat->nama,
+            'description' => 'Pendaftaran SMMPTP - '.$peminat->nama,
         ];
 
         try {
@@ -62,7 +62,7 @@ class BsiVaService
 
             $response = Http::withHeaders(['Content-Type' => 'application/json'])
                 ->timeout(30)
-                ->post($this->apiUrl . '?fungsi=vabilling', $payload);
+                ->post($this->apiUrl.'?fungsi=vabilling', $payload);
 
             if (! $response->successful()) {
                 Log::error('BSI VA Creation HTTP Failed', [
@@ -73,7 +73,7 @@ class BsiVaService
 
                 return [
                     'success' => false,
-                    'message' => 'Gagal menghubungi BSI: ' . $response->status(),
+                    'message' => 'Gagal menghubungi BSI: '.$response->status(),
                 ];
             }
 
@@ -99,7 +99,7 @@ class BsiVaService
                 'peminat_id' => $peminat->id,
                 'trx_amount' => $amount,
                 'virtual_account' => $vaNumber,
-                'description' => 'Pendaftaran SMMPTP - ' . $peminat->nama,
+                'description' => 'Pendaftaran SMMPTP - '.$peminat->nama,
                 'datetime_expired' => $expiredTime,
             ]);
 
@@ -156,7 +156,7 @@ class BsiVaService
         $prefix = Setup::get('bsi_va_prefix', '9901');
         $suffix = str_pad($peminat->id, 10, '0', STR_PAD_LEFT);
 
-        return $prefix . $suffix;
+        return $prefix.$suffix;
     }
 
     protected function isMockMode(): bool
@@ -173,7 +173,7 @@ class BsiVaService
             'peminat_id' => $peminat->id,
             'trx_amount' => $amount,
             'virtual_account' => $vaNumber,
-            'description' => 'Pendaftaran SMMPTP - ' . $peminat->nama,
+            'description' => 'Pendaftaran SMMPTP - '.$peminat->nama,
             'datetime_expired' => $expiredAt,
         ]);
 

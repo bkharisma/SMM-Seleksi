@@ -8,11 +8,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-blue-600',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600',
-    ghost: 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
-    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700',
+    primary: 'bg-primary text-on-primary hover:bg-primary/90 focus-visible:outline-primary',
+    secondary: 'bg-surface-container text-on-surface hover:bg-surface-container-high',
+    danger: 'bg-error text-on-error hover:bg-error/90 focus-visible:outline-error',
+    ghost: 'text-on-surface hover:bg-surface-container',
+    outline: 'border border-outline-variant bg-surface-container-lowest text-on-surface hover:bg-surface-container',
 };
 
 const sizes = {

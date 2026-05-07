@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\KriteriaKelulusan;
-use App\Models\Peserta;
-use App\Models\PesertaNilai;
+use App\Models\Pendaftar;
+use App\Models\PendaftarNilai;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
 use App\Models\Ujian;
@@ -62,12 +62,11 @@ test('seleksi index page loads for authenticated admin', function () {
 });
 
 test('seleksi preview shows candidates', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'noujian' => '25HO0001',
         'nama' => 'Test Peserta',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     KriteriaKelulusan::create([
@@ -78,8 +77,8 @@ test('seleksi preview shows candidates', function () {
     ]);
 
     $ujianId = Ujian::where('kode', 'PSIKOTES')->first()->id;
-    PesertaNilai::create([
-        'nup' => '250001',
+    PendaftarNilai::create([
+        'pendaftar_id' => $peserta->id,
         'ujian_id' => $ujianId,
         'psi_iq' => 100,
         'type' => 'PSIKOTES',
@@ -95,12 +94,11 @@ test('seleksi preview shows candidates', function () {
 });
 
 test('seleksi save marks peserta as lulus', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'noujian' => '25HO0001',
         'nama' => 'Test Peserta',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     KriteriaKelulusan::create([
@@ -111,8 +109,8 @@ test('seleksi save marks peserta as lulus', function () {
     ]);
 
     $ujianId = Ujian::where('kode', 'PSIKOTES')->first()->id;
-    PesertaNilai::create([
-        'nup' => '250001',
+    PendaftarNilai::create([
+        'pendaftar_id' => $peserta->id,
         'ujian_id' => $ujianId,
         'psi_iq' => 100,
         'type' => 'PSIKOTES',
@@ -132,13 +130,12 @@ test('seleksi save marks peserta as lulus', function () {
 });
 
 test('seleksi rekap shows summary', function () {
-    Peserta::create([
-        'nup' => '250001',
+    Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'noujian' => '25HO0001',
         'nama' => 'Test A',
         'pil1' => 1,
         'lulus' => 1,
-        'status' => true,
     ]);
 
     $response = $this->get(route('admin.seleksi.rekap'));
@@ -155,14 +152,13 @@ test('seleksi page requires authentication', function () {
 });
 
 test('can check kelulusan as public with valid nup', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'noujian' => '25HO0001',
         'nama' => 'Test Peserta',
         'pil1' => 1,
         'lulus' => 1,
         'lulus_tahap' => 'Tahap 1',
-        'status' => true,
     ]);
 
     $user = User::create([

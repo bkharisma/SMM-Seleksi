@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Models\Mnoujian;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Illuminate\Support\Facades\DB;
 
 class ExamNumberService
 {
-    public function generateForPeserta(Peserta $peserta): string
+    public function generateForPeserta(Pendaftar $peserta): string
     {
         return DB::transaction(function () use ($peserta) {
-            $existing = Mnoujian::where('nup', $peserta->nup)->first();
+            $existing = Mnoujian::where('nup', $peserta->kode_pendaftar)->first();
             if ($existing) {
                 $peserta->update(['noujian' => $existing->noujian]);
 
@@ -25,7 +25,7 @@ class ExamNumberService
 
             Mnoujian::create([
                 'noujian' => $noujian,
-                'nup' => $peserta->nup,
+                'nup' => $peserta->kode_pendaftar,
             ]);
 
             $peserta->update(['noujian' => $noujian]);
@@ -38,7 +38,7 @@ class ExamNumberService
     {
         $count = 0;
         foreach ($pesertaIds as $id) {
-            $peserta = Peserta::find($id);
+            $peserta = Pendaftar::find($id);
             if ($peserta && ! $peserta->noujian) {
                 $this->generateForPeserta($peserta);
                 $count++;

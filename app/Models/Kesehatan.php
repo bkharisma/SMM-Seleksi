@@ -17,13 +17,13 @@ class Kesehatan extends Model
         'paru', 'sco', 'mop', 'amp', 'thc', 'kehamilan', 'status', 'catatan',
     ];
 
-    public function peserta()
+    public function pendaftar()
     {
-        return $this->belongsTo(Peserta::class, 'noujian', 'noujian');
+        return $this->belongsTo(Pendaftar::class);
     }
 
     public function fileKesehatan()
     {
-        return $this->hasMany(FileKesehatan::class, 'noujian', 'noujian');
+        return $this->hasMany(FileKesehatan::class, 'pendaftar_id');
     }
 }

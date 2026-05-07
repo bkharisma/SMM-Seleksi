@@ -5,14 +5,15 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\JadwalController;
+use App\Http\Controllers\Admin\JalurPendaftaranController;
 use App\Http\Controllers\Admin\KriteriaKelulusanController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\NilaiUjianController;
-use App\Http\Controllers\Admin\PeminatController;
+use App\Http\Controllers\Admin\PendaftarController;
+use App\Http\Controllers\Admin\PendaftarUploadController;
 use App\Http\Controllers\Admin\PeriodeController;
-use App\Http\Controllers\Admin\PesertaController;
-use App\Http\Controllers\Admin\PesertaUploadController;
 use App\Http\Controllers\Admin\ProdiController;
+use App\Http\Controllers\Admin\ReferensiController as AdminReferensiController;
 use App\Http\Controllers\Admin\RuangController;
 use App\Http\Controllers\Admin\SeleksiController;
 use App\Http\Controllers\Admin\SetupController;
@@ -121,36 +122,34 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/documents/upload', [DocumentController::class, 'upload'])->name('documents.upload');
     Route::delete('/documents/{filename}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 
-    // Peminat
-    Route::get('/peminat', [PeminatController::class, 'index'])->name('peminat.index');
-    Route::get('/peminat/export', [PeminatController::class, 'export'])->name('peminat.export');
-    Route::post('/peminat/import', [PeminatController::class, 'import'])->name('peminat.import');
-    Route::get('/peminat/template', [PeminatController::class, 'template'])->name('peminat.template');
-    Route::delete('/peminat/{peminat}', [PeminatController::class, 'destroy'])->name('peminat.destroy');
+    // Jalur Pendaftaran
+    Route::resource('jalur-pendaftaran', JalurPendaftaranController::class)->except(['show']);
+    Route::patch('/jalur-pendaftaran/{jalur}/toggle-status', [JalurPendaftaranController::class, 'toggleStatus'])->name('jalur-pendaftaran.toggle-status');
 
-    // Peserta
-    Route::get('/peserta', [PesertaController::class, 'index'])->name('peserta.index');
-    Route::get('/peserta/export', [PesertaController::class, 'export'])->name('peserta.export');
-    Route::post('/peserta/import', [PesertaController::class, 'import'])->name('peserta.import');
-    Route::get('/peserta/template', [PesertaController::class, 'downloadTemplate'])->name('peserta.template');
-    Route::post('/peserta/generate-noujian', [PesertaController::class, 'generateNoUjian'])->name('peserta.generate-noujian');
-    Route::get('/peserta/{peserta}', [PesertaController::class, 'show'])->name('peserta.show');
-    Route::get('/peserta/{peserta}/edit', [PesertaController::class, 'edit'])->name('peserta.edit');
-    Route::put('/peserta/{peserta}', [PesertaController::class, 'update'])->name('peserta.update');
-    Route::delete('/peserta/{peserta}', [PesertaController::class, 'destroy'])->name('peserta.destroy');
-    Route::get('/peserta/{peserta}/kartu', [PesertaController::class, 'kartuPeserta'])->name('peserta.kartu');
-    Route::get('/peserta/{peserta}/profile-pdf', [PesertaController::class, 'profilePdf'])->name('peserta.profile-pdf');
-    Route::post('/peserta/{peserta}/upload-foto', [PesertaController::class, 'uploadFoto'])->name('peserta.upload-foto');
+    // Pendaftar
+    Route::get('/pendaftar', [PendaftarController::class, 'index'])->name('pendaftar.index');
+    Route::get('/pendaftar/export', [PendaftarController::class, 'export'])->name('pendaftar.export');
+    Route::post('/pendaftar/import', [PendaftarController::class, 'import'])->name('pendaftar.import');
+    Route::get('/pendaftar/import-errors/{key}', [PendaftarController::class, 'downloadImportErrors'])->name('pendaftar.import-errors');
+    Route::get('/pendaftar/template', [PendaftarController::class, 'template'])->name('pendaftar.template');
+    Route::post('/pendaftar/generate-noujian', [PendaftarController::class, 'generateNoUjian'])->name('pendaftar.generate-noujian');
+    Route::get('/pendaftar/{pendaftar}', [PendaftarController::class, 'show'])->name('pendaftar.show');
+    Route::get('/pendaftar/{pendaftar}/edit', [PendaftarController::class, 'edit'])->name('pendaftar.edit');
+    Route::put('/pendaftar/{pendaftar}', [PendaftarController::class, 'update'])->name('pendaftar.update');
+    Route::delete('/pendaftar/{pendaftar}', [PendaftarController::class, 'destroy'])->name('pendaftar.destroy');
+    Route::get('/pendaftar/{pendaftar}/kartu', [PendaftarController::class, 'kartuPendaftar'])->name('pendaftar.kartu');
+    Route::get('/pendaftar/{pendaftar}/profile-pdf', [PendaftarController::class, 'profilePdf'])->name('pendaftar.profile-pdf');
+    Route::post('/pendaftar/{pendaftar}/upload-foto', [PendaftarController::class, 'uploadFoto'])->name('pendaftar.upload-foto');
 
     // Upload Dokumen Admin
-    Route::get('/upload/raport', [PesertaUploadController::class, 'raportIndex'])->name('upload.raport-index');
-    Route::get('/upload/raport/{raport}', [PesertaUploadController::class, 'raportShow'])->name('upload.raport-show');
-    Route::post('/upload/raport/{raport}/status', [PesertaUploadController::class, 'updateRaportStatus'])->name('upload.raport-status');
-    Route::get('/upload/raport/export', [PesertaUploadController::class, 'exportRaport'])->name('upload.raport-export');
-    Route::get('/upload/kesehatan', [PesertaUploadController::class, 'kesehatanIndex'])->name('upload.kesehatan-index');
-    Route::get('/upload/kesehatan/{kesehatan}', [PesertaUploadController::class, 'kesehatanShow'])->name('upload.kesehatan-show');
-    Route::post('/upload/kesehatan/{kesehatan}/status', [PesertaUploadController::class, 'updateKesehatanStatus'])->name('upload.kesehatan-status');
-    Route::get('/upload/kesehatan/export', [PesertaUploadController::class, 'exportKesehatan'])->name('upload.kesehatan-export');
+    Route::get('/upload/raport', [PendaftarUploadController::class, 'raportIndex'])->name('upload.raport-index');
+    Route::get('/upload/raport/{raport}', [PendaftarUploadController::class, 'raportShow'])->name('upload.raport-show');
+    Route::post('/upload/raport/{raport}/status', [PendaftarUploadController::class, 'updateRaportStatus'])->name('upload.raport-status');
+    Route::get('/upload/raport/export', [PendaftarUploadController::class, 'exportRaport'])->name('upload.raport-export');
+    Route::get('/upload/kesehatan', [PendaftarUploadController::class, 'kesehatanIndex'])->name('upload.kesehatan-index');
+    Route::get('/upload/kesehatan/{kesehatan}', [PendaftarUploadController::class, 'kesehatanShow'])->name('upload.kesehatan-show');
+    Route::post('/upload/kesehatan/{kesehatan}/status', [PendaftarUploadController::class, 'updateKesehatanStatus'])->name('upload.kesehatan-status');
+    Route::get('/upload/kesehatan/export', [PendaftarUploadController::class, 'exportKesehatan'])->name('upload.kesehatan-export');
 
     // Kriteria Kelulusan
     Route::get('/kriteria', [KriteriaKelulusanController::class, 'index'])->name('kriteria.index');
@@ -168,6 +167,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::get('/nilai/{ujian}/export', [NilaiUjianController::class, 'export'])->name('nilai.export');
     Route::put('/nilai/{nilai}', [NilaiUjianController::class, 'update'])->name('nilai.update');
     Route::delete('/nilai/{nilai}', [NilaiUjianController::class, 'destroy'])->name('nilai.destroy');
+    Route::delete('/nilai-bulk', [NilaiUjianController::class, 'bulkDestroy'])->name('nilai.bulk-destroy');
 
     // Absensi
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
@@ -184,7 +184,14 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/seleksi/preview', [SeleksiController::class, 'preview'])->name('seleksi.preview');
     Route::post('/seleksi/save', [SeleksiController::class, 'save'])->name('seleksi.save');
     Route::get('/seleksi/rekap', [SeleksiController::class, 'rekap'])->name('seleksi.rekap');
+    Route::get('/seleksi/rekap/{prodi}/export', [SeleksiController::class, 'rekapDetailExport'])->name('seleksi.rekap.detail.export');
+    Route::get('/seleksi/rekap/{prodi}', [SeleksiController::class, 'rekapDetail'])->name('seleksi.rekap.detail');
+    Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
     Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
+
+    // Referensi
+    Route::get('/referensi', [AdminReferensiController::class, 'index'])->name('referensi.index');
+    Route::post('/referensi/{pendaftar}/toggle', [AdminReferensiController::class, 'toggle'])->name('referensi.toggle');
 });
 
 // Member routes

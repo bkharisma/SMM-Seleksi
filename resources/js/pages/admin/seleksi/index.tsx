@@ -120,7 +120,7 @@ export default function SeleksiIndex({ tahap, prodi, filters }: SeleksiIndexProp
                                     <option value="1">Pilihan 1</option>
                                     <option value="2">Pilihan 2</option>
                                     <option value="3">Pilihan 3</option>
-                                    <option value="4">Pilihan 4</option>
+                                    <option value="3">Pilihan 3</option>
                                 </select>
                             </div>
                         </div>

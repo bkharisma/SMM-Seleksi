@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\News;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,19 +24,19 @@ class PortalController extends Controller
 
     public function verify(string $noujian): Response
     {
-        $peserta = Peserta::with(['lulusProdi', 'ruang', 'pil1Prodi'])
+        $peserta = Pendaftar::with(['lulusProdi', 'ruang', 'pil1Prodi'])
             ->where('noujian', $noujian)
             ->first();
 
         return Inertia::render('public/verifikasi', [
             'peserta' => $peserta ? [
-                'nup' => $peserta->nup,
+                'nup' => $peserta->kode_pendaftar,
                 'noujian' => $peserta->noujian,
                 'nama' => $peserta->nama,
                 'foto' => $peserta->foto,
-                'tempatlahir' => $peserta->tempatlahir,
-                'tgllahir' => $peserta->tgllahir,
-                'sex' => $peserta->sex,
+                'tempatlahir' => $peserta->tempat_lahir,
+                'tgllahir' => $peserta->tanggal_lahir,
+                'sex' => $peserta->jenis_kelamin,
                 'pil1' => $peserta->pil1Prodi?->nama_prodi,
                 'ruang' => $peserta->ruang ? [
                     'nomor_ruang' => $peserta->ruang->nomor_ruang,
@@ -51,8 +51,8 @@ class PortalController extends Controller
 
     public function buktiDaftar(string $nup): Response
     {
-        $peserta = Peserta::with(['pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'pil4Prodi'])
-            ->where('nup', $nup)
+        $peserta = Pendaftar::with(['pil1Prodi', 'pil2Prodi', 'pil3Prodi'])
+            ->where('kode_pendaftar', $nup)
             ->first();
 
         if (! $peserta) {

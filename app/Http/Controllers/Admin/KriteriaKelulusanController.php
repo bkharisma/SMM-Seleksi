@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\KriteriaKelulusan;
-use App\Models\KriteriaUjian;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
 use App\Models\Ujian;

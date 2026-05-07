@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use App\Models\DataAbsensi;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\Ruang;
 use App\Pdf\DaftarHadirPdf;
 use Illuminate\Http\RedirectResponse;
@@ -46,7 +46,7 @@ class AbsensiController extends Controller
         return Inertia::render('admin/absensi/form', [
             'dataAbsensi' => null,
             'ruang' => Ruang::where('active', true)->get(['id', 'nomor_ruang', 'nama_gedung', 'kapasitas']),
-            'peserta' => Peserta::whereNotNull('noujian')->where('status', true)->get(['id', 'nup', 'noujian', 'nama', 'ruang_id']),
+            'peserta' => Pendaftar::whereNotNull('noujian')->get(['id', 'kode_pendaftar', 'noujian', 'nama', 'ruang_id']),
         ]);
     }
 
@@ -61,7 +61,7 @@ class AbsensiController extends Controller
             'nomor_awal' => 'nullable|string|max:16',
             'nomor_akhir' => 'nullable|string|max:16',
             'peserta_ids' => 'nullable|array',
-            'peserta_ids.*' => 'exists:peserta,id',
+            'peserta_ids.*' => 'exists:pendaftar,id',
         ]);
 
         $dataAbsensi = DB::transaction(function () use ($validated) {
@@ -139,10 +139,9 @@ class AbsensiController extends Controller
         $ruang = Ruang::find($validated['ruang_id']);
         $kapasitas = $ruang->kapasitas ?? 30;
 
-        $peserta = Peserta::whereNotNull('noujian')
-            ->where('status', true)
+        $peserta = Pendaftar::whereNotNull('noujian')
             ->whereNull('ruang_id')
-            ->orderBy('nup')
+            ->orderBy('kode_pendaftar')
             ->get();
 
         DB::transaction(function () use ($validated, $peserta, $kapasitas, $ruang) {

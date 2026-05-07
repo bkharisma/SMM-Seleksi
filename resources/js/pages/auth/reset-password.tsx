@@ -24,7 +24,7 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
             <Head title="Reset Password" />
             <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="email" className="mb-1 block text-label-md text-on-surface-container">
                         Email
                     </label>
                     <input
@@ -32,14 +32,14 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
                         type="email"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         required
                         readOnly
                     />
-                    {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                    {errors.email && <p className="mt-1 text-label-md text-error">{errors.email}</p>}
                 </div>
                 <div>
-                    <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="password" className="mb-1 block text-label-md text-on-surface-container">
                         Password Baru
                     </label>
                     <input
@@ -47,14 +47,14 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
                         type="password"
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         required
                         autoFocus
                     />
-                    {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+                    {errors.password && <p className="mt-1 text-label-md text-error">{errors.password}</p>}
                 </div>
                 <div>
-                    <label htmlFor="password_confirmation" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="password_confirmation" className="mb-1 block text-label-md text-on-surface-container">
                         Konfirmasi Password
                     </label>
                     <input
@@ -62,15 +62,15 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
                         type="password"
                         value={data.password_confirmation}
                         onChange={(e) => setData('password_confirmation', e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         required
                     />
-                    {errors.password_confirmation && <p className="mt-1 text-sm text-red-600">{errors.password_confirmation}</p>}
+                    {errors.password_confirmation && <p className="mt-1 text-label-md text-error">{errors.password_confirmation}</p>}
                 </div>
                 <button
                     type="submit"
                     disabled={processing}
-                    className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                    className="w-full rounded-lg bg-primary px-4 py-2 font-button text-button text-on-primary transition-colors hover:bg-primary/90 disabled:opacity-50"
                 >
                     {processing ? 'Memproses...' : 'Reset Password'}
                 </button>

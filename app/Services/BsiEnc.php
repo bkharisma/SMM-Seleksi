@@ -8,7 +8,7 @@ class BsiEnc
 
     public static function encrypt(array $json_data, string $cid, string $secret): string
     {
-        return self::doubleEncrypt(strrev((string) time()) . '.' . json_encode($json_data), $cid, $secret);
+        return self::doubleEncrypt(strrev((string) time()).'.'.json_encode($json_data), $cid, $secret);
     }
 
     public static function decrypt(string $hashed_string, string $cid, string $secret): ?array

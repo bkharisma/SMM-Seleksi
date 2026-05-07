@@ -2,13 +2,13 @@
 
 namespace App\Pdf;
 
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Mpdf\Mpdf;
 use SimpleSoftwareIO\QrCode\Generator;
 
 class KartuPesertaPdf
 {
-    public function generate(Peserta $peserta): string
+    public function generate(Pendaftar $peserta): string
     {
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
@@ -35,7 +35,7 @@ class KartuPesertaPdf
         return $mpdf->Output('kartu-peserta-'.$peserta->noujian.'.pdf', 'S');
     }
 
-    public function download(Peserta $peserta)
+    public function download(Pendaftar $peserta)
     {
         $pdf = $this->generate($peserta);
 
@@ -44,10 +44,10 @@ class KartuPesertaPdf
             ->header('Content-Disposition', 'attachment; filename="kartu-peserta-'.$peserta->noujian.'.pdf"');
     }
 
-    private function generateQrCode(Peserta $peserta): string
+    private function generateQrCode(Pendaftar $peserta): string
     {
         $qrCode = new Generator;
-        $data = "NUP:{$peserta->nup}|NOUJIAN:{$peserta->noujian}|NAMA:{$peserta->nama}";
+        $data = "KODE:{$peserta->kode_pendaftar}|NOUJIAN:{$peserta->noujian}|NAMA:{$peserta->nama}";
         $svg = $qrCode->size(80)->generate($data);
 
         return 'data:image/svg+xml;base64,'.base64_encode($svg);

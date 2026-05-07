@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Laporan Biodata Pendaftar - Periode 2026 Ganjil</title>
+                <style type="text/css">
+                    body {
+                margin: 0 auto;
+            }
+            body, td, th {
+                font-family: 'Source Sans Pro', sans-serif;
+                font-size: 12px;
+            }
+            td, th {
+                vertical-align: top;
+            }
+            th {
+                text-align: center;
+            }
+            .font-normal th {
+                font-weight: normal;
+                vertical-align: middle;
+            }
+            .kop {
+                border-spacing: 0;
+                border-collapse: collapse;
+            }
+            .kop td {
+                padding: 0;
+                text-align: center;
+            }
+            .kop-univ td {
+                font-size: 16px;
+                line-height: 1.1;
+            }
+            .kop-fak td {
+                font-size: 24px;
+                font-weight: bold;
+                line-height: 1.1;
+            }
+            .kop-prodi td {
+                font-size: 18px;
+                font-weight: bold;
+                line-height: 1.1;
+                padding-bottom: 5px;
+            }
+            .header td, .header th {
+                font-size: 16px;
+            }
+            .mid td, .mid th {
+                font-size: 14px;
+            }
+            .center td, .center th {
+                text-align: center;
+                vertical-align: middle;
+            }
+            table.border {
+                border-collapse: collapse;
+            }
+            table.border td, table.border th {
+                border: 1px solid black;
+            }
+            tr.noborder td, tr.noborder th {
+                border: none;
+            }
+            hr {
+                margin: 10px auto;
+                border: 1px solid black;
+                border-width: 1px 0 0 0;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .btn-flat {
+                -webkit-border-radius: 0;
+                -moz-border-radius: 0;
+                border-radius: 0;
+                -webkit-box-shadow: none;
+                -moz-box-shadow: none;
+                box-shadow: none;
+                border-width: 1px;
+            }
+            .btn.btn-primary {
+                background-color: #0052A2;
+                border-color: #008D4C;
+            }
+            .btn.btn-primary:hover, .btn.btn-primary:active, .btn.btn-primary.hover {
+                background-color: #008D4C;
+            }
+            .bg-info {
+                background-color: #D9EDF7;
+            }
+            .bg-success {
+                background-color: #DFF0D8;
+            }
+
+            .title{
+                font-size: 14px;
+                font-weight: bold;
+            }
+            .padded th, .padded td {
+                padding: 4px;
+            }
+            @media print {
+                .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+                  float: left;
+                }
+                .col-md-12 {
+                  width: 100%;
+                }
+                .col-md-11 {
+                  width: 91.66666666666666%;
+                }
+                .col-md-10 {
+                  width: 83.33333333333334%;
+                }
+                .col-md-9 {
+                  width: 75%;
+                }
+                .col-md-8 {
+                  width: 66.66666666666666%;
+                }
+                .col-md-7 {
+                  width: 58.333333333333336%;
+                }
+                .col-md-6 {
+                  width: 50%;
+                }
+                .col-md-5 {
+                  width: 41.66666666666667%;
+                }
+                .col-md-4 {
+                  width: 33.33333333333333%;
+                 }
+                 .col-md-3 {
+                   width: 25%;
+                 }
+                 .col-md-2 {
+                   width: 16.666666666666664%;
+                 }
+                 .col-md-1 {
+                  width: 8.333333333333332%;
+                 }
+            }
+
+            .footer {
+                background-color: #fab619;
+                height: 36px;
+                width: 100%;
+                margin-top: 20px;
+                position: relative;
+            }
+            .footer::after {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                content: url('https://assets.siakadcloud.com/assets/v1/img/obe/object-footer.svg');
+                height: 61px;
+            }
+
+            @media print {
+                .footer.no-print {
+                    display: none;
+                }
+                .navbar.navbar-default{
+                    display: none !important;
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+            }
+                    </style>
+    </head>
+    <body>
+        
+        <div align="center">
+            <div style="width: 1300px">
+                
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td style="width: 15%;" align="center"><img src="https://assets.siakadcloud.com/uploads/poltekparpalembang/logoaplikasi/1750.jpg?1750400043" width="104" height="98" /></td>
+<td align="center">
+<p><span style="font-size: 21.3333px;"><strong>Politeknik Pariwisata Palembang </strong></span><br />Jl. Sapta Pesona No. 10 Kelurahan Silaberanti Kecamatan Seberang Ulu 1 Palembang <br />Website :<a href="http://www.poltekpar-palembang.ac.id">www.poltekpar-palembang.ac.id </a> / e-Mail : info@poltekpar-palembang.ac.id / Telepon :0711-5740909</p>
+</td>
+</tr>
+</tbody>
+</table>
+<hr style="border: 0; border-top: 5px double #8c8c8c; margin-top: 0;" />
+<style>
+    th {
+        vertical-align: middle;
+    }
+</style>
+<style type="text/css">
+    .border tr td,
+    .border tr th,
+    .border thead tr th,
+    .border tbody tr td {
+        border: 1px solid #000;
+        mso-number-format: \@;
+    }
+</style>
+<div align="center">
+        <div class="title" style="margin-bottom: 20px">
+        LAPORAN BIODATA PENDAFTAR - PERIODE 2026 GANJIL    </div>
+                <table style="text-align:left;margin-bottom: 20px" border="0" width="1300px" cellpadding="5" cellspacing="0">
+                            <tr class="left">
+                    <td width="12%"><strong>Jalur Pendaftaran</strong></td>
+                    <td width="1%">:</td>
+                    <td width="34%">Semua Jalur</td>
+                                            <td width="6%">&nbsp;</td>
+                        <td width="12%"><strong>Gelombang</strong></td>
+                        <td width="1%">:</td>
+                        <td width="34%">Semua Gelombang</td>
+                                    </tr>
+                            <tr class="left">
+                    <td width="12%"><strong>Sistem Kuliah</strong></td>
+                    <td width="1%">:</td>
+                    <td width="34%">Semua Sistem Kuliah</td>
+                                            <td width="6%">&nbsp;</td>
+                        <td width="12%"><strong>Unit / Program Studi</strong></td>
+                        <td width="1%">:</td>
+                        <td width="34%">Semua Prodi</td>
+                                    </tr>
+                            <tr class="left">
+                    <td width="12%"><strong>Status</strong></td>
+                    <td width="1%">:</td>
+                    <td width="34%">Semua Status</td>
+                                            <td width="53%" colspan="3">&nbsp;</td>
+                                    </tr>
+                    </table>
+            <table class="border" style="text-align:left;margin-bottom: 20px" border="1" width="1300px" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                                    <th class="text-center"  >No.</th>
+                                    <th class="text-center"  >Kode Pendaftar</th>
+                                    <th class="text-center"  >Nama Pendaftar</th>
+                                    <th class="text-center"  >No. Ujian</th>
+                                    <th class="text-center"  >Pilihan 1</th>
+                                    <th class="text-center"  >Pilihan 2</th>
+                                    <th class="text-center"  >Pilihan 3</th>
+                                    <th class="text-center"  >Tanggal Lahir</th>
+                                    <th class="text-center"  > Email</th>
+                                    <th class="text-center"  >No. HP</th>
+                            </tr>
+        </thead>
+        <tbody>
+                    <tr>
+                            <td   style="text-align:center" >
+                    1                </td>
+                            <td   >
+                    '115261001                </td>
+                            <td   >
+                    AYUDIA FAHRA                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    2008-11-22                </td>
+                            <td   >
+                    ayudiafahra275@gmail.com                </td>
+                            <td   >
+                    085896959409                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    2                </td>
+                            <td   >
+                    '115261002                </td>
+                            <td   >
+                    IRVAN                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2006-01-06                </td>
+                            <td   >
+                    irvan@poltekpar-palembang.ac.id                </td>
+                            <td   >
+                    08997777933                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    3                </td>
+                            <td   >
+                    '115261003                </td>
+                            <td   >
+                    SHINTA RAHMADANI                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2008-09-10                </td>
+                            <td   >
+                    shintarahmadani1008@gmail.com                </td>
+                            <td   >
+                    082289680474                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    4                </td>
+                            <td   >
+                    '115261004                </td>
+                            <td   >
+                    TUZZAHRA ANJANI ZIKRI                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2008-07-26                </td>
+                            <td   >
+                    anjazikri7@gmail.com                </td>
+                            <td   >
+                    089667419922                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    5                </td>
+                            <td   >
+                    '115261005                </td>
+                            <td   >
+                    ALDI PERWIRA DINATA                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    2008-11-12                </td>
+                            <td   >
+                    nagoaldi61@gmail.com                </td>
+                            <td   >
+                    0895327102355                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    6                </td>
+                            <td   >
+                    '115261006                </td>
+                            <td   >
+                    ALTHAFUNISA JOVANKA AFRILIN                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2008-04-29                </td>
+                            <td   >
+                    althafunisajovanka@gmail.com                </td>
+                            <td   >
+                    085381174400                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    7                </td>
+                            <td   >
+                    '115261007                </td>
+                            <td   >
+                    ELAK AGUST                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    2008-08-27                </td>
+                            <td   >
+                    yelowwwa322@gmail.com                </td>
+                            <td   >
+                    087711195064                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    8                </td>
+                            <td   >
+                    '115265001                </td>
+                            <td   >
+                    FARAH SAVAIRA                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Tata Hidang                </td>
+                            <td   >
+                    2007-05-12                </td>
+                            <td   >
+                    suryairawan2108@gmail.com                </td>
+                            <td   >
+                    085366333600                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    9                </td>
+                            <td   >
+                    '115261008                </td>
+                            <td   >
+                    RISKA AIDILLAH PRATIWI                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2008-09-22                </td>
+                            <td   >
+                    riskaaidillahpratiwi@gmail.com                </td>
+                            <td   >
+                    083196807730                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    10                </td>
+                            <td   >
+                    '115264001                </td>
+                            <td   >
+                    KOMARIA                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2008-02-09                </td>
+                            <td   >
+                    anggunplg375@gmail.com                </td>
+                            <td   >
+                    0887437495612                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    11                </td>
+                            <td   >
+                    '115261009                </td>
+                            <td   >
+                    BALQIS FATHINAH MUBAROKAH                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    D3 - Seni Kuliner                </td>
+                            <td   >
+                    2008-01-08                </td>
+                            <td   >
+                    balqisfathinahmubarokah28@gmail.com                </td>
+                            <td   >
+                    0895620643730                </td>
+                    </tr>
+            <tr>
+                            <td   style="text-align:center" >
+                    12                </td>
+                            <td   >
+                    '115261010                </td>
+                            <td   >
+                    LADY MUTIA AISYAH                </td>
+                            <td   >
+                    '                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    D4 - Pengelolaan Konvensi dan Acara                </td>
+                            <td   >
+                    D3 - Divisi Kamar                </td>
+                            <td   >
+                    2007-11-22                </td>
+                            <td   >
+                    ladymutia6@gmail.com                </td>
+                            <td   >
+                    083803420577                </td>
+                    </tr>
+            </tbody>
+    </table>
+</div>
+                <style>
+    /* Watermark-style footer */
+    .footprint {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: left;
+        font-size: 5px;
+    }
+
+    @media print {
+        .footprint {
+            display: block;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: left;
+            font-size: 5px;
+        }
+    }
+
+    @page {
+        /* margin-bottom: 0; */
+    }
+</style>
+<div class="footprint">
+    <div>
+        Dicetak oleh: Budi Kharisma Setiawan, S.Kom., pada 06 Mei 2026 03:36:06 WIB | siakad.poltekpar-palembang.ac.id/spmb/rep_pendaftar    </div>
+</div>            </div>
+        </div>
+
+        <!-- Tambahan footer untuk laporan OBE -->
+        
+        <!-- tambahan -->
+            </body>
+</html>

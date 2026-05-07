@@ -18,6 +18,11 @@ class Ujian extends Model
         'fields_config' => 'array',
     ];
 
+    public function pendaftarNilai()
+    {
+        return $this->hasMany(PendaftarNilai::class);
+    }
+
     public function pesertaNilai()
     {
         return $this->hasMany(PesertaNilai::class);

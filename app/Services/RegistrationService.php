@@ -82,7 +82,7 @@ class RegistrationService
 
                 try {
                     Mail::to($peminat->email)->queue(new RegistrationConfirmed($peminat, $password, $vaResult));
-        } catch (\Throwable $e) {
+                } catch (\Throwable $e) {
                     Log::error('Failed to send registration email', [
                         'peminat_id' => $peminat->id,
                         'error' => $e->getMessage(),

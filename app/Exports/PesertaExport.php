@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -18,13 +18,13 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        $query = Peserta::with(['pil1Prodi', 'ruang', 'lulusProdi']);
+        $query = Pendaftar::with(['pil1Prodi', 'ruang', 'lulusProdi']);
 
         if (! empty($this->filters['search'])) {
             $search = $this->filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('nup', 'like', "%{$search}%")
+                    ->orWhere('kode_pendaftar', 'like', "%{$search}%")
                     ->orWhere('noujian', 'like', "%{$search}%");
             });
         }
@@ -35,10 +35,6 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
 
         if (! empty($this->filters['ruang_id'])) {
             $query->where('ruang_id', $this->filters['ruang_id']);
-        }
-
-        if (! empty($this->filters['status'])) {
-            $query->where('status', $this->filters['status'] === 'active');
         }
 
         if (! empty($this->filters['lulus'])) {
@@ -55,10 +51,9 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'NUP',
+            'Kode Pendaftar',
             'No. Ujian',
             'Nama',
-            'NIK',
             'Tempat Lahir',
             'Tanggal Lahir',
             'Jenis Kelamin',
@@ -66,35 +61,24 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping
             'HP',
             'Pilihan 1',
             'Ruang',
-            'Nilai Psikotes',
-            'Nilai B. Inggris',
-            'Nilai Wawancara',
-            'Nilai Kesehatan',
             'Lulus',
-            'Status',
         ];
     }
 
     public function map($peserta): array
     {
         return [
-            $peserta->nup,
+            $peserta->kode_pendaftar,
             $peserta->noujian,
             $peserta->nama,
-            $peserta->nik,
-            $peserta->tempatlahir,
-            $peserta->tgllahir?->format('Y-m-d'),
-            $peserta->sex === 'L' ? 'Laki-laki' : ($peserta->sex === 'P' ? 'Perempuan' : ''),
+            $peserta->tempat_lahir,
+            $peserta->tanggal_lahir?->format('Y-m-d'),
+            $peserta->jenis_kelamin === 'L' ? 'Laki-laki' : ($peserta->jenis_kelamin === 'P' ? 'Perempuan' : ''),
             $peserta->email,
-            $peserta->hp,
+            $peserta->no_hp,
             $peserta->pil1Prodi?->nama_prodi,
             $peserta->ruang?->nomor_ruang,
-            $peserta->nil_psikotes,
-            $peserta->nil_bhsinggris,
-            $peserta->nil_wawancara,
-            $peserta->nil_kesehatan,
             $peserta->lulusProdi?->nama_prodi,
-            $peserta->status ? 'Aktif' : 'Tidak Aktif',
         ];
     }
 }

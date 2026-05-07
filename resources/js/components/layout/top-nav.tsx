@@ -1,105 +1,95 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
-import {
-    LayoutDashboard, Users, BookOpen, Calendar, Home, Clock, FileText,
-    Layers, ClipboardList, GraduationCap, Newspaper, FolderOpen,
-    UserCheck, Heart, Target, Award, CheckCircle, BarChart3,
-    CreditCard, Settings, LogOut, Bell, Menu, X, ChevronDown,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
 
-interface MenuItem {
-    href: string;
+interface NavItem {
+    href?: string;
     label: string;
-    icon: React.ReactNode;
+    icon?: string;
+    children?: NavItem[];
 }
 
-interface MenuGroup {
-    label: string;
-    icon: React.ReactNode;
-    items: MenuItem[];
-}
-
-const menuGroups: (MenuItem | MenuGroup)[] = [
+const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
     {
-        href: '/admin/dashboard',
-        label: 'Dashboard',
-        icon: <LayoutDashboard className="h-4 w-4" />,
-    } as MenuItem,
-    {
-        label: 'Data Master',
-        icon: <BookOpen className="h-4 w-4" />,
         items: [
-            { href: '/admin/prodi', label: 'Program Studi', icon: <BookOpen className="h-4 w-4" /> },
-            { href: '/admin/periode', label: 'Periode', icon: <Calendar className="h-4 w-4" /> },
-            { href: '/admin/ruang', label: 'Ruang Ujian', icon: <Home className="h-4 w-4" /> },
-            { href: '/admin/jadwal', label: 'Jadwal', icon: <Clock className="h-4 w-4" /> },
-            { href: '/admin/ujian', label: 'Jenis Ujian', icon: <FileText className="h-4 w-4" /> },
-            { href: '/admin/tahap-seleksi', label: 'Tahap Seleksi', icon: <Layers className="h-4 w-4" /> },
-            { href: '/admin/survey', label: 'Sumber Informasi', icon: <ClipboardList className="h-4 w-4" /> },
-            { href: '/admin/education', label: 'Jenjang Pendidikan', icon: <GraduationCap className="h-4 w-4" /> },
+            { href: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
         ],
-    } as MenuGroup,
+    },
     {
-        label: 'Konten',
-        icon: <Newspaper className="h-4 w-4" />,
+        title: 'Data Master',
+        icon: 'database',
         items: [
-            { href: '/admin/news', label: 'Berita', icon: <Newspaper className="h-4 w-4" /> },
-            { href: '/admin/documents', label: 'Dokumen', icon: <FolderOpen className="h-4 w-4" /> },
+            { href: '/admin/prodi', label: 'Program Studi', icon: 'book' },
+            { href: '/admin/periode', label: 'Periode', icon: 'calendar_today' },
+            { href: '/admin/ruang', label: 'Ruang Ujian', icon: 'home' },
+            { href: '/admin/jadwal', label: 'Jadwal', icon: 'schedule' },
+            { href: '/admin/ujian', label: 'Jenis Ujian', icon: 'description' },
+            { href: '/admin/tahap-seleksi', label: 'Tahap Seleksi', icon: 'layers' },
+            { href: '/admin/survey', label: 'Sumber Informasi', icon: 'poll' },
+            { href: '/admin/education', label: 'Jenjang Pendidikan', icon: 'school' },
+            { href: '/admin/jalur-pendaftaran', label: 'Jalur Pendaftaran', icon: 'format_list_bulleted' },
         ],
-    } as MenuGroup,
+    },
     {
-        label: 'Peserta',
-        icon: <Users className="h-4 w-4" />,
+        title: 'Konten',
+        icon: 'article',
         items: [
-            { href: '/admin/peminat', label: 'Peminat', icon: <Users className="h-4 w-4" /> },
-            { href: '/admin/peserta', label: 'Peserta', icon: <UserCheck className="h-4 w-4" /> },
+            { href: '/admin/news', label: 'Berita', icon: 'newspaper' },
+            { href: '/admin/documents', label: 'Dokumen', icon: 'folder' },
         ],
-    } as MenuGroup,
+    },
     {
-        label: 'Dokumen',
-        icon: <FileText className="h-4 w-4" />,
+        title: 'Pendaftar',
+        icon: 'groups',
         items: [
-            { href: '/admin/upload/raport', label: 'Verifikasi Raport', icon: <FileText className="h-4 w-4" /> },
-            { href: '/admin/upload/kesehatan', label: 'Verifikasi Kesehatan', icon: <Heart className="h-4 w-4" /> },
+            { href: '/admin/pendaftar', label: 'Data Pendaftar', icon: 'groups' },
         ],
-    } as MenuGroup,
+    },
     {
-        label: 'Seleksi',
-        icon: <Target className="h-4 w-4" />,
+        title: 'Dokumen',
+        icon: 'description',
         items: [
-            { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: <Target className="h-4 w-4" /> },
-            { href: '/admin/ujian', label: 'Nilai Ujian', icon: <Award className="h-4 w-4" /> },
-            { href: '/admin/seleksi', label: 'Seleksi', icon: <CheckCircle className="h-4 w-4" /> },
-            { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: <BarChart3 className="h-4 w-4" /> },
-            { href: '/admin/absensi', label: 'Absensi', icon: <ClipboardList className="h-4 w-4" /> },
-            { href: '/admin/pembayaran/bsi', label: 'Pembayaran BSI', icon: <CreditCard className="h-4 w-4" /> },
+            { href: '/admin/upload/raport', label: 'Verifikasi Raport', icon: 'description' },
+            { href: '/admin/upload/kesehatan', label: 'Verifikasi Kesehatan', icon: 'favorite' },
         ],
-    } as MenuGroup,
+    },
     {
-        label: 'Pengaturan',
-        icon: <Settings className="h-4 w-4" />,
+        title: 'Seleksi',
+        icon: 'playlist_add_check',
         items: [
-            { href: '/admin/users', label: 'Manajemen User', icon: <Users className="h-4 w-4" /> },
-            { href: '/admin/settings', label: 'Pengaturan Sistem', icon: <Settings className="h-4 w-4" /> },
+            { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'my_location' },
+            { href: '/admin/nilai', label: 'Nilai Ujian', icon: 'emoji_events' },
+            { href: '/admin/seleksi', label: 'Seleksi', icon: 'check_circle' },
+            { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
+            { href: '/admin/referensi', label: 'Referensi', icon: 'info' },
+            { href: '/admin/absensi', label: 'Absensi', icon: 'content_paste' },
         ],
-    } as MenuGroup,
+    },
+    {
+        title: 'Pengaturan',
+        icon: 'settings',
+        items: [
+            { href: '/admin/users', label: 'Manajemen User', icon: 'group' },
+            { href: '/admin/settings', label: 'Pengaturan Sistem', icon: 'settings' },
+        ],
+    },
 ];
 
 export default function TopNav() {
-    const { url } = usePage();
-    const [openGroup, setOpenGroup] = useState<string | null>(null);
+    const { url, auth } = usePage() as any;
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [mobileGroup, setMobileGroup] = useState<string | null>(null);
+    const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+    const [mobileDropdowns, setMobileDropdowns] = useState<Record<number, boolean>>({});
     const navRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (navRef.current && !navRef.current.contains(e.target as Node)) {
-                setOpenGroup(null);
+                setMobileOpen(false);
+                setOpenDropdown(null);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
+
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
@@ -107,221 +97,200 @@ export default function TopNav() {
         return url.startsWith(href);
     }
 
-    function isGroupActive(group: MenuGroup) {
-        return group.items.some((item) => isActive(item.href));
+    function isGroupActive(items: NavItem[]): boolean {
+        return items.some(item => item.href && isActive(item.href));
     }
 
     return (
-        <nav ref={navRef} className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="flex h-14 items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/admin/dashboard" className="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
-                        <GraduationCap className="h-5 w-5 text-blue-600" />
-                        <span className="hidden sm:inline">SMMPTP Admin</span>
-                    </Link>
-
-                    {/* Desktop Menu */}
-                    <div className="hidden lg:flex lg:items-center lg:gap-1">
-                        {menuGroups.map((entry, idx) => {
-                            if ('items' in entry) {
-                                const group = entry as MenuGroup;
-                                const active = isGroupActive(group);
-                                return (
-                                    <div key={idx} className="relative">
-                                        <button
-                                            onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
-                                            className={cn(
-                                                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                                                active
-                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
-                                            )}
-                                        >
-                                            {group.icon}
-                                            <span>{group.label}</span>
-                                            <ChevronDown className={cn('h-3 w-3 transition-transform', openGroup === group.label && 'rotate-180')} />
-                                        </button>
-                                        {openGroup === group.label && (
-                                            <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-                                                {group.items.map((item) => (
-                                                    <Link
-                                                        key={item.href}
-                                                        href={item.href}
-                                                        onClick={() => setOpenGroup(null)}
-                                                        className={cn(
-                                                            'flex items-center gap-3 px-4 py-2 text-sm transition-colors',
-                                                            isActive(item.href)
-                                                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                                                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700',
-                                                        )}
-                                                    >
-                                                        <span className="flex h-5 w-5 items-center justify-center">{item.icon}</span>
-                                                        {item.label}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            }
-
-                            const item = entry as MenuItem;
-                            const active = isActive(item.href);
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                                        active
-                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
-                                    )}
-                                >
-                                    {item.icon}
-                                    <span>{item.label}</span>
-                                </Link>
-                            );
-                        })}
-                    </div>
-
-                    {/* Right side: notifications + user */}
-                    <div className="flex items-center gap-3">
-                        <button className="relative text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                            <Bell className="h-5 w-5" />
-                            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                                0
-                            </span>
-                        </button>
-                        <UserDropdown />
-                        {/* Mobile toggle */}
-                        <button
-                            onClick={() => setMobileOpen(!mobileOpen)}
-                            className="text-gray-500 hover:text-gray-700 lg:hidden dark:text-gray-400"
-                        >
-                            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                        </button>
+        <nav ref={navRef} className="bg-surface-container-low border-b border-outline-variant sticky top-0 z-50 w-full">
+            <div className="max-w-[1400px] mx-auto px-gutter h-14 flex items-center justify-between gap-md">
+                <div className="flex items-center gap-sm shrink-0">
+                    <div>
+                        <h1 className="text-label-md font-h3 font-medium text-primary leading-none">SMMPTP Poltekpar</h1>
+                        <p className="text-[9px] uppercase tracking-wider font-medium text-secondary">Admin Portal</p>
                     </div>
                 </div>
+
+                <div className="hidden lg:flex items-center gap-xs">
+                    {menuGroups.map((group, groupIndex) => (
+                        <div
+                            key={groupIndex}
+                            className="relative"
+                            onMouseEnter={() => setOpenDropdown(groupIndex)}
+                            onMouseLeave={() => setOpenDropdown(null)}
+                        >
+                            {group.items.length === 1 && group.items[0].href ? (
+                                <Link
+                                    href={group.items[0].href}
+                                    className={`flex items-center gap-xs px-2 py-1.5 rounded-lg transition-all text-label-md ${
+                                        isActive(group.items[0].href)
+                                            ? 'bg-primary-container text-on-primary-container'
+                                            : 'text-on-surface-variant hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">{group.items[0].icon}</span>
+                                    {group.items[0].label}
+                                </Link>
+                            ) : (
+                                <button
+                                    className={`flex items-center gap-xs px-2 py-1.5 rounded-lg transition-all text-label-md ${
+                                        openDropdown === groupIndex || isGroupActive(group.items)
+                                            ? 'bg-primary-container text-on-primary-container'
+                                            : 'text-on-surface-variant hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">
+                                        {group.icon}
+                                    </span>
+                                    {group.title}
+                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                </button>
+                            )}
+
+                            {group.items.length > 1 && (
+                                <div
+                                    className={`absolute top-full left-0 mt-2 min-w-56 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant py-2 transition-all z-50 ${
+                                        openDropdown === groupIndex
+                                            ? 'opacity-100 visible'
+                                            : 'opacity-0 invisible'
+                                    }`}
+                                >
+                                    <div className="px-3 py-2 border-b border-outline-variant mb-2">
+                                        <p className="text-[10px] font-medium uppercase tracking-wider text-secondary">
+                                            {group.title}
+                                        </p>
+                                    </div>
+                                    {group.items.map((item, itemIndex) => (
+                                        item.href && (
+                                            <Link
+                                                key={itemIndex}
+                                                href={item.href}
+                                                className={`flex items-center gap-xs px-cs py-1.5 transition-all text-label-md ${
+                                                    isActive(item.href)
+                                                        ? 'bg-primary-container text-on-primary-container mx-2 rounded-lg'
+                                                        : 'text-on-surface-variant hover:bg-surface-variant'
+                                                }`}
+                                            >
+                                                <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                                                {item.label}
+                                            </Link>
+                                        )
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-sm shrink-0">
+                    <button className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all relative">
+                        <span className="material-symbols-outlined text-lg">notifications</span>
+                        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full"></span>
+                    </button>
+                    <div className="h-6 w-[1px] bg-outline-variant mx-xs"></div>
+                    <div className="flex items-center gap-sm">
+                        <div className="text-right hidden sm:block">
+                            <p className="font-medium text-label-md text-on-surface leading-none">{auth?.user?.name || 'Admin'}</p>
+                            <p className="text-[9px] text-secondary">{auth?.user?.email || 'admin@poltekpar.ac.id'}</p>
+                        </div>
+                        <div className="relative group cursor-pointer">
+                            <img
+                                alt="Admin Avatar"
+                                className="w-8 h-8 rounded-full object-cover border-2 border-surface-container"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX3M2w147ji8PBtzu1GronKRpsuN76_oq8fZYmQVbdFtzIhGUGzL5ne8Zy3XYb_pui9wo_G-WZPfL5J4crHltKQREWyecdmvZAGwaCOsdPp0uyrVbFe6jZRq6_nUnxc3JRI0gS1GaHlKiC4EJMqXXQhdGZkysrwBRP01TOhbOuFD0VJQ8BYVDUVTG3R6kW6eGXhdhMlLtSJnmgSahKw6GO6p-6IIKGtNmxID93elDgWr8BuBPHpfze94c6C3aEneABRnzzqJ26oA"
+                            />
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all py-xs z-50">
+                                <Link href="#" className="flex items-center gap-sm px-cs py-sm text-on-surface-variant hover:bg-surface-variant transition-all text-label-md">
+                                    <span className="material-symbols-outlined text-lg">person</span> Profil
+                                </Link>
+                                <hr className="border-outline-variant my-xs"/>
+                                <Link href="/logout" method="post" as="button" className="flex items-center gap-sm px-cs py-sm text-error hover:bg-error-container transition-all text-label-md">
+                                    <span className="material-symbols-outlined text-lg">logout</span> Keluar
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onClick={() => setMobileOpen(!mobileOpen)}
+                    className="text-on-surface-variant lg:hidden"
+                >
+                    <span className="material-symbols-outlined text-lg">
+                        {mobileOpen ? 'close' : 'menu'}
+                    </span>
+                </button>
             </div>
 
-            {/* Mobile Menu */}
             {mobileOpen && (
-                <div className="border-t border-gray-200 dark:border-gray-700 lg:hidden">
-                    <div className="max-h-[calc(100vh-3.5rem)] overflow-y-auto px-4 py-2">
-                        {menuGroups.map((entry, idx) => {
-                            if ('items' in entry) {
-                                const group = entry as MenuGroup;
-                                const active = isGroupActive(group);
-                                return (
-                                    <div key={idx} className="py-1">
+                <div className="border-t border-outline-variant lg:hidden px-gutter py-cs">
+                    <div className="flex flex-col gap-sm">
+                        {menuGroups.map((group, groupIndex) => (
+                            <div key={groupIndex}>
+                                {group.items.length === 1 && group.items[0].href ? (
+                                    <Link
+                                        href={group.items[0].href}
+                                        onClick={() => setMobileOpen(false)}
+                                        className={`flex items-center gap-xs px-sm py-2 rounded-lg transition-all text-label-md ${
+                                            isActive(group.items[0].href)
+                                                ? 'bg-primary-container text-on-primary-container'
+                                                : 'text-on-surface-variant hover:bg-surface-variant'
+                                        }`}
+                                    >
+                                        <span className="material-symbols-outlined text-lg">{group.items[0].icon}</span>
+                                        {group.items[0].label}
+                                    </Link>
+                                ) : (
+                                    <div>
                                         <button
-                                            onClick={() => setMobileGroup(mobileGroup === group.label ? null : group.label)}
-                                            className={cn(
-                                                'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                                                active
-                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
-                                            )}
+                                            onClick={() => setMobileDropdowns(prev => ({
+                                                ...prev,
+                                                [groupIndex]: !prev[groupIndex]
+                                            }))}
+                                            className={`flex items-center justify-between gap-xs px-sm py-2 w-full rounded-lg transition-all text-label-md ${
+                                                isGroupActive(group.items)
+                                                    ? 'bg-primary-container text-on-primary-container'
+                                                    : 'text-on-surface-variant hover:bg-surface-variant'
+                                            }`}
                                         >
-                                            {group.icon}
-                                            <span className="flex-1 text-left">{group.label}</span>
-                                            <ChevronDown className={cn('h-4 w-4 transition-transform', mobileGroup === group.label && 'rotate-180')} />
+                                            <div className="flex items-center gap-xs">
+                                                <span className="material-symbols-outlined text-lg">
+                                                    {group.icon}
+                                                </span>
+                                                {group.title}
+                                            </div>
+                                            <span className="material-symbols-outlined text-sm">
+                                                {mobileDropdowns[groupIndex] ? 'expand_less' : 'expand_more'}
+                                            </span>
                                         </button>
-                                        {mobileGroup === group.label && (
-                                            <div className="ml-6 mt-1 space-y-1">
-                                                {group.items.map((item) => (
-                                                    <Link
-                                                        key={item.href}
-                                                        href={item.href}
-                                                        onClick={() => setMobileOpen(false)}
-                                                        className={cn(
-                                                            'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-                                                            isActive(item.href)
-                                                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                                                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700',
-                                                        )}
-                                                    >
-                                                        {item.icon}
-                                                        {item.label}
-                                                    </Link>
+                                        {mobileDropdowns[groupIndex] && (
+                                            <div className="pl-8 pt-sm pb-sm space-y-1">
+                                                {group.items.map((item, itemIndex) => (
+                                                    item.href && (
+                                                        <Link
+                                                            key={itemIndex}
+                                                            href={item.href}
+                                                            onClick={() => setMobileOpen(false)}
+                                                            className={`flex items-center gap-xs px-sm py-2 rounded-lg transition-all text-label-md ${
+                                                                isActive(item.href)
+                                                                    ? 'bg-primary-container text-on-primary-container'
+                                                                    : 'text-on-surface-variant hover:bg-surface-variant'
+                                                            }`}
+                                                        >
+                                                            <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                                                            {item.label}
+                                                        </Link>
+                                                    )
                                                 ))}
                                             </div>
                                         )}
                                     </div>
-                                );
-                            }
-
-                            const item = entry as MenuItem;
-                            const active = isActive(item.href);
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={cn(
-                                        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                                        active
-                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
-                                    )}
-                                >
-                                    {item.icon}
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
         </nav>
-    );
-}
-
-function UserDropdown() {
-    const { auth } = usePage().props as any;
-    const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        function handleClickOutside(e: MouseEvent) {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    return (
-        <div ref={ref} className="relative hidden sm:block">
-            <button
-                onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
-            >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                    {(auth?.user?.name ?? 'A').charAt(0)}
-                </div>
-                <span className="hidden md:inline">{auth?.user?.name}</span>
-            </button>
-            {open && (
-                <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-                    <div className="border-b border-gray-100 px-4 py-2 dark:border-gray-700">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{auth?.user?.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{auth?.user?.email}</p>
-                    </div>
-                    <Link
-                        href="/logout"
-                        method="post"
-                        as="button"
-                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 dark:text-red-400 dark:hover:bg-gray-700"
-                    >
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                    </Link>
-                </div>
-            )}
-        </div>
     );
 }

@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Mnoujian;
-use App\Models\Peserta;
+use App\Models\Pendaftar;
 use App\Models\Prodi;
 use App\Services\ExamNumberService;
 
@@ -16,11 +16,10 @@ beforeEach(function () {
 });
 
 test('generates exam number with correct format', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'nama' => 'Test Peserta',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     $service = new ExamNumberService;
@@ -35,18 +34,16 @@ test('generates exam number with correct format', function () {
 });
 
 test('generates unique exam numbers for different participants', function () {
-    $peserta1 = Peserta::create([
-        'nup' => '250001',
+    $peserta1 = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'nama' => 'Test A',
         'pil1' => 1,
-        'status' => true,
     ]);
 
-    $peserta2 = Peserta::create([
-        'nup' => '250002',
+    $peserta2 = Pendaftar::create([
+        'kode_pendaftar' => '250002',
         'nama' => 'Test B',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     $service = new ExamNumberService;
@@ -57,12 +54,11 @@ test('generates unique exam numbers for different participants', function () {
 });
 
 test('returns existing exam number if already generated', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'nama' => 'Test Peserta',
         'noujian' => '25HO0001',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     Mnoujian::create([
@@ -77,18 +73,16 @@ test('returns existing exam number if already generated', function () {
 });
 
 test('generate bulk creates exam numbers for multiple peserta', function () {
-    $peserta1 = Peserta::create([
-        'nup' => '250001',
+    $peserta1 = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'nama' => 'Test A',
         'pil1' => 1,
-        'status' => true,
     ]);
 
-    $peserta2 = Peserta::create([
-        'nup' => '250002',
+    $peserta2 = Pendaftar::create([
+        'kode_pendaftar' => '250002',
         'nama' => 'Test B',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     $service = new ExamNumberService;
@@ -102,13 +96,12 @@ test('generate bulk creates exam numbers for multiple peserta', function () {
     expect($peserta2->noujian)->not->toBeNull();
 });
 
-test('skips peserta that is no longer exam', function () {
-    $peserta = Peserta::create([
-        'nup' => '250001',
+test('skips peserta that already has exam number', function () {
+    $peserta = Pendaftar::create([
+        'kode_pendaftar' => '250001',
         'nama' => 'Test A',
         'noujian' => '25HO0001',
         'pil1' => 1,
-        'status' => true,
     ]);
 
     $service = new ExamNumberService;
