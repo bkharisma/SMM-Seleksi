@@ -168,7 +168,7 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
             )}
 
             <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-5">
                     <Card>
                         <div className="text-center">
                             <div className="text-3xl font-bold text-gray-900">{totalPeserta}</div>
@@ -191,6 +191,12 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                         <div className="text-center">
                             <div className="text-3xl font-bold text-blue-600">{rasio}%</div>
                             <div className="text-sm text-gray-500">Rasio Kelulusan</div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-green-600">{kuota ? Math.round((totalLulus / kuota) * 100) : 0}%</div>
+                            <div className="text-sm text-gray-500">Keterisian</div>
                         </div>
                     </Card>
                 </div>
