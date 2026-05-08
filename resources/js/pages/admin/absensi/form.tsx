@@ -159,7 +159,7 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
                             <table className="w-full">
                                 <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
                                             <input
                                                 type="checkbox"
                                                 checked={selectAll}
@@ -167,10 +167,10 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
                                                 className="rounded border-gray-300"
                                             />
                                         </th>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">NUP</th>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">No. Ujian</th>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Nama</th>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Ruang</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">NUP</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Nama</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Ruang</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">

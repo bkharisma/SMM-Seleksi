@@ -39,6 +39,7 @@ interface NilaiRecord {
     kes_paru: number | null;
     kes_stra: number | null;
     kes_scol: number | null;
+    minat_dominan: number | null;
     skor_akhir: number | null;
     pendaftar: Pendaftar | null;
 }
@@ -77,6 +78,7 @@ const FIELD_LABELS: Record<string, string> = {
     kes_bw: 'Buta Warna',
     kes_scol: 'Skoliosis',
     kes_hamil: 'Kehamilan',
+    minat_dominan: 'Minat Dominan',
     skor_akhir: 'Skor Akhir',
 };
 
@@ -202,10 +204,8 @@ return;
 
             if (BOOL_FIELDS.includes(field)) {
                 payload[field] = raw === '' ? null : raw === '1' || raw === 'true';
-            } else if (field === 'kes_obe' || field === 'skor_akhir') {
-                payload[field] = raw === '' ? null : parseFloat(raw);
             } else {
-                payload[field] = raw === '' ? null : parseInt(raw, 10);
+                payload[field] = raw === '' ? null : parseFloat(raw);
             }
         });
         router.put(`/admin/nilai/${editItem.id}`, payload as any, {
@@ -410,8 +410,8 @@ return;
                                         <Input
                                             id={`edit_${field}`}
                                             label={FIELD_LABELS[field] || field}
-                                            type={field === 'kes_obe' ? 'number' : 'number'}
-                                            step={field === 'kes_obe' || field === 'skor_akhir' ? '0.01' : '1'}
+                                            type="number"
+                                            step="0.01"
                                             value={editData[field] || ''}
                                             onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
                                         />

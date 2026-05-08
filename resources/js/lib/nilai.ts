@@ -8,6 +8,7 @@ export const FIELD_LABELS: Record<string, string> = {
     kes_paru: 'TBC',
     kes_scol: 'Scoliosis',
     kes_hamil: 'Kehamilan',
+    minat_dominan: 'Minat Dominan',
     skor_akhir: 'Skor Akhir',
 };
 

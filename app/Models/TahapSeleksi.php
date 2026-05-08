@@ -20,6 +20,11 @@ class TahapSeleksi extends Model
         return $this->hasMany(KriteriaKelulusan::class);
     }
 
+    public function ujian()
+    {
+        return $this->hasMany(Ujian::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('active', true)->orderBy('urutan');

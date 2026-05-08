@@ -137,16 +137,16 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Kode</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Program Studi</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Total Lulus</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Kuota</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Pilihan 1</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Pilihan 2</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Pilihan 3</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Pilihan 4</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Sisa Kuota</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Kode</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Program Studi</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Total Lulus</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Kuota</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 1</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 2</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 3</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 4</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Sisa Kuota</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -181,24 +181,24 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                             </tbody>
                             <tfoot className="bg-gray-50 dark:bg-gray-800 font-bold">
                                 <tr>
-                                    <td colSpan={2} className="px-4 py-2 text-sm">TOTAL</td>
+                                    <td colSpan={2} className="px-4 py-2 text-sm dark:text-gray-200">TOTAL</td>
                                     <td className="px-4 py-2 text-center text-sm text-green-600">{rekap.total_lulus}</td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + (i.kuota ?? 0), 0) || '-'}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_1, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_2, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_3, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_4, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm">
+                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + (i.tersisa ?? 0), 0) || '-'}
                                     </td>
                                     <td></td>

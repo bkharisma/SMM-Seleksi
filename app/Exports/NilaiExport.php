@@ -14,15 +14,16 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class NilaiExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     const FIELD_META = [
-        'psi_iq' => ['label' => 'Bakat Skolastik', 'type' => 'int'],
-        'psi_bobot' => ['label' => 'Psikotes', 'type' => 'int'],
-        'bing_nil' => ['label' => 'Literasi Bahasa Inggris', 'type' => 'int'],
-        'waw_nil' => ['label' => 'Wawancara', 'type' => 'int'],
+        'psi_iq' => ['label' => 'Bakat Skolastik', 'type' => 'float'],
+        'psi_bobot' => ['label' => 'Psikotes', 'type' => 'float'],
+        'bing_nil' => ['label' => 'Literasi Bahasa Inggris', 'type' => 'float'],
+        'waw_nil' => ['label' => 'Wawancara', 'type' => 'float'],
         'kes_hasil' => ['label' => 'Tes Kesehatan', 'type' => 'bool'],
-        'kes_tb' => ['label' => 'Tinggi Badan', 'type' => 'int'],
+        'kes_tb' => ['label' => 'Tinggi Badan', 'type' => 'float'],
         'kes_bw' => ['label' => 'Buta Warna', 'type' => 'bool'],
         'kes_scol' => ['label' => 'Skoliosis', 'type' => 'bool'],
         'kes_hamil' => ['label' => 'Kehamilan', 'type' => 'bool'],
+        'minat_dominan' => ['label' => 'Minat Dominan', 'type' => 'float'],
         'skor_akhir' => ['label' => 'Skor Akhir', 'type' => 'float'],
     ];
 

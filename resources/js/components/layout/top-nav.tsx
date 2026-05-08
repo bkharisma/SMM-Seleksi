@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
+import { getStoredTheme, setStoredTheme, toggleTheme, getEffectiveTheme } from '@/lib/theme';
 
 interface NavItem {
     href?: string;
@@ -57,6 +58,7 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
         icon: 'playlist_add_check',
         items: [
             { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'my_location' },
+            { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
             { href: '/admin/nilai', label: 'Nilai Ujian', icon: 'emoji_events' },
             { href: '/admin/seleksi', label: 'Seleksi', icon: 'check_circle' },
             { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
@@ -79,13 +81,26 @@ export default function TopNav() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<number | null>(null);
     const [mobileDropdowns, setMobileDropdowns] = useState<Record<number, boolean>>({});
+    const [themeOpen, setThemeOpen] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>(getStoredTheme());
     const navRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setCurrentTheme(getStoredTheme());
+    }, [getStoredTheme()]);
+
+    const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
+        setStoredTheme(theme);
+        setCurrentTheme(theme);
+        setThemeOpen(false);
+    };
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (navRef.current && !navRef.current.contains(e.target as Node)) {
                 setMobileOpen(false);
                 setOpenDropdown(null);
+                setThemeOpen(false);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
@@ -183,6 +198,56 @@ export default function TopNav() {
                 </div>
 
                 <div className="flex items-center gap-sm shrink-0">
+                    <div className="relative">
+                        <button
+                            onClick={() => setThemeOpen(!themeOpen)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all"
+                            title="Tema"
+                        >
+                            <span className="material-symbols-outlined text-lg">
+                                {currentTheme === 'light' && 'light_mode'}
+                                {currentTheme === 'dark' && 'dark_mode'}
+                                {currentTheme === 'system' && 'desktop_windows'}
+                            </span>
+                        </button>
+                        {themeOpen && (
+                            <div className="absolute right-0 top-full mt-2 w-40 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant py-1 z-50">
+                                <button
+                                    onClick={() => handleThemeChange('light')}
+                                    className={`flex items-center gap-xs px-cs py-1.5 w-full text-left transition-all text-label-md ${
+                                        currentTheme === 'light'
+                                            ? 'bg-primary-container text-on-primary-container'
+                                            : 'text-on-surface-variant hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">light_mode</span>
+                                    Light
+                                </button>
+                                <button
+                                    onClick={() => handleThemeChange('dark')}
+                                    className={`flex items-center gap-xs px-cs py-1.5 w-full text-left transition-all text-label-md ${
+                                        currentTheme === 'dark'
+                                            ? 'bg-primary-container text-on-primary-container'
+                                            : 'text-on-surface-variant hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">dark_mode</span>
+                                    Dark
+                                </button>
+                                <button
+                                    onClick={() => handleThemeChange('system')}
+                                    className={`flex items-center gap-xs px-cs py-1.5 w-full text-left transition-all text-label-md ${
+                                        currentTheme === 'system'
+                                            ? 'bg-primary-container text-on-primary-container'
+                                            : 'text-on-surface-variant hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">desktop_windows</span>
+                                    System
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all relative">
                         <span className="material-symbols-outlined text-lg">notifications</span>
                         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full"></span>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\NilaiUjianController;
 use App\Http\Controllers\Admin\PendaftarController;
 use App\Http\Controllers\Admin\PendaftarUploadController;
+use App\Http\Controllers\Admin\PembobotanController;
 use App\Http\Controllers\Admin\PeriodeController;
 use App\Http\Controllers\Admin\ProdiController;
 use App\Http\Controllers\Admin\ReferensiController as AdminReferensiController;
@@ -189,6 +190,13 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::get('/seleksi/rekap/{prodi}', [SeleksiController::class, 'rekapDetail'])->name('seleksi.rekap.detail');
     Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
     Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
+
+    // Pembobotan
+    Route::get('/pembobotan', [PembobotanController::class, 'index'])->name('pembobotan.index');
+    Route::get('/pembobotan/{tahap}', [PembobotanController::class, 'edit'])->name('pembobotan.edit');
+    Route::put('/pembobotan/{tahap}', [PembobotanController::class, 'update'])->name('pembobotan.update');
+    Route::post('/pembobotan/{tahap}/hitung', [PembobotanController::class, 'hitung'])->name('pembobotan.hitung');
+    Route::delete('/pembobotan/{tahap}/reset-nilai-akhir', [PembobotanController::class, 'resetNilaiAkhir'])->name('pembobotan.reset-nilai-akhir');
 
     // Referensi
     Route::get('/referensi', [AdminReferensiController::class, 'index'])->name('referensi.index');

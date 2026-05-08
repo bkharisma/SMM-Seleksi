@@ -155,15 +155,16 @@ class NilaiUjianController extends Controller
     public function update(Request $request, PendaftarNilai $nilai): RedirectResponse
     {
         $validated = $request->validate([
-            'psi_iq' => 'nullable|integer',
-            'psi_bobot' => 'nullable|integer',
-            'bing_nil' => 'nullable|integer',
-            'waw_nil' => 'nullable|integer',
+            'psi_iq' => 'nullable|numeric',
+            'psi_bobot' => 'nullable|numeric',
+            'bing_nil' => 'nullable|numeric',
+            'waw_nil' => 'nullable|numeric',
             'kes_hasil' => 'nullable|boolean',
-            'kes_tb' => 'nullable|integer',
+            'kes_tb' => 'nullable|numeric',
             'kes_bw' => 'nullable|boolean',
             'kes_scol' => 'nullable|boolean',
             'kes_hamil' => 'nullable|boolean',
+            'minat_dominan' => 'nullable|numeric',
             'skor_akhir' => 'nullable|numeric',
         ]);
 

@@ -62,6 +62,7 @@ export default function UjianForm({ ujian, tahap }: UjianFormProps) {
         { name: 'kes_bw', label: 'Buta Warna' },
         { name: 'kes_scol', label: 'Skoliosis' },
         { name: 'kes_hamil', label: 'Kehamilan' },
+        { name: 'minat_dominan', label: 'Minat Dominan' },
         { name: 'skor_akhir', label: 'Skor Akhir' },
     ];
 

@@ -129,8 +129,8 @@ export default function DocumentsIndex({ documents }: DocumentsProps) {
                                                 {doc.name}
                                             </a>
                                         </td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">{formatSize(doc.size)}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">{formatDate(doc.created_at)}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{formatSize(doc.size)}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{formatDate(doc.created_at)}</td>
                                         <td className="whitespace-nowrap px-4 py-3 text-right text-sm">
                                             <button
                                                 onClick={() => handleDelete(doc.name)}

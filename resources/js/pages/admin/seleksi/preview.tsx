@@ -255,18 +255,18 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-800">
                                         <tr>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">NUP</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">No. Ujian</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
                                             {preview.results[0] && Object.keys(preview.results[0].scores || {}).map((key) => (
-                                                <th key={key} className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                <th key={key} className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                                     {key.toUpperCase()}
                                                 </th>
                                             ))}
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nilai Akhir</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Peringkat</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nilai Akhir</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Peringkat</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -281,7 +281,7 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                                     </td>
                                                 ))}
                                                 <td className="whitespace-nowrap px-4 py-2 text-sm font-semibold">
-                                                    {result.total_skor}
+                                                    {typeof result.total_skor === 'number' ? result.total_skor.toFixed(2) : result.total_skor}
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-500">
                                                     {result.peringkat ? `#${result.peringkat}` : '-'}

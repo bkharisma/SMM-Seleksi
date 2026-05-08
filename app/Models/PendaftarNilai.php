@@ -14,7 +14,7 @@ class PendaftarNilai extends Model
     protected $fillable = [
         'nup', 'nus', 'ujian_id', 'psi_iq', 'psi_bobot', 'bing_nil',
         'waw_nil', 'kes_tb', 'kes_bw', 'kes_paru',
-        'kes_scol', 'kes_hamil', 'kes_hasil', 'type', 'skor_akhir', 'pendaftar_id',
+        'kes_scol', 'kes_hamil', 'kes_hasil', 'type', 'skor_akhir', 'minat_dominan', 'pendaftar_id',
     ];
 
     protected $casts = [

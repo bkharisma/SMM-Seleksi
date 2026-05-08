@@ -60,6 +60,8 @@ class SelectionService
             'total_skor' => 0,
         ];
 
+        $useWeighted = $peserta->nilai_akhir !== null;
+
         if ($peserta->is_referensi) {
             $result['lulus'] = true;
             $result['reasons'][] = 'Peserta Referensi (auto-lulus)';
@@ -71,11 +73,13 @@ class SelectionService
                 if ($ku->jenis === 'tes' && $ku->nilai_standar !== null) {
                     $skor = $nilai?->skor_akhir;
                     $result['scores'][$ku->ujian->nama ?? $ujianId] = $skor;
-                    $result['total_skor'] += (float) ($skor ?? 0);
+                    if (! $useWeighted) {
+                        $result['total_skor'] += (float) ($skor ?? 0);
+                    }
                 }
             }
 
-            $result['total_skor'] += 99999;
+            $result['total_skor'] = ($useWeighted ? (float) $peserta->nilai_akhir : $result['total_skor']) + 99999;
 
             return $result;
         }
@@ -87,13 +91,19 @@ class SelectionService
             if ($ku->jenis === 'tes' && $ku->nilai_standar !== null) {
                 $skor = $nilai?->skor_akhir;
                 $result['scores'][$ku->ujian->nama ?? $ujianId] = $skor;
-                $result['total_skor'] += (float) ($skor ?? 0);
+                if (! $useWeighted) {
+                    $result['total_skor'] += (float) ($skor ?? 0);
+                }
 
                 if ($skor === null || (float) $skor < (float) $ku->nilai_standar) {
                     $result['lulus'] = false;
                     $result['reasons'][] = "Nilai {$ku->ujian->nama} ({$skor}) di bawah standar ({$ku->nilai_standar})";
                 }
             }
+        }
+
+        if ($useWeighted) {
+            $result['total_skor'] = (float) $peserta->nilai_akhir;
         }
 
         return $result;

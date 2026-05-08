@@ -49,6 +49,7 @@ interface NilaiData {
     kes_paru: boolean;
     kes_scol: boolean;
     kes_hamil: boolean;
+    minat_dominan: string | null;
     type: string | null;
     skor_akhir: string | null;
     ujian?: { id: number; nama_ujian?: string; nama?: string; fields_config?: { fields?: string[]; labels?: Record<string, string> } | null } | null;

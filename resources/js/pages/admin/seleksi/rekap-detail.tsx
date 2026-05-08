@@ -131,15 +131,15 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">NUP</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">No. Ujian</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Pilihan</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tahap Lulus</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Nilai Akhir</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lulus di Prodi</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Tahap Lulus</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nilai Akhir</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Lulus di Prodi</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">

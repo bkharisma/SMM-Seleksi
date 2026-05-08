@@ -29,6 +29,7 @@ const menuItems = [
     { href: '/admin/upload/kesehatan', label: 'Verifikasi Kesehatan', icon: 'favorite' },
     { label: 'Seleksi', divider: true },
     { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'tune' },
+    { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
     { href: '/admin/nilai', label: 'Nilai Ujian', icon: 'grade' },
     { href: '/admin/seleksi', label: 'Seleksi', icon: 'fact_check' },
     { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },

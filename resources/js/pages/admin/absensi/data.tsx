@@ -91,22 +91,22 @@ export default function AbsensiData({ dataAbsensi }: AbsensiDataProps) {
             <Card title="Data Absensi">
                 <div className="mb-4 grid gap-4 md:grid-cols-4">
                     <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500">Tanggal</p>
-                        <p className="text-sm font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Tanggal</p>
+                        <p className="text-sm font-medium dark:text-gray-200">
                             {dataAbsensi.tanggal ? new Date(dataAbsensi.tanggal).toLocaleDateString('id-ID') : '-'}
                         </p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500">Waktu</p>
-                        <p className="text-sm font-medium">{dataAbsensi.waktu || '-'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Waktu</p>
+                        <p className="text-sm font-medium dark:text-gray-200">{dataAbsensi.waktu || '-'}</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500">Jenis</p>
-                        <p className="text-sm font-medium">{dataAbsensi.jenis || '-'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Jenis</p>
+                        <p className="text-sm font-medium dark:text-gray-200">{dataAbsensi.jenis || '-'}</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500">Ruang</p>
-                        <p className="text-sm font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Ruang</p>
+                        <p className="text-sm font-medium dark:text-gray-200">
                             {dataAbsensi.ruang ? `${dataAbsensi.ruang.nomor_ruang} - ${dataAbsensi.ruang.nama_gedung}` : '-'}
                         </p>
                     </div>
@@ -141,22 +141,22 @@ export default function AbsensiData({ dataAbsensi }: AbsensiDataProps) {
                     <table className="w-full">
                         <thead className="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">No</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">NUP</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">No. Ujian</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Nama</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Pilihan 1</th>
-                                <th className="px-4 py-3 text-center text-xs font-medium uppercase text-gray-500">Kehadiran</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">No</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">NUP</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Nama</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Pilihan 1</th>
+                                <th className="px-4 py-3 text-center text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Kehadiran</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
                             {dataAbsensi.absensi.map((item, index) => (
                                 <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                    <td className="px-4 py-3 text-sm">{index + 1}</td>
-                                    <td className="px-4 py-3 text-sm">{item.peserta?.nup}</td>
-                                    <td className="px-4 py-3 text-sm">{item.peserta?.noujian}</td>
-                                    <td className="px-4 py-3 text-sm font-medium">{item.peserta?.nama}</td>
-                                    <td className="px-4 py-3 text-sm">{item.peserta?.pil1_prodi?.nama_prodi}</td>
+                                    <td className="px-4 py-3 text-sm dark:text-gray-300">{index + 1}</td>
+                                    <td className="px-4 py-3 text-sm dark:text-gray-300">{item.peserta?.nup}</td>
+                                    <td className="px-4 py-3 text-sm dark:text-gray-300">{item.peserta?.noujian}</td>
+                                    <td className="px-4 py-3 text-sm font-medium dark:text-gray-200">{item.peserta?.nama}</td>
+                                    <td className="px-4 py-3 text-sm dark:text-gray-300">{item.peserta?.pil1_prodi?.nama_prodi}</td>
                                     <td className="px-4 py-3 text-center">
                                         <button
                                             onClick={() => toggleHadir(item.id)}

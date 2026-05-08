@@ -91,6 +91,72 @@ body {
     color: var(--color-on-background);
 }
 
+.dark {
+    --color-background: #0f1114;
+    --color-on-background: #e2e3e5;
+
+    --color-surface: #0f1114;
+    --color-on-surface: #e2e3e5;
+    --color-surface-container: #1d2023;
+    --color-on-surface-container: #c1c7ce;
+    --color-surface-container-low: #191c1f;
+    --color-on-surface-container-low: #c1c7ce;
+    --color-surface-container-lowest: #0a0c0f;
+    --color-on-surface-container-lowest: #c1c7ce;
+    --color-surface-container-high: #272a2d;
+    --color-on-surface-container-high: #c1c7ce;
+    --color-surface-container-highest: #323538;
+    --color-on-surface-container-highest: #c1c7ce;
+    --color-surface-dim: #0f1114;
+    --color-on-surface-dim: #e2e3e5;
+    --color-surface-bright: #353839;
+    --color-on-surface-bright: #e2e3e5;
+    --color-surface-tint: #81d1f0;
+
+    --color-outline: #8b9297;
+    --color-on-outline: #d5dcdf;
+    --color-outline-variant: #41484c;
+
+    --color-surface-variant: #41484c;
+    --color-on-surface-variant: #c1c7ce;
+
+    --color-primary: #81d1f0;
+    --color-on-primary: #003644;
+    --color-primary-container: #004e63;
+    --color-on-primary-container: #b9eaff;
+    --color-primary-fixed: #b9eaff;
+    --color-on-primary-fixed: #001f29;
+    --color-primary-fixed-dim: #81d1f0;
+    --color-on-primary-fixed-dim: #003644;
+
+    --color-secondary: #b5c7e1;
+    --color-on-secondary: #1e3048;
+    --color-secondary-container: #354660;
+    --color-on-secondary-container: #d0e1fb;
+    --color-secondary-fixed: #d3e4fe;
+    --color-on-secondary-fixed: #0b1c30;
+    --color-secondary-fixed-dim: #b7c8e1;
+    --color-on-secondary-fixed-dim: #38485d;
+
+    --color-tertiary: #ffb86f;
+    --color-on-tertiary: #4a2800;
+    --color-tertiary-container: #693c00;
+    --color-on-tertiary-container: #ffdcbd;
+    --color-tertiary-fixed: #ffdcbd;
+    --color-on-tertiary-fixed: #2c1600;
+    --color-tertiary-fixed-dim: #ffb86f;
+    --color-on-tertiary-fixed-dim: #4a2800;
+
+    --color-error: #ffb4ab;
+    --color-on-error: #690005;
+    --color-error-container: #93000a;
+    --color-on-error-container: #ffdad6;
+
+    --color-inverse-surface: #e2e3e5;
+    --color-inverse-on-surface: #2f3033;
+    --color-inverse-primary: #005a71;
+}
+
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
 }

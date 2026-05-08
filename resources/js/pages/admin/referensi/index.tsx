@@ -158,16 +158,16 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">NUP</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">No. Ujian</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Pil 1</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Pil 2</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Pil 3</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status Kelulusan</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Catatan</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 1</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 2</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 3</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status Kelulusan</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Catatan</th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
@@ -180,12 +180,12 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                                 : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }
                                     >
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono">{item.kode_pendaftar}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono">{item.noujian || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-medium">{item.nama}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm">{item.pil1_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm">{item.pil2_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm">{item.pil3_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900 dark:text-gray-200">{item.kode_pendaftar}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900 dark:text-gray-200">{item.noujian || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-200">{item.nama}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil1_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil2_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil3_prodi?.nama_prodi || '-'}</td>
                                         <td className="whitespace-nowrap px-4 py-3 text-sm">
                                             {item.lulus_prodi ? (
                                                 <Badge variant="success">Lulus - {item.lulus_prodi.nama_prodi}</Badge>
@@ -218,7 +218,7 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                 ))}
                                 {pendaftar.data.length === 0 && (
                                     <tr>
-                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-gray-500">
+                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                                             Tidak ada data pendaftar.
                                         </td>
                                     </tr>
