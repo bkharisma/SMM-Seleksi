@@ -26,8 +26,8 @@ interface Pendaftar {
     tanggal_lahir: string | null;
     email: string | null;
     no_hp: string | null;
-    pil1_prodi: { id: number; nama_prodi: string } | null;
-    lulus_prodi: { id: number; nama_prodi: string } | null;
+    pil1_prodi: { id: number; nama_prodi: string; kode_prodi?: string } | null;
+    lulus_prodi: { id: number; nama_prodi: string; kode_prodi?: string } | null;
     ruang: { id: number; nomor_ruang: string } | null;
     jalur: { id: number; nama_jalur: string } | null;
 }
@@ -218,7 +218,7 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
         {
             key: 'pil1_prodi',
             label: 'Pilihan 1',
-            render: (item: Pendaftar) => item.pil1_prodi?.nama_prodi || '-',
+            render: (item: Pendaftar) => item.pil1_prodi?.kode_prodi || item.pil1_prodi?.nama_prodi || '-',
         },
         {
             key: 'jalur',
@@ -230,7 +230,7 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
             label: 'Lulus',
             render: (item: Pendaftar) =>
                 item.lulus_prodi ? (
-                    <Badge variant="success">{item.lulus_prodi.nama_prodi}</Badge>
+                    <Badge variant="success">{item.lulus_prodi.kode_prodi || item.lulus_prodi.nama_prodi}</Badge>
                 ) : (
                     <Badge variant="info">Belum</Badge>
                 ),

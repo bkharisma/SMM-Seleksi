@@ -26,11 +26,18 @@ interface RekapProdi {
     tersisa: number | null;
 }
 
+interface Statistik {
+    min: number;
+    max: number;
+    median: number;
+}
+
 interface RekapData {
     rekap_per_prodi: RekapProdi[];
     total_lulus: number;
     total_peserta: number;
     total_peminat: number;
+    statistik: Statistik | null;
 }
 
 interface SeleksiRekapProps {
@@ -68,16 +75,10 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
             <Head title="Rekap Kelulusan" />
 
             <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-3">
                     <Card>
                         <div className="text-center">
-                            <div className="text-3xl font-bold text-blue-600">{rekap.total_peminat}</div>
-                            <div className="text-sm text-gray-500">Total Peminat</div>
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{rekap.total_peserta}</div>
+                            <div className="text-3xl font-bold text-gray-900">{rekap.total_peserta}</div>
                             <div className="text-sm text-gray-500">Total Peserta</div>
                         </div>
                     </Card>
@@ -93,6 +94,27 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                                 {rekap.total_peserta > 0 ? Math.round((rekap.total_lulus / rekap.total_peserta) * 100) : 0}%
                             </div>
                             <div className="text-sm text-gray-500">Rasio Kelulusan</div>
+                        </div>
+                    </Card>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{rekap.statistik?.min ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Min</div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{rekap.statistik?.max ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Max</div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{rekap.statistik?.median ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Median</div>
                         </div>
                     </Card>
                 </div>

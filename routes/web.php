@@ -202,6 +202,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     // Referensi
     Route::get('/referensi', [AdminReferensiController::class, 'index'])->name('referensi.index');
     Route::post('/referensi/{pendaftar}/toggle', [AdminReferensiController::class, 'toggle'])->name('referensi.toggle');
+    Route::get('/referensi/{pendaftar}/nilai', [AdminReferensiController::class, 'nilai'])->name('referensi.nilai');
 });
 
 // Member routes

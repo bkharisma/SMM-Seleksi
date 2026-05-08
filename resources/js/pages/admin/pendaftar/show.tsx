@@ -166,7 +166,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export default function PendaftarShow({ pendaftar }: Props) {
     const getLulusStatus = () => {
         if (pendaftar.lulus_prodi) {
-            return <Badge variant="success">{pendaftar.lulus_prodi.nama_prodi}</Badge>;
+            return <Badge variant="success">{pendaftar.lulus_prodi.kode_prodi || pendaftar.lulus_prodi.nama_prodi}</Badge>;
         }
 
         return <Badge variant="info">Belum Lulus</Badge>;
@@ -241,9 +241,9 @@ return '-';
                 {/* Pilihan & Status */}
                 <Card title="Pilihan Prodi & Status" className="lg:col-span-1">
                     <DetailItem label="Jalur Pendaftaran" value={pendaftar.jalur?.nama_jalur || '-'} />
-                    <DetailItem label="Pilihan 1" value={pendaftar.pil1_prodi?.nama_prodi || '-'} />
-                    <DetailItem label="Pilihan 2" value={pendaftar.pil2_prodi?.nama_prodi || '-'} />
-                    <DetailItem label="Pilihan 3" value={pendaftar.pil3_prodi?.nama_prodi || '-'} />
+                    <DetailItem label="Pilihan 1" value={pendaftar.pil1_prodi?.kode_prodi || pendaftar.pil1_prodi?.nama_prodi || '-'} />
+                    <DetailItem label="Pilihan 2" value={pendaftar.pil2_prodi?.kode_prodi || pendaftar.pil2_prodi?.nama_prodi || '-'} />
+                    <DetailItem label="Pilihan 3" value={pendaftar.pil3_prodi?.kode_prodi || pendaftar.pil3_prodi?.nama_prodi || '-'} />
                     <DetailItem label="Ruang" value={pendaftar.ruang?.nomor_ruang || '-'} />
                     <DetailItem label="Kelompok" value={pendaftar.ruang_kelompok || '-'} />
                     <DetailItem label="Status Kelulusan" value={getLulusStatus()} />

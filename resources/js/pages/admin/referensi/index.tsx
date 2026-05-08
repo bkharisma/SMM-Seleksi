@@ -1,5 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Star, StarOff } from 'lucide-react';
+import { ChevronDown, ChevronRight, Star, StarOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Alert from '@/components/ui/alert';
@@ -10,6 +10,7 @@ import Modal from '@/components/ui/modal';
 import Textarea from '@/components/ui/textarea';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
+import { FIELD_LABELS, BOOL_FIELDS } from '@/lib/nilai';
 
 interface ProdiData {
     id: number;
@@ -28,6 +29,47 @@ interface PendaftarItem {
     pil2_prodi: ProdiData | null;
     pil3_prodi: ProdiData | null;
     lulus_prodi: ProdiData | null;
+}
+
+interface NilaiItem {
+    id: number;
+    nup: string | null;
+    nus: string | null;
+    type: string | null;
+    skor_akhir: string | null;
+    ujian_nama: string;
+    fields_config: { fields?: string[]; labels?: Record<string, string> } | null;
+    psi_iq: string | null;
+    psi_bobot: string | null;
+    bing_nil: string | null;
+    waw_nil: string | null;
+    kes_tb: string | null;
+    kes_bw: boolean;
+    kes_paru: boolean;
+    kes_scol: boolean;
+    kes_hamil: boolean;
+    minat_dominan: string | null;
+}
+
+interface AgregasiNilaiAkhir {
+    max: number | null;
+    min: number | null;
+    median: number | null;
+}
+
+interface AgregasiData {
+    has_lulus: boolean;
+    prodi_nama?: string;
+    jumlah_lulus?: number;
+    nilai_akhir?: AgregasiNilaiAkhir;
+}
+
+interface NilaiResponse {
+    nama: string;
+    kode_pendaftar: string;
+    noujian: string | null;
+    nilai: NilaiItem[];
+    agregasi: AgregasiData;
 }
 
 interface Props {
@@ -53,6 +95,9 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [catatan, setCatatan] = useState('');
+    const [expandedRow, setExpandedRow] = useState<number | null>(null);
+    const [nilaiCache, setNilaiCache] = useState<Record<number, NilaiResponse | null>>({});
+    const [nilaiLoading, setNilaiLoading] = useState<number | null>(null);
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
@@ -98,6 +143,63 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
             setSelectedId(null);
             setCatatan('');
         }
+    };
+
+    const handleRowClick = async (id: number) => {
+        if (expandedRow === id) {
+            setExpandedRow(null);
+            return;
+        }
+
+        if (nilaiCache[id] !== undefined) {
+            setExpandedRow(id);
+            return;
+        }
+
+        setNilaiLoading(id);
+        try {
+            const res = await fetch(`/admin/referensi/${id}/nilai`);
+            const data: NilaiResponse = await res.json();
+            setNilaiCache(prev => ({ ...prev, [id]: data }));
+            setExpandedRow(id);
+        } catch {
+            setNilaiCache(prev => ({ ...prev, [id]: null }));
+        } finally {
+            setNilaiLoading(null);
+        }
+    };
+
+    const renderNilaiDetail = (nilai: NilaiItem) => {
+        const fields = nilai.fields_config?.fields || [];
+        const labels = nilai.fields_config?.labels || {};
+        const allFields = fields.length > 0 ? fields : ['psi_iq', 'psi_bobot', 'bing_nil', 'waw_nil', 'kes_tb', 'kes_bw', 'kes_paru', 'kes_scol', 'kes_hamil', 'minat_dominan'];
+
+        return (
+            <div key={nilai.id} className="mb-3 last:mb-0">
+                <h5 className="mb-1 text-sm font-semibold text-on-surface">
+                    {nilai.ujian_nama}
+                    {nilai.type && <span className="ml-2"><Badge variant="info">{nilai.type}</Badge></span>}
+                </h5>
+                <div className="rounded-lg border border-outline-variant p-3">
+                    <div className="grid gap-1 sm:grid-cols-2">
+                        {allFields.map((field: string) => {
+                            const val = (nilai as any)[field];
+                            if (val === null || val === undefined || val === '') return null;
+                            const label = labels[field] || FIELD_LABELS[field] || field;
+                            const display = BOOL_FIELDS.includes(field)
+                                ? (val === true || val === 1 || val === '1' ? 'Ya' : 'Tidak')
+                                : String(val);
+                            return (
+                                <div key={field} className="flex items-center justify-between py-1 text-sm">
+                                    <span className="text-on-surface-container">{label}</span>
+                                    <span className="font-medium text-on-background">{display}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -154,13 +256,14 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                         <table className="min-w-full divide-y divide-outline-variant">
                             <thead className="bg-surface-container">
                                 <tr>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container w-8"></th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">NUP</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No. Ujian</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nama</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 1</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 2</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 3</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Status Kelulusan</th>
+                                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 1</th>
+                                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 2</th>
+                                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 3</th>
+                                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Lulus</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Catatan</th>
                                     <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Status</th>
                                     <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Aksi</th>
@@ -168,53 +271,124 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                             </thead>
                             <tbody className="divide-y divide-outline-variant bg-surface-container-lowest">
                                 {pendaftar.data.map((item) => (
-                                    <tr
-                                        key={item.id}
-                                        className={
-                                            item.is_referensi
-                                                ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/10 dark:hover:bg-amber-900/20'
-                                                : 'hover:bg-surface-container'
-                                        }
-                                    >
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.kode_pendaftar}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.noujian || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-on-background">{item.nama}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil1_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil2_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil3_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm">
-                                            {item.lulus_prodi ? (
-                                                <Badge variant="success">Lulus - {item.lulus_prodi.nama_prodi}</Badge>
-                                            ) : (
-                                                <Badge variant="danger">Belum Lulus</Badge>
-                                            )}
-                                        </td>
-                                        <td className="max-w-xs truncate px-4 py-3 text-sm text-on-surface" title={item.catatan_referensi || '-'}>{item.catatan_referensi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-center">
-                                            {item.is_referensi ? (
-                                                <Badge variant="warning">Referensi</Badge>
-                                            ) : (
-                                                <Badge variant="info">Regular</Badge>
-                                            )}
-                                        </td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-center">
-                                            <Button
-                                                size="sm"
-                                                variant={item.is_referensi ? 'danger' : 'primary'}
-                                                onClick={() => handleToggle(item.id, item.catatan_referensi)}
-                                            >
-                                                {item.is_referensi ? (
-                                                    <><StarOff className="mr-1 h-3.5 w-3.5" /> Hapus</>
+                                    <>
+                                        <tr
+                                            key={item.id}
+                                            className={`cursor-pointer ${
+                                                item.is_referensi
+                                                    ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/10 dark:hover:bg-amber-900/20'
+                                                    : 'hover:bg-surface-container'
+                                            }`}
+                                            onClick={() => handleRowClick(item.id)}
+                                        >
+                                            <td className="px-4 py-3 text-sm text-on-surface-container">
+                                                {expandedRow === item.id ? (
+                                                    <ChevronDown className="h-4 w-4" />
                                                 ) : (
-                                                    <><Star className="mr-1 h-3.5 w-3.5" /> Referensi</>
+                                                    <ChevronRight className="h-4 w-4" />
                                                 )}
-                                            </Button>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.kode_pendaftar}</td>
+                                            <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.noujian || '-'}</td>
+                                            <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-on-background">{item.nama}</td>
+                                            <td className="whitespace-nowrap px-2 py-3 text-sm font-mono text-on-surface">{item.pil1_prodi?.kode_prodi || '-'}</td>
+                                            <td className="whitespace-nowrap px-2 py-3 text-sm font-mono text-on-surface">{item.pil2_prodi?.kode_prodi || '-'}</td>
+                                            <td className="whitespace-nowrap px-2 py-3 text-sm font-mono text-on-surface">{item.pil3_prodi?.kode_prodi || '-'}</td>
+                                            <td className="whitespace-nowrap px-2 py-3 text-sm font-mono text-on-surface">
+                                                {item.lulus_prodi ? (
+                                                    <Badge variant="success">{item.lulus_prodi.kode_prodi}</Badge>
+                                                ) : (
+                                                    <Badge variant="danger">-</Badge>
+                                                )}
+                                            </td>
+                                            <td className="max-w-xs truncate px-4 py-3 text-sm text-on-surface" title={item.catatan_referensi || '-'}>{item.catatan_referensi || '-'}</td>
+                                            <td className="whitespace-nowrap px-4 py-3 text-center">
+                                                {item.is_referensi ? (
+                                                    <Badge variant="warning">Referensi</Badge>
+                                                ) : (
+                                                    <Badge variant="info">Regular</Badge>
+                                                )}
+                                            </td>
+                                            <td className="whitespace-nowrap px-4 py-3 text-center">
+                                                <Button
+                                                    size="sm"
+                                                    variant={item.is_referensi ? 'danger' : 'primary'}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleToggle(item.id, item.catatan_referensi);
+                                                    }}
+                                                >
+                                                    {item.is_referensi ? (
+                                                        <><StarOff className="mr-1 h-3.5 w-3.5" /> Hapus</>
+                                                    ) : (
+                                                        <><Star className="mr-1 h-3.5 w-3.5" /> Referensi</>
+                                                    )}
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                        {expandedRow === item.id && (
+                                            <tr key={`${item.id}-detail`}>
+                                                <td colSpan={11} className="bg-surface-container px-4 py-4">
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center gap-4 text-sm">
+                                                            <span className="font-semibold text-on-background">{item.nama}</span>
+                                                            <span className="text-on-surface-container">NUP: <span className="font-mono">{item.kode_pendaftar}</span></span>
+                                                            {item.noujian && <span className="text-on-surface-container">No. Ujian: <span className="font-mono">{item.noujian}</span></span>}
+                                                        </div>
+                                                        {nilaiLoading === item.id && (
+                                                            <div className="py-4 text-center text-sm text-on-surface-container">Memuat data nilai...</div>
+                                                        )}
+                                                        {!nilaiLoading && nilaiCache[item.id] && (
+                                                            <>
+                                                                {nilaiCache[item.id]!.agregasi.has_lulus ? (
+                                                                    <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-4">
+                                                                        <div className="mb-3 flex items-center gap-2">
+                                                                            <h5 className="text-sm font-semibold text-on-background">
+                                                                                Statistik Kelulusan Prodi {nilaiCache[item.id]!.agregasi.prodi_nama}
+                                                                            </h5>
+                                                                            <Badge variant="success">{nilaiCache[item.id]!.agregasi.jumlah_lulus} lulus</Badge>
+                                                                        </div>
+                                                                        <div className="flex flex-wrap gap-4 text-sm">
+                                                                            <div className="flex items-center gap-1">
+                                                                                <span className="text-on-surface-container">Skor Min:</span>
+                                                                                <span className="font-mono font-medium text-on-background">{nilaiCache[item.id]!.agregasi.nilai_akhir!.min ?? '-'}</span>
+                                                                            </div>
+                                                                            <div className="flex items-center gap-1">
+                                                                                <span className="text-on-surface-container">Skor Max:</span>
+                                                                                <span className="font-mono font-medium text-on-background">{nilaiCache[item.id]!.agregasi.nilai_akhir!.max ?? '-'}</span>
+                                                                            </div>
+                                                                            <div className="flex items-center gap-1">
+                                                                                <span className="text-on-surface-container">Skor Median:</span>
+                                                                                <span className="font-mono font-medium text-on-background">{nilaiCache[item.id]!.agregasi.nilai_akhir!.median ?? '-'}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="rounded-lg border border-outline-variant bg-amber-50 p-4 text-center text-sm font-medium text-amber-700 dark:bg-amber-900/10 dark:text-amber-400">
+                                                                        Kelulusan belum diproses
+                                                                    </div>
+                                                                )}
+                                                                {nilaiCache[item.id]!.nilai.length > 0 ? (
+                                                                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                                                        {nilaiCache[item.id]!.nilai.map((n) => renderNilaiDetail(n))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="py-4 text-center text-sm text-on-surface-container">Belum ada data nilai.</div>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                        {!nilaiLoading && !nilaiCache[item.id] && (
+                                                            <div className="py-4 text-center text-sm text-error">Gagal memuat data nilai.</div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
                                 ))}
                                 {pendaftar.data.length === 0 && (
                                     <tr>
-                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-on-surface-container">
+                                        <td colSpan={11} className="px-4 py-8 text-center text-sm text-on-surface-container">
                                             Tidak ada data pendaftar.
                                         </td>
                                     </tr>

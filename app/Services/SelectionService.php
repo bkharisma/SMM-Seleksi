@@ -281,11 +281,29 @@ class SelectionService
         $totalLulus = $pesertaLulus->count();
         $totalPeserta = Pendaftar::count();
 
+        $nilaiLulus = (clone $query)->whereNotNull('nilai_akhir')->pluck('nilai_akhir');
+        $statistik = null;
+
+        if ($nilaiLulus->isNotEmpty()) {
+            $sorted = $nilaiLulus->sort()->values();
+            $count = $sorted->count();
+            $median = $count % 2 === 0
+                ? ($sorted[$count / 2 - 1] + $sorted[$count / 2]) / 2
+                : $sorted[floor($count / 2)];
+
+            $statistik = [
+                'min' => $sorted->first(),
+                'max' => $sorted->last(),
+                'median' => $median,
+            ];
+        }
+
         return [
             'rekap_per_prodi' => $rekapPerProdi,
             'total_lulus' => $totalLulus,
             'total_peserta' => $totalPeserta,
             'total_peminat' => 0,
+            'statistik' => $statistik,
         ];
     }
 
@@ -376,9 +394,30 @@ class SelectionService
                     'tahap_lulus' => $p->lulusTahap?->nama,
                     'total_skor' => $totalSkor,
                     'status' => 'Lulus',
-                    'lulus_prodi' => $p->lulusProdi?->nama_prodi,
+                    'lulus_prodi' => $p->lulusProdi?->kode_prodi,
+                    'is_referensi' => (bool) $p->is_referensi,
                 ];
             });
+
+        $nilaiLulus = Pendaftar::where('lulus', $prodiId)
+            ->whereNotNull('nilai_akhir')
+            ->pluck('nilai_akhir');
+
+        $statistik = null;
+
+        if ($nilaiLulus->isNotEmpty()) {
+            $sorted = $nilaiLulus->sort()->values();
+            $count = $sorted->count();
+            $median = $count % 2 === 0
+                ? ($sorted[$count / 2 - 1] + $sorted[$count / 2]) / 2
+                : $sorted[floor($count / 2)];
+
+            $statistik = [
+                'min' => $sorted->first(),
+                'max' => $sorted->last(),
+                'median' => $median,
+            ];
+        }
 
         return [
             'prodi' => [
@@ -389,6 +428,7 @@ class SelectionService
             ],
             'total_peserta' => $prodi->pendaftar_pil1_count + $prodi->pendaftar_pil2_count + $prodi->pendaftar_pil3_count,
             'total_lulus' => $peserta->count(),
+            'statistik' => $statistik,
             'peserta' => $peserta,
         ];
     }

@@ -1,5 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Star } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
@@ -22,6 +23,13 @@ interface PesertaLulus {
     total_skor: number;
     status: string;
     lulus_prodi: string | null;
+    is_referensi: boolean;
+}
+
+interface Statistik {
+    min: number;
+    max: number;
+    median: number;
 }
 
 interface DetailData {
@@ -29,6 +37,7 @@ interface DetailData {
     prodi?: ProdiDetail;
     total_peserta?: number;
     total_lulus?: number;
+    statistik?: Statistik | null;
     peserta?: PesertaLulus[];
 }
 
@@ -42,6 +51,8 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [allSelected, setAllSelected] = useState(false);
     const [processing, setProcessing] = useState(false);
+    const [sortColumn, setSortColumn] = useState<string>('nama');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
@@ -92,6 +103,37 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
         });
     };
 
+    const handleSort = (column: string) => {
+        if (sortColumn === column) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+    };
+
+    const sortedPeserta = useMemo(() => {
+        if (!detail.peserta) return [];
+        return [...detail.peserta].sort((a, b) => {
+            let comparison = 0;
+            switch (sortColumn) {
+                case 'nup':
+                    comparison = a.nup.localeCompare(b.nup);
+                    break;
+                case 'nama':
+                    comparison = a.nama.localeCompare(b.nama);
+                    break;
+                case 'noujian':
+                    comparison = (a.noujian || '').localeCompare(b.noujian || '');
+                    break;
+                case 'total_skor':
+                    comparison = a.total_skor - b.total_skor;
+                    break;
+            }
+            return sortDirection === 'asc' ? comparison : -comparison;
+        });
+    }, [detail.peserta, sortColumn, sortDirection]);
+
     const kuota = detail.prodi?.kuota_smm;
     const totalPeserta = detail.total_peserta ?? 0;
     const totalLulus = detail.total_lulus ?? 0;
@@ -129,7 +171,7 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                 <div className="grid gap-4 md:grid-cols-4">
                     <Card>
                         <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{totalPeserta}</div>
+                            <div className="text-3xl font-bold text-gray-900">{totalPeserta}</div>
                             <div className="text-sm text-gray-500">Total Peserta</div>
                         </div>
                     </Card>
@@ -149,6 +191,27 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                         <div className="text-center">
                             <div className="text-3xl font-bold text-blue-600">{rasio}%</div>
                             <div className="text-sm text-gray-500">Rasio Kelulusan</div>
+                        </div>
+                    </Card>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{detail.statistik?.min ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Min</div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{detail.statistik?.max ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Max</div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-600">{detail.statistik?.median ?? '-'}</div>
+                            <div className="text-sm text-gray-500">Skor Median</div>
                         </div>
                     </Card>
                 </div>
@@ -189,20 +252,56 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                                             className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                         />
                                     </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        <button type="button" onClick={() => handleSort('nup')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
+                                            NUP
+                                            {sortColumn === 'nup' ? (
+                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                            ) : (
+                                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                            )}
+                                        </button>
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        <button type="button" onClick={() => handleSort('nama')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
+                                            Nama
+                                            {sortColumn === 'nama' ? (
+                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                            ) : (
+                                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                            )}
+                                        </button>
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        <button type="button" onClick={() => handleSort('noujian')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
+                                            No. Ujian
+                                            {sortColumn === 'noujian' ? (
+                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                            ) : (
+                                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                            )}
+                                        </button>
+                                    </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan</th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Tahap Lulus</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nilai Akhir</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        <button type="button" onClick={() => handleSort('total_skor')} className="inline-flex items-center gap-1 mx-auto hover:text-gray-700 dark:hover:text-gray-300">
+                                            Nilai Akhir
+                                            {sortColumn === 'total_skor' ? (
+                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                            ) : (
+                                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                            )}
+                                        </button>
+                                    </th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Lulus di Prodi</th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant">
-                                {detail.peserta && detail.peserta.length > 0 ? (
-                                    detail.peserta.map((p) => (
+                                {sortedPeserta.length > 0 ? (
+                                    sortedPeserta.map((p) => (
                                         <tr key={p.id}>
                                             <td className="px-4 py-2 text-center">
                                                 <input
@@ -221,7 +320,10 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">
                                                 <span className="inline-block rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">{p.status}</span>
                                             </td>
-                                            <td className="whitespace-nowrap px-4 py-2 text-sm">{p.lulus_prodi || '-'}</td>
+                                            <td className="whitespace-nowrap px-4 py-2 text-sm">
+                                                {p.lulus_prodi || '-'}
+                                                {p.is_referensi && <Star className="inline h-4 w-4 text-amber-500 ml-1" />}
+                                            </td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">
                                                 <button
                                                     onClick={() => handleRevoke(p.id, p.nama)}
