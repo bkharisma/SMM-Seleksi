@@ -8,7 +8,9 @@ use App\Imports\NilaiImport;
 use App\Models\PendaftarNilai;
 use App\Models\Ujian;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -63,16 +65,81 @@ class NilaiUjianController extends Controller
         ]);
     }
 
-    public function upload(Request $request, Ujian $ujian): RedirectResponse
+    public function upload(Request $request, Ujian $ujian): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
         ]);
 
-        $import = new NilaiImport($ujian);
-        Excel::import($import, $validated['file']);
+        try {
+            $import = new NilaiImport($ujian);
+            Excel::import($import, $validated['file']);
 
-        return redirect()->back()->with('success', "Berhasil import {$import->getRowCount()} data nilai.");
+            $rowCount = $import->getRowCount();
+            $errors = $import->getErrors();
+            $errorCount = count($errors);
+
+            $message = $rowCount > 0
+                ? "Berhasil import {$rowCount} data nilai".($errorCount > 0 ? " dengan {$errorCount} error" : '')
+                : 'Gagal import data nilai';
+
+            if ($request->wantsJson()) {
+                $response = [
+                    'success' => $errorCount === 0,
+                    'message' => $message,
+                    'row_count' => $rowCount,
+                    'error_count' => $errorCount,
+                ];
+
+                if ($errorCount > 0) {
+                    $cacheKey = 'import_nilai_errors_'.uniqid();
+                    cache()->put($cacheKey, $errors, now()->addMinutes(30));
+                    $response['download_error_url'] = '/admin/nilai/import-errors/'.$cacheKey;
+                }
+
+                return response()->json($response);
+            }
+
+            if ($rowCount > 0 && $errorCount > 0) {
+                return redirect()->back()->with('warning', $message);
+            }
+            if ($rowCount > 0) {
+                return redirect()->back()->with('success', $message);
+            }
+
+            return redirect()->back()->with('error', $message);
+        } catch (\Throwable $e) {
+            \Log::error('Nilai import error: '.$e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal import: '.$e->getMessage(),
+                    'row_count' => 0,
+                    'error_count' => 1,
+                ]);
+            }
+
+            return redirect()->back()->with('error', 'Gagal import: '.$e->getMessage());
+        }
+    }
+
+    public function downloadImportErrors(string $key): BinaryFileResponse
+    {
+        $errors = cache()->get($key);
+
+        if (! $errors) {
+            abort(404, 'File error tidak ditemukan atau sudah kadaluarsa.');
+        }
+
+        $headings = [];
+        if (! empty($errors[0]['data']) && is_array($errors[0]['data'])) {
+            $headings = array_keys($errors[0]['data']);
+        }
+
+        $export = new \App\Exports\ImportErrorsExport($errors, $headings);
+
+        return Excel::download($export, 'import-nilai-errors-'.now()->format('Y-m-d').'.xlsx');
     }
 
     public function downloadTemplate(Ujian $ujian)

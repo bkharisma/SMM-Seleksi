@@ -29,6 +29,8 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
 
     protected int $rowCount = 0;
 
+    protected array $errors = [];
+
     public function __construct(Ujian $ujian)
     {
         $this->ujian = $ujian;
@@ -47,6 +49,13 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
     public function model(array $row)
     {
         if (empty($row['nup']) && empty($row['no_ujian'])) {
+            $this->rowCount++;
+            $this->errors[] = [
+                'row' => $this->rowCount + 1,
+                'data' => $row,
+                'error' => 'NUP atau No. Ujian wajib diisi',
+            ];
+
             return null;
         }
 
@@ -59,6 +68,13 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
         }
 
         if (! $nup) {
+            $this->rowCount++;
+            $this->errors[] = [
+                'row' => $this->rowCount + 1,
+                'data' => $row,
+                'error' => 'Pendaftar dengan NUP/No. Ujian tersebut tidak ditemukan',
+            ];
+
             return null;
         }
 
@@ -133,5 +149,10 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
     public function getRowCount(): int
     {
         return $this->rowCount;
+    }
+
+    public function getErrors(): array
+    {
+        return $this->errors;
     }
 }

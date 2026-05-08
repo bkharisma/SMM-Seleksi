@@ -60,7 +60,7 @@ class KriteriaKelulusanController extends Controller
             'filter_pilihan' => 'nullable|integer|min:1|max:4',
             'active' => 'boolean',
             'kriteria_ujian' => 'required|array|min:1',
-            'kriteria_ujian.*.ujian_id' => 'required|exists:ujian,id',
+            'kriteria_ujian.*.ujian_id' => 'required',
             'kriteria_ujian.*.jenis' => 'required|in:tes,berkas',
             'kriteria_ujian.*.nilai_standar' => 'nullable|numeric',
             'kriteria_ujian.*.parameters' => 'nullable|array',
@@ -68,10 +68,12 @@ class KriteriaKelulusanController extends Controller
             'kriteria_ujian.*.parameters.*.tipe_value' => 'required|in:number,string,boolean',
             'kriteria_ujian.*.parameters.*.nilai' => 'required',
         ]);
-
+ 
+        $this->validateUjianIds($request);
+ 
         DB::transaction(function () use ($validated, $request) {
             $validated['active'] = $request->boolean('active', true);
-
+ 
             $kriteria = KriteriaKelulusan::create($validated);
 
             foreach ($validated['kriteria_ujian'] as $ku) {
@@ -112,7 +114,7 @@ class KriteriaKelulusanController extends Controller
             'filter_pilihan' => 'nullable|integer|min:1|max:4',
             'active' => 'boolean',
             'kriteria_ujian' => 'required|array|min:1',
-            'kriteria_ujian.*.ujian_id' => 'required|exists:ujian,id',
+            'kriteria_ujian.*.ujian_id' => 'required',
             'kriteria_ujian.*.jenis' => 'required|in:tes,berkas',
             'kriteria_ujian.*.nilai_standar' => 'nullable|numeric',
             'kriteria_ujian.*.parameters' => 'nullable|array',
@@ -120,7 +122,9 @@ class KriteriaKelulusanController extends Controller
             'kriteria_ujian.*.parameters.*.tipe_value' => 'required|in:number,string,boolean',
             'kriteria_ujian.*.parameters.*.nilai' => 'required',
         ]);
-
+ 
+        $this->validateUjianIds($request);
+ 
         DB::transaction(function () use ($validated, $request, $kriteria) {
             $validated['active'] = $request->boolean('active', true);
 
@@ -146,5 +150,25 @@ class KriteriaKelulusanController extends Controller
         $kriteria->delete();
 
         return redirect()->back()->with('success', 'Kriteria berhasil dihapus.');
+    }
+
+    private function validateUjianIds(Request $request): void
+    {
+        $ids = collect($request->input('kriteria_ujian', []))
+            ->pluck('ujian_id')
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($ids)) {
+            return;
+        }
+
+        $existing = Ujian::whereIn('id', $ids)->pluck('id')->toArray();
+
+        $diff = array_diff($ids, $existing);
+        if (!empty($diff)) {
+            abort(422, 'Ujian ID tidak valid: ' . implode(', ', $diff));
+        }
     }
 }

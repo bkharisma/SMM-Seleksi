@@ -8,6 +8,7 @@ import Card from '@/components/ui/card';
 import DataTable from '@/components/ui/data-table';
 import Input from '@/components/ui/input';
 import Modal from '@/components/ui/modal';
+import UploadProgressModal from '@/components/ui/upload-progress-modal';
 
 interface Prodi {
     nama_prodi: string;
@@ -107,6 +108,10 @@ export default function NilaiIndex({ nilai, ujian, filters }: NilaiIndexProps) {
     const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
     const [deleteAllConfirm, setDeleteAllConfirm] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+    const [uploadMessage, setUploadMessage] = useState('');
+    const [uploadErrorUrl, setUploadErrorUrl] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fields = ujian.fields_config?.fields || [];
@@ -130,11 +135,48 @@ params.set('search', search);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
+            setUploadModalOpen(true);
+            setUploadStatus('uploading');
+            setUploadMessage('');
+            setUploadErrorUrl('');
+
             const formData = new FormData();
             formData.append('file', e.target.files[0]);
-            router.post(`/admin/nilai/${ujian.id}/upload`, formData as any, {
-                forceFormData: true,
-            });
+            fetch(`/admin/nilai/${ujian.id}/upload`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                    'Accept': 'application/json',
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error('Server error: ' + res.status);
+                    }
+                    const ct = res.headers.get('content-type');
+                    if (ct && ct.includes('application/json')) {
+                        return res.json();
+                    }
+                    return res.text().then((t) => {
+                        throw new Error(t || 'Empty response');
+                    });
+                })
+                .then((data) => {
+                    setUploadStatus(data.success ? 'success' : 'error');
+                    setUploadMessage(data.message || 'Import selesai');
+                    if (data.download_error_url) {
+                        setUploadErrorUrl(data.download_error_url);
+                    }
+                    router.reload();
+                })
+                .catch((err) => {
+                    setUploadStatus('error');
+                    setUploadMessage('Gagal import: ' + (err?.message || 'Unknown error'));
+                    router.reload();
+                });
+
+            e.target.value = '';
         }
     };
 
@@ -413,6 +455,15 @@ return;
                     </div>
                 </div>
             </Modal>
+
+            <UploadProgressModal
+                isOpen={uploadModalOpen}
+                status={uploadStatus}
+                title="Upload Nilai"
+                message={uploadMessage}
+                errorUrl={uploadErrorUrl}
+                onClose={() => setUploadModalOpen(false)}
+            />
         </AdminLayout>
     );
 }

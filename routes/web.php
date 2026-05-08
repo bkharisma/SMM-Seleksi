@@ -161,6 +161,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
 
     // Nilai Ujian
     Route::get('/nilai', [NilaiUjianController::class, 'selectUjian'])->name('nilai.select');
+    Route::get('/nilai/import-errors/{key}', [NilaiUjianController::class, 'downloadImportErrors'])->name('nilai.import-errors');
     Route::get('/nilai/{ujian}', [NilaiUjianController::class, 'index'])->name('nilai.index');
     Route::post('/nilai/{ujian}/upload', [NilaiUjianController::class, 'upload'])->name('nilai.upload');
     Route::get('/nilai/{ujian}/template', [NilaiUjianController::class, 'downloadTemplate'])->name('nilai.template');

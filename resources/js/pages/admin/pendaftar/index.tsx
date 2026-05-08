@@ -15,6 +15,7 @@ import AdminLayout from '@/components/layout/admin-layout';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import DataTable from '@/components/ui/data-table';
+import UploadProgressModal from '@/components/ui/upload-progress-modal';
 
 interface Pendaftar {
     id: number;
@@ -65,6 +66,68 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
     const [lulus, setLulus] = useState(filters.lulus || '');
     const [noujian, setNoujian] = useState(filters.noujian || '');
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+    const [uploadMessage, setUploadMessage] = useState('');
+    const [uploadErrorUrl, setUploadErrorUrl] = useState('');
+
+    const handleImport = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.xlsx,.xls,.csv';
+        input.onchange = (e: Event) => {
+            const target = e.target as HTMLInputElement;
+
+            if (target.files && target.files[0]) {
+                setUploadModalOpen(true);
+                setUploadStatus('uploading');
+                setUploadMessage('');
+                setUploadErrorUrl('');
+
+                const formData = new FormData();
+                formData.append('file', target.files[0]);
+                fetch('/admin/pendaftar/import', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                        'Accept': 'application/json',
+                    },
+                })
+                    .then((res) => {
+                        if (!res.ok) {
+                            throw new Error('Server error: ' + res.status);
+                        }
+
+                        const ct = res.headers.get('content-type');
+
+                        if (ct && ct.includes('application/json')) {
+                            return res.json();
+                        }
+
+                        return res.text().then((t) => {
+                            throw new Error(t || 'Empty response');
+                        });
+                    })
+                    .then((data) => {
+                        setUploadStatus(data.success ? 'success' : 'error');
+                        setUploadMessage(data.message || 'Import selesai');
+
+                        if (data.download_error_url) {
+                            setUploadErrorUrl(data.download_error_url);
+                        }
+
+                        router.reload();
+                    })
+                    .catch((err) => {
+                        setUploadStatus('error');
+                        setUploadMessage('Gagal import: ' + (err?.message || 'Unknown error'));
+                        router.reload();
+                    });
+            }
+        };
+        input.click();
+    };
 
     const handleSearch = () => {
         const params = new URLSearchParams();
@@ -199,56 +262,7 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = '.xlsx,.xls,.csv';
-                        input.onchange = (e: Event) => {
-                            const target = e.target as HTMLInputElement;
-
-                            if (target.files && target.files[0]) {
-                                const formData = new FormData();
-                                formData.append('file', target.files[0]);
-                                fetch('/admin/pendaftar/import', {
-                                    method: 'POST',
-                                    body: formData,
-                                    headers: {
-                                        'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
-                                        'Accept': 'application/json',
-                                    },
-                                })
-                                    .then((res) => {
-                                        if (!res.ok) {
-throw new Error('Server error: ' + res.status);
-}
-
-                                        const ct = res.headers.get('content-type');
-
-                                        if (ct && ct.includes('application/json')) {
-return res.json();
-}
-
-                                        return res.text().then((t) => {
- throw new Error(t || 'Empty response'); 
-});
-                                    })
-                                    .then((data) => {
-                                        alert(data.message || 'Import selesai');
-
-                                        if (data.download_error_url) {
-                                            window.open(data.download_error_url, '_blank');
-                                        }
-
-                                        router.reload();
-                                    })
-                                    .catch((err) => {
-                                        alert('Gagal import: ' + (err?.message || 'Unknown error'));
-                                        router.reload();
-                                    });
-                            }
-                        };
-                        input.click();
-                    }}
+                    onClick={handleImport}
                 >
                     <Upload className="mr-2 h-4 w-4" />
                     Import
@@ -373,6 +387,15 @@ return res.json();
                     </>
                 )}
                 emptyMessage="Tidak ada data pendaftar"
+            />
+
+            <UploadProgressModal
+                isOpen={uploadModalOpen}
+                status={uploadStatus}
+                title="Upload Peserta"
+                message={uploadMessage}
+                errorUrl={uploadErrorUrl}
+                onClose={() => setUploadModalOpen(false)}
             />
         </AdminLayout>
     );
