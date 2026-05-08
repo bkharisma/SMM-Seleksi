@@ -47,19 +47,19 @@ export default function PembobotanIndex({ tahap, pembobotan }: Props) {
                 {tahap.length === 0 ? (
                     <p className="text-sm text-gray-500">Belum ada tahap seleksi.</p>
                 ) : (
-                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <div className="divide-y divide-outline-variant">
                         {tahap.map((item) => {
                             const config = pembobotan[item.id.toString()] as Record<string, number> | undefined;
                             const hasConfig = config && Object.keys(config).length > 0;
-
+                            
                             return (
                                 <div key={item.id} className="flex items-center justify-between py-4">
                                     <div className="flex items-center gap-4">
                                         <div>
-                                            <p className="font-medium text-gray-900 dark:text-white">
+                                            <p className="font-medium text-on-background">
                                                 {item.nama}
                                             </p>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-on-surface-container">
                                                 {item.ujian.length} jenis ujian
                                             </p>
                                         </div>

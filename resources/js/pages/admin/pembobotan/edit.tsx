@@ -129,13 +129,13 @@ export default function PembobotanEdit({ tahap, ujian, pembobotan }: Props) {
                             ))}
                         </div>
 
-                        <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
+                        <div className="rounded-lg bg-surface-container p-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span className="text-sm font-medium text-on-surface">
                                     Total
                                 </span>
                                 <div className="flex items-center gap-3">
-                                    <div className="h-2 w-48 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600">
+                                    <div className="h-2 w-48 overflow-hidden rounded-full bg-surface-container">
                                         <div
                                             className={`h-full rounded-full transition-all ${
                                                 isValid ? 'bg-green-500' : total > 100 ? 'bg-red-500' : 'bg-primary'
@@ -145,7 +145,7 @@ export default function PembobotanEdit({ tahap, ujian, pembobotan }: Props) {
                                     </div>
                                     <span
                                         className={`text-sm font-bold ${
-                                            isValid ? 'text-green-600' : total > 100 ? 'text-red-500' : 'text-gray-500'
+                                            isValid ? 'text-green-600' : total > 100 ? 'text-red-500' : 'text-on-surface-container'
                                         }`}
                                     >
                                         {total.toFixed(2)}%

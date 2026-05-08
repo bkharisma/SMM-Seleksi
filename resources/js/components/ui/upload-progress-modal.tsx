@@ -26,15 +26,15 @@ export default function UploadProgressModal({
                 onClick={status !== 'uploading' ? onClose : undefined}
             />
             <div className="relative w-full max-w-md transform transition-all scale-100 opacity-100">
-                <div className="relative rounded-xl bg-white shadow-xl dark:bg-gray-800">
-                    <div className="flex items-center justify-between border-b px-6 py-4 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="relative rounded-xl bg-surface-container-lowest shadow">
+                    <div className="flex items-center justify-between border-b px-6 py-4 border-outline-variant">
+                        <h3 className="text-lg font-semibold text-on-background">
                             {title || (status === 'uploading' ? 'Upload Data' : 'Hasil Upload')}
                         </h3>
                         {status !== 'uploading' && (
                             <button
                                 onClick={onClose}
-                                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+                                className="rounded-lg p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                             >
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -47,7 +47,7 @@ export default function UploadProgressModal({
                             {status === 'uploading' && (
                                 <>
                                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm text-on-surface-variant">
                                         Sedang memproses upload data. Harap tunggu...
                                     </p>
                                 </>
@@ -56,7 +56,7 @@ export default function UploadProgressModal({
                             {status === 'success' && (
                                 <>
                                     <CheckCircle className="h-12 w-12 text-green-500" />
-                                    <p className="text-sm text-gray-700 dark:text-gray-300">{message}</p>
+                                    <p className="text-sm text-on-surface">{message}</p>
                                     {errorUrl && (
                                         <a
                                             href={errorUrl}
@@ -80,7 +80,7 @@ export default function UploadProgressModal({
                             {status === 'error' && (
                                 <>
                                     <XCircle className="h-12 w-12 text-red-500" />
-                                    <p className="text-sm text-gray-700 dark:text-gray-300">{message}</p>
+                                    <p className="text-sm text-on-surface">{message}</p>
                                     <button
                                         onClick={onClose}
                                         className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"

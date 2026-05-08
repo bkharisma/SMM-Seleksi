@@ -4,6 +4,7 @@ import AdminLayout from '@/components/layout/admin-layout';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Alert from '@/components/ui/alert';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     id: number;
@@ -70,58 +71,37 @@ export default function SeleksiIndex({ tahap, prodi, filters }: SeleksiIndexProp
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-3">
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Tahap Seleksi
-                                </label>
-                                <select
+                                <Select
+                                    label="Tahap Seleksi"
+                                    required
                                     value={tahapId}
                                     onChange={(e) => setTahapId(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    required
-                                >
-                                    <option value="">-- Pilih Tahap --</option>
-                                    {tahap.map((t) => (
-                                        <option key={t.id} value={t.id}>
-                                            {t.nama}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={[{ value: '', label: '-- Pilih Tahap --' }, ...tahap.map((t) => ({ value: t.id, label: t.nama }))]}
+                                />
                             </div>
-
+                            
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Program Studi
-                                </label>
-                                <select
+                                <Select
+                                    label="Program Studi"
+                                    required
                                     value={prodiId}
                                     onChange={(e) => setProdiId(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    required
-                                >
-                                    <option value="">-- Pilih Prodi --</option>
-                                    {prodi.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.nama_prodi}
-                                        </option>
-                                    ))}
-                                </select>
+                                    options={[{ value: '', label: '-- Pilih Prodi --' }, ...prodi.map((p) => ({ value: p.id, label: p.nama_prodi }))]}
+                                />
                             </div>
-
+                            
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Filter Pilihan (Opsional)
-                                </label>
-                                <select
+                                <Select
+                                    label="Filter Pilihan (Opsional)"
                                     value={pilihan}
                                     onChange={(e) => setPilihan(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                >
-                                    <option value="">Semua Pilihan</option>
-                                    <option value="1">Pilihan 1</option>
-                                    <option value="2">Pilihan 2</option>
-                                    <option value="3">Pilihan 3</option>
-                                    <option value="3">Pilihan 3</option>
-                                </select>
+                                    options={[
+                                        { value: '', label: 'Semua Pilihan' },
+                                        { value: '1', label: 'Pilihan 1' },
+                                        { value: '2', label: 'Pilihan 2' },
+                                        { value: '3', label: 'Pilihan 3' }
+                                    ]}
+                                />
                             </div>
                         </div>
 

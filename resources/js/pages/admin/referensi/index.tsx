@@ -8,6 +8,8 @@ import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Modal from '@/components/ui/modal';
 import Textarea from '@/components/ui/textarea';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 interface ProdiData {
     id: number;
@@ -116,33 +118,27 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                 <Card title="Data Referensi">
                     <div className="mb-4">
                         <div className="flex flex-wrap gap-2">
-                            <input
+                            <Input
                                 type="text"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                 placeholder="Cari nama, NUP, atau no. ujian..."
-                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                             />
-                            <select
+                            <Select
                                 value={prodiId}
                                 onChange={(e) => setProdiId(e.target.value)}
-                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            >
-                                <option value="">Semua Prodi</option>
-                                {prodi.map((p) => (
-                                    <option key={p.id} value={p.id}>{p.nama_prodi}</option>
-                                ))}
-                            </select>
-                            <select
+                                options={[{ value: '', label: 'Semua Prodi' }, ...prodi.map((p) => ({ value: p.id, label: p.nama_prodi }))]}
+                            />
+                            <Select
                                 value={isReferensi}
                                 onChange={(e) => setIsReferensi(e.target.value)}
-                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            >
-                                <option value="">Semua Status</option>
-                                <option value="1">Referensi</option>
-                                <option value="0">Regular</option>
-                            </select>
+                                options={[
+                                    { value: '', label: 'Semua Status' },
+                                    { value: '1', label: 'Referensi' },
+                                    { value: '0', label: 'Regular' }
+                                ]}
+                            />
                             <Button onClick={handleSearch} size="sm">Cari</Button>
                         </div>
                     </div>
@@ -155,37 +151,37 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
+                        <table className="min-w-full divide-y divide-outline-variant">
+                            <thead className="bg-surface-container">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 1</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 2</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pil 3</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status Kelulusan</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Catatan</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">NUP</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No. Ujian</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nama</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 1</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 2</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 3</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Status Kelulusan</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Catatan</th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Status</th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                            <tbody className="divide-y divide-outline-variant bg-surface-container-lowest">
                                 {pendaftar.data.map((item) => (
                                     <tr
                                         key={item.id}
                                         className={
                                             item.is_referensi
                                                 ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/10 dark:hover:bg-amber-900/20'
-                                                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                : 'hover:bg-surface-container'
                                         }
                                     >
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900 dark:text-gray-200">{item.kode_pendaftar}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900 dark:text-gray-200">{item.noujian || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-200">{item.nama}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil1_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil2_prodi?.nama_prodi || '-'}</td>
-                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{item.pil3_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.kode_pendaftar}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-mono text-on-background">{item.noujian || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-on-background">{item.nama}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil1_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil2_prodi?.nama_prodi || '-'}</td>
+                                        <td className="whitespace-nowrap px-4 py-3 text-sm text-on-surface">{item.pil3_prodi?.nama_prodi || '-'}</td>
                                         <td className="whitespace-nowrap px-4 py-3 text-sm">
                                             {item.lulus_prodi ? (
                                                 <Badge variant="success">Lulus - {item.lulus_prodi.nama_prodi}</Badge>
@@ -193,7 +189,7 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                                 <Badge variant="danger">Belum Lulus</Badge>
                                             )}
                                         </td>
-                                        <td className="max-w-xs truncate px-4 py-3 text-sm text-gray-700 dark:text-gray-300" title={item.catatan_referensi || '-'}>{item.catatan_referensi || '-'}</td>
+                                        <td className="max-w-xs truncate px-4 py-3 text-sm text-on-surface" title={item.catatan_referensi || '-'}>{item.catatan_referensi || '-'}</td>
                                         <td className="whitespace-nowrap px-4 py-3 text-center">
                                             {item.is_referensi ? (
                                                 <Badge variant="warning">Referensi</Badge>
@@ -218,7 +214,7 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                 ))}
                                 {pendaftar.data.length === 0 && (
                                     <tr>
-                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-on-surface-container">
                                             Tidak ada data pendaftar.
                                         </td>
                                     </tr>
@@ -228,8 +224,8 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                     </div>
 
                     {pendaftar.last_page > 1 && (
-                        <div className="mt-4 flex items-center justify-between">
-                            <div className="text-sm text-gray-500">
+                            <div className="mt-4 flex items-center justify-between">
+                            <div className="text-sm text-on-surface-container">
                                 Menampilkan {pendaftar.from} - {pendaftar.to} dari {pendaftar.total}
                             </div>
                             <div className="flex gap-1">
@@ -238,7 +234,7 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                         return (
                                             <span
                                                 key={i}
-                                                className="inline-flex items-center rounded-md px-3 py-1 text-sm text-gray-400"
+                                                className="inline-flex items-center rounded-md px-3 py-1 text-sm text-on-surface-container/50"
                                                 dangerouslySetInnerHTML={{ __html: link.label }}
                                             />
                                         );
@@ -254,8 +250,8 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                                             }}
                                             className={`inline-flex items-center rounded-md px-3 py-1 text-sm ${
                                                 link.active
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                    ? 'bg-primary text-on-primary'
+                                                    : 'text-on-surface hover:bg-surface-container'
                                             }`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
@@ -268,7 +264,7 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
 
                 <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Tandai sebagai Referensi">
                     <div className="space-y-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-on-surface-container">
                             Masukkan catatan untuk pendaftar ini. Catatan bersifat opsional.
                         </p>
                         <Textarea

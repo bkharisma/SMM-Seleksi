@@ -4,6 +4,8 @@ import AdminLayout from '@/components/layout/admin-layout';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Alert from '@/components/ui/alert';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 interface Role {
     id: number;
@@ -77,98 +79,73 @@ export default function UserForm({ user, roles }: UserFormProps) {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Nama Lengkap <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
+                            <Input
+                                label="Nama Lengkap"
+                                required
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                required
                             />
                         </div>
-
+ 
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Username <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
+                            <Input
+                                label="Username"
+                                required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                required
                             />
                         </div>
-
+ 
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Email
-                            </label>
-                            <input
+                            <Input
+                                label="Email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                             />
                         </div>
-
+ 
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Password {user && <span className="text-gray-500">(kosongkan jika tidak diubah)</span>}
-                                </label>
-                                <input
+                                <Input
+                                    label={`Password ${user ? '(kosongkan jika tidak diubah)' : ''}`}
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                                     required={!user}
                                 />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Konfirmasi Password
-                                </label>
-                                <input
+                                <Input
+                                    label="Konfirmasi Password"
                                     type="password"
                                     value={passwordConfirmation}
                                     onChange={(e) => setPasswordConfirmation(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                                     required={!user}
                                 />
                             </div>
                         </div>
-
+ 
                         <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Role <span className="text-red-500">*</span>
-                                </label>
-                                <select
+                                <Select
+                                    label="Role"
+                                    required
                                     value={role}
                                     onChange={(e) => setRole(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    required
-                                >
-                                    {roles.map((r) => (
-                                        <option key={r.id} value={r.name}>{r.name}</option>
-                                    ))}
-                                </select>
+                                    options={roles.map((r) => ({ value: r.name, label: r.name }))}
+                                />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Status
-                                </label>
-                                <select
+                                <Select
+                                    label="Status"
                                     value={status ? '1' : '0'}
                                     onChange={(e) => setStatus(e.target.value === '1')}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                >
-                                    <option value="1">Aktif</option>
-                                    <option value="0">Nonaktif</option>
-                                </select>
+                                    options={[
+                                        { value: '1', label: 'Aktif' },
+                                        { value: '0', label: 'Nonaktif' }
+                                    ]}
+                                />
                             </div>
                         </div>
 

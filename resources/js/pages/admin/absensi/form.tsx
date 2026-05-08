@@ -157,7 +157,7 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
 
                         <div className="max-h-64 overflow-y-auto rounded-lg border dark:border-gray-700">
                             <table className="w-full">
-                                <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800">
+                                <thead className="sticky top-0 bg-surface-container">
                                     <tr>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
                                             <input
@@ -173,9 +173,9 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Ruang</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody className="divide-y divide-outline-variant">
                                     {peserta.map(p => (
-                                        <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                        <tr key={p.id} className="hover:bg-surface-container">
                                             <td className="px-3 py-2">
                                                 <input
                                                     type="checkbox"

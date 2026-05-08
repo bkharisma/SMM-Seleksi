@@ -5,6 +5,7 @@ import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
 import Card from '@/components/ui/card';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     id: number;
@@ -138,52 +139,35 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                     <form onSubmit={handleRepreview} className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-3">
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Tahap Seleksi
-                                </label>
-                                <select
+                                <Select
+                                    label="Tahap Seleksi"
+                                    required
                                     value={tahapId}
                                     onChange={(e) => setTahapId(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    required
-                                >
-                                    <option value="">-- Pilih Tahap --</option>
-                                    {tahap.map((t) => (
-                                        <option key={t.id} value={t.id}>{t.nama}</option>
-                                    ))}
-                                </select>
+                                    options={[{ value: '', label: '-- Pilih Tahap --' }, ...tahap.map((t) => ({ value: t.id, label: t.nama }))]}
+                                />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Program Studi
-                                </label>
-                                <select
+                                <Select
+                                    label="Program Studi"
+                                    required
                                     value={prodiId}
                                     onChange={(e) => setProdiId(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    required
-                                >
-                                    <option value="">-- Pilih Prodi --</option>
-                                    {prodi.map((p) => (
-                                        <option key={p.id} value={p.id}>{p.nama_prodi}</option>
-                                    ))}
-                                </select>
+                                    options={[{ value: '', label: '-- Pilih Prodi --' }, ...prodi.map((p) => ({ value: p.id, label: p.nama_prodi }))]}
+                                />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Filter Pilihan
-                                </label>
-                                <select
+                                <Select
+                                    label="Filter Pilihan"
                                     value={pilihan}
                                     onChange={(e) => setPilihan(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                >
-                                    <option value="">Semua Pilihan</option>
-                                    <option value="1">Pilihan 1</option>
-                                    <option value="2">Pilihan 2</option>
-                                    <option value="3">Pilihan 3</option>
-                                    <option value="3">Pilihan 3</option>
-                                </select>
+                                    options={[
+                                        { value: '', label: 'Semua Pilihan' },
+                                        { value: '1', label: 'Pilihan 1' },
+                                        { value: '2', label: 'Pilihan 2' },
+                                        { value: '3', label: 'Pilihan 3' }
+                                    ]}
+                                />
                             </div>
                         </div>
                         <div className="flex justify-end">
@@ -199,32 +183,32 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                         <div className="grid gap-4 md:grid-cols-5">
                             <Card>
                                 <div className="text-center">
-                                    <div className="text-3xl font-bold text-gray-900 dark:text-white">{preview.total}</div>
-                                    <div className="text-sm text-gray-500">Total Peserta</div>
+                                    <div className="text-3xl font-bold text-on-background">{preview.total}</div>
+                                    <div className="text-sm text-on-surface-container">Total Peserta</div>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-green-600">{preview.lulus}</div>
-                                    <div className="text-sm text-gray-500">Lulus Seleksi</div>
+                                    <div className="text-sm text-on-surface-container">Lulus Seleksi</div>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-red-600">{preview.tidak_lulus}</div>
-                                    <div className="text-sm text-gray-500">Tidak Lulus</div>
+                                    <div className="text-sm text-on-surface-container">Tidak Lulus</div>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-purple-600">{preview.kuota ?? '-'}</div>
-                                    <div className="text-sm text-gray-500">Kuota Prodi</div>
+                                    <div className="text-sm text-on-surface-container">Kuota Prodi</div>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-blue-600">{selectedNup.length}</div>
-                                    <div className="text-sm text-gray-500">Dipilih Lulus</div>
+                                    <div className="text-sm text-on-surface-container">Dipilih Lulus</div>
                                 </div>
                             </Card>
                         </div>
@@ -248,42 +232,42 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                                     onChange={handleToggleAll}
                                     className="h-4 w-4 rounded border-gray-300"
                                 />
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Pilih semua yang memenuhi kriteria</span>
+                                <span className="text-sm text-on-surface-container">Pilih semua yang memenuhi kriteria</span>
                             </div>
 
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead className="bg-gray-50 dark:bg-gray-800">
+                                <table className="min-w-full divide-y divide-outline-variant">
+                                    <thead className="bg-surface-container">
                                         <tr>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">NUP</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nama</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No. Ujian</th>
                                             {preview.results[0] && Object.keys(preview.results[0].scores || {}).map((key) => (
-                                                <th key={key} className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                <th key={key} className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">
                                                     {key.toUpperCase()}
                                                 </th>
                                             ))}
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nilai Akhir</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Peringkat</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nilai Akhir</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Peringkat</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Status</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tbody className="divide-y divide-outline-variant">
                                         {preview.results.map((result) => (
                                             <tr key={result.nup} className={!result.lulus ? 'bg-red-50 dark:bg-red-900/10' : ''}>
-                                                <td className="whitespace-nowrap px-4 py-2 text-sm">{result.nup}</td>
-                                                <td className="whitespace-nowrap px-4 py-2 text-sm font-medium">{result.nama}</td>
-                                                <td className="whitespace-nowrap px-4 py-2 text-sm">{result.noujian || '-'}</td>
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm text-on-surface">{result.nup}</td>
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm font-medium text-on-surface">{result.nama}</td>
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm text-on-surface">{result.noujian || '-'}</td>
                                                 {Object.values(result.scores || {}).map((val, idx) => (
-                                                    <td key={idx} className="whitespace-nowrap px-4 py-2 text-sm">
+                                                    <td key={idx} className="whitespace-nowrap px-4 py-2 text-sm text-on-surface">
                                                         {val !== null ? val : '-'}
                                                     </td>
                                                 ))}
-                                                <td className="whitespace-nowrap px-4 py-2 text-sm font-semibold">
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm font-semibold text-on-surface">
                                                     {typeof result.total_skor === 'number' ? result.total_skor.toFixed(2) : result.total_skor}
                                                 </td>
-                                                <td className="whitespace-nowrap px-4 py-2 text-sm text-gray-500">
+                                                <td className="whitespace-nowrap px-4 py-2 text-sm text-on-surface-container">
                                                     {result.peringkat ? `#${result.peringkat}` : '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-2 text-sm">
@@ -309,12 +293,12 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
 
                             {preview.results.some((r) => !r.lulus && r.reasons.length > 0) && (
                                 <div className="mt-4">
-                                    <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Alasan Tidak Lulus:</h4>
+                                    <h4 className="mb-2 text-sm font-medium text-on-surface">Alasan Tidak Lulus:</h4>
                                     <div className="max-h-48 overflow-y-auto space-y-1">
                                         {preview.results
                                             .filter((r) => !r.lulus && r.reasons.length > 0)
                                             .map((r) => (
-                                                <div key={r.nup} className="text-xs text-gray-600 dark:text-gray-400">
+                                                <div key={r.nup} className="text-xs text-on-surface-container">
                                                     <strong>{r.nup}</strong> - {r.nama}: {r.reasons.join('; ')}
                                                 </div>
                                             ))}
@@ -325,7 +309,7 @@ export default function SeleksiPreview({ tahap, prodi, preview, filters }: Selek
                     </>
                 ) : (
                     <Card>
-                        <p className="text-center text-gray-500">Silakan pilih tahap dan prodi untuk preview.</p>
+                        <p className="text-center text-on-surface-container">Silakan pilih tahap dan prodi untuk preview.</p>
                     </Card>
                 )}
             </div>

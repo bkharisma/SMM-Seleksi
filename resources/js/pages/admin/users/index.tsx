@@ -6,6 +6,8 @@ import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
 import Card from '@/components/ui/card';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 interface Role {
     id: number;
@@ -130,33 +132,45 @@ export default function UsersIndex({ users, roles, filters }: UsersIndexProps) {
                 }
             >
                 <div className="mb-4 flex flex-wrap gap-2">
-                    <input
+                    <Input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Cari nama, username, email..."
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
-                    <select
+                    <Select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Role</option>
-                        {roles.map((r) => (
-                            <option key={r.id} value={r.name}>{r.name}</option>
-                        ))}
-                    </select>
-                    <select
+                        options={[{ value: '', label: 'Semua Role' }, ...roles.map((r) => ({ value: r.name, label: r.name }))]}
+                    />
+                    <Select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Status</option>
-                        <option value="active">Aktif</option>
-                        <option value="inactive">Nonaktif</option>
-                    </select>
+                        options={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'active', label: 'Aktif' },
+                            { value: 'inactive', label: 'Nonaktif' }
+                        ]}
+                    />
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        options={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'active', label: 'Aktif' },
+                            { value: 'inactive', label: 'Nonaktif' }
+                        ]}
+                    />
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        options={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'active', label: 'Aktif' },
+                            { value: 'inactive', label: 'Nonaktif' }
+                        ]}
+                    />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                 </div>
 

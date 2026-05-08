@@ -412,4 +412,47 @@ class SelectionService
 
         return ['success' => true, 'message' => "Kelulusan {$peserta->nama} berhasil dibatalkan."];
     }
+
+    public function bulkRevokeLulus(array $pendaftarIds): array
+    {
+        $revoked = 0;
+        $errors = [];
+
+        DB::beginTransaction();
+        try {
+            $pesertaList = Pendaftar::whereIn('id', $pendaftarIds)->get();
+
+            foreach ($pesertaList as $peserta) {
+                if (! $peserta->lulus) {
+                    $errors[] = "{$peserta->nama} belum diluluskan";
+                    continue;
+                }
+
+                $peserta->update([
+                    'lulus' => null,
+                    'lulus_tahap' => null,
+                    'param_lulus' => null,
+                ]);
+                $revoked++;
+            }
+
+            DB::commit();
+
+            $message = "Berhasil membatalkan kelulusan {$revoked} peserta";
+            if (count($errors) > 0) {
+                $message .= " dengan " . count($errors) . " error";
+            }
+
+            return [
+                'success' => true,
+                'message' => $message,
+                'revoked' => $revoked,
+                'errors' => $errors,
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return ['success' => false, 'message' => 'Gagal membatalkan kelulusan: ' . $e->getMessage()];
+        }
+    }
 }

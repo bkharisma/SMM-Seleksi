@@ -90,23 +90,23 @@ export default function AbsensiData({ dataAbsensi }: AbsensiDataProps) {
 
             <Card title="Data Absensi">
                 <div className="mb-4 grid gap-4 md:grid-cols-4">
-                    <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Tanggal</p>
-                        <p className="text-sm font-medium dark:text-gray-200">
+                    <div className="rounded-lg bg-surface-container p-3">
+                        <p className="text-xs text-on-surface-container">Tanggal</p>
+                        <p className="text-sm font-medium text-on-surface">
                             {dataAbsensi.tanggal ? new Date(dataAbsensi.tanggal).toLocaleDateString('id-ID') : '-'}
                         </p>
                     </div>
-                    <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Waktu</p>
-                        <p className="text-sm font-medium dark:text-gray-200">{dataAbsensi.waktu || '-'}</p>
+                    <div className="rounded-lg bg-surface-container p-3">
+                        <p className="text-xs text-on-surface-container">Waktu</p>
+                        <p className="text-sm font-medium text-on-surface">{dataAbsensi.waktu || '-'}</p>
                     </div>
-                    <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Jenis</p>
-                        <p className="text-sm font-medium dark:text-gray-200">{dataAbsensi.jenis || '-'}</p>
+                    <div className="rounded-lg bg-surface-container p-3">
+                        <p className="text-xs text-on-surface-container">Jenis</p>
+                        <p className="text-sm font-medium text-on-surface">{dataAbsensi.jenis || '-'}</p>
                     </div>
-                    <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Ruang</p>
-                        <p className="text-sm font-medium dark:text-gray-200">
+                    <div className="rounded-lg bg-surface-container p-3">
+                        <p className="text-xs text-on-surface-container">Ruang</p>
+                        <p className="text-sm font-medium text-on-surface">
                             {dataAbsensi.ruang ? `${dataAbsensi.ruang.nomor_ruang} - ${dataAbsensi.ruang.nama_gedung}` : '-'}
                         </p>
                     </div>
@@ -139,7 +139,7 @@ export default function AbsensiData({ dataAbsensi }: AbsensiDataProps) {
 
                 <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
                     <table className="w-full">
-                        <thead className="bg-gray-50 dark:bg-gray-800">
+                        <thead className="bg-surface-container">
                             <tr>
                                 <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">No</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">NUP</th>
@@ -149,9 +149,9 @@ export default function AbsensiData({ dataAbsensi }: AbsensiDataProps) {
                                 <th className="px-4 py-3 text-center text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Kehadiran</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                        <tbody className="divide-y divide-outline-variant bg-surface-container-lowest">
                             {dataAbsensi.absensi.map((item, index) => (
-                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <tr key={item.id} className="hover:bg-surface-container">
                                     <td className="px-4 py-3 text-sm dark:text-gray-300">{index + 1}</td>
                                     <td className="px-4 py-3 text-sm dark:text-gray-300">{item.peserta?.nup}</td>
                                     <td className="px-4 py-3 text-sm dark:text-gray-300">{item.peserta?.noujian}</td>

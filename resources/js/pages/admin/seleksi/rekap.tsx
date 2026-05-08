@@ -5,6 +5,7 @@ import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     id: number;
@@ -120,44 +121,39 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                     }
                 >
                     <div className="mb-4 flex gap-2">
-                        <select
+                        <Select
                             value={prodiId}
                             onChange={(e) => setProdiId(e.target.value)}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                        >
-                            <option value="">Semua Prodi</option>
-                            {prodi.map((p) => (
-                                <option key={p.id} value={p.id}>{p.nama_prodi}</option>
-                            ))}
-                        </select>
+                            options={[{ value: '', label: 'Semua Prodi' }, ...prodi.map((p) => ({ value: p.id, label: p.nama_prodi }))]}
+                        />
                         <Button size="sm" onClick={handleFilter}>Filter</Button>
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
+                        <table className="min-w-full divide-y divide-outline-variant">
+                            <thead className="bg-surface-container">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Kode</th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Program Studi</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Total Lulus</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Kuota</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 1</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 2</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 3</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Pilihan 4</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Sisa Kuota</th>
-                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Kode</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Program Studi</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Total Lulus</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Kuota</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Pilihan 1</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Pilihan 2</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Pilihan 3</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Pilihan 4</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Sisa Kuota</th>
+                                    <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-on-surface-container">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="divide-y divide-outline-variant">
                                 {rekap.rekap_per_prodi.map((item) => {
                                     const status = getKuotaStatus(item);
                                     const isOverload = item.kuota && item.total_lulus > item.kuota;
                                     return (
                                         <tr
                                             key={item.prodi_id}
-                                            className={`cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/10 ${isOverload ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
                                             onClick={() => router.get(`/admin/seleksi/rekap/${item.prodi_id}`)}
+                                            className={`cursor-pointer hover:bg-surface-container ${isOverload ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
                                         >
                                             <td className="whitespace-nowrap px-4 py-2 text-sm font-medium">{item.kode_prodi}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm text-blue-600 hover:underline">{item.nama_prodi}</td>
@@ -179,26 +175,26 @@ export default function SeleksiRekap({ rekap, prodi, filters }: SeleksiRekapProp
                                     );
                                 })}
                             </tbody>
-                            <tfoot className="bg-gray-50 dark:bg-gray-800 font-bold">
+                            <tfoot className="bg-surface-container font-bold">
                                 <tr>
-                                    <td colSpan={2} className="px-4 py-2 text-sm dark:text-gray-200">TOTAL</td>
+                                    <td colSpan={2} className="px-4 py-2 text-sm text-on-surface">TOTAL</td>
                                     <td className="px-4 py-2 text-center text-sm text-green-600">{rekap.total_lulus}</td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + (i.kuota ?? 0), 0) || '-'}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_1, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_2, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_3, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + i.pilihan_4, 0)}
                                     </td>
-                                    <td className="px-4 py-2 text-center text-sm dark:text-gray-300">
+                                    <td className="px-4 py-2 text-center text-sm text-on-surface">
                                         {rekap.rekap_per_prodi.reduce((sum, i) => sum + (i.tersisa ?? 0), 0) || '-'}
                                     </td>
                                     <td></td>

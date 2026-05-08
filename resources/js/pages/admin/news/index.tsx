@@ -6,6 +6,8 @@ import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
 import Card from '@/components/ui/card';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 interface News {
     id: number;
@@ -100,23 +102,22 @@ export default function NewsIndex({ news, filters }: NewsIndexProps) {
                 }
             >
                 <div className="mb-4 flex gap-2">
-                    <input
+                    <Input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder="Cari berita..."
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     />
-                    <select
+                    <Select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Status</option>
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                    </select>
+                        options={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'published', label: 'Published' },
+                            { value: 'draft', label: 'Draft' }
+                        ]}
+                    />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                 </div>
 

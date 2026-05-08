@@ -39,6 +39,9 @@ interface RekapDetailProps {
 export default function RekapDetail({ detail }: RekapDetailProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const [allSelected, setAllSelected] = useState(false);
+    const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
@@ -51,6 +54,42 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
         if (confirm(`Batalkan kelulusan ${nama}?`)) {
             router.delete(`/admin/seleksi/revoke/${id}`);
         }
+    };
+
+    const handleSelectAll = (checked: boolean) => {
+        setAllSelected(checked);
+        if (checked && detail.peserta) {
+            setSelectedIds(new Set(detail.peserta.map(p => p.id)));
+        } else {
+            setSelectedIds(new Set());
+        }
+    };
+
+    const handleSelectOne = (id: number, checked: boolean) => {
+        const newSelected = new Set(selectedIds);
+        if (checked) {
+            newSelected.add(id);
+        } else {
+            newSelected.delete(id);
+        }
+        setSelectedIds(newSelected);
+        setAllSelected(newSelected.size === detail.peserta?.length);
+    };
+
+    const handleBulkRevoke = () => {
+        const count = selectedIds.size;
+        if (count === 0) return;
+        if (!confirm(`Batalkan kelulusan ${count} peserta yang dipilih?`)) return;
+
+        setProcessing(true);
+        router.delete('/admin/seleksi/bulk-revoke', {
+            data: { ids: Array.from(selectedIds) },
+            onFinish: () => {
+                setProcessing(false);
+                setSelectedIds(new Set());
+                setAllSelected(false);
+            },
+        });
     };
 
     const kuota = detail.prodi?.kuota_smm;
@@ -118,6 +157,17 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                     title={`Peserta Lulus - ${detail.prodi?.nama_prodi} (${detail.prodi?.kode_prodi})`}
                     action={
                         <div className="flex gap-2">
+                            {selectedIds.size > 0 && (
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={handleBulkRevoke}
+                                    disabled={processing}
+                                    isLoading={processing}
+                                >
+                                    Hapus {selectedIds.size} Kelulusan
+                                </Button>
+                            )}
                             <a href={`/admin/seleksi/rekap/${detail.prodi?.id}/export`}>
                                 <Button variant="outline" size="sm">Export Excel</Button>
                             </a>
@@ -129,8 +179,16 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                 >
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-800">
+                            <thead className="bg-surface-container">
                                 <tr>
+                                    <th className="px-4 py-2 text-center w-12">
+                                        <input
+                                            type="checkbox"
+                                            checked={allSelected}
+                                            onChange={(e) => handleSelectAll(e.target.checked)}
+                                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                        />
+                                    </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">NUP</th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Nama</th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">No. Ujian</th>
@@ -142,10 +200,18 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="divide-y divide-outline-variant">
                                 {detail.peserta && detail.peserta.length > 0 ? (
                                     detail.peserta.map((p) => (
                                         <tr key={p.id}>
+                                            <td className="px-4 py-2 text-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.has(p.id)}
+                                                    onChange={(e) => handleSelectOne(p.id, e.target.checked)}
+                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                />
+                                            </td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">{p.nup}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm font-medium">{p.nama}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">{p.noujian || '-'}</td>
@@ -161,14 +227,14 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                                                     onClick={() => handleRevoke(p.id, p.nama)}
                                                     className="text-red-600 hover:text-red-800"
                                                 >
-                                                    Hapus Kelulusan
+                                                    Hapus
                                                 </button>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={9} className="px-4 py-8 text-center text-sm text-gray-500">
+                                        <td colSpan={10} className="px-4 py-8 text-center text-sm text-gray-500">
                                             Belum ada peserta yang lulus untuk prodi ini.
                                         </td>
                                     </tr>

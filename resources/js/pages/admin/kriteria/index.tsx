@@ -6,6 +6,7 @@ import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import DataTable from '@/components/ui/data-table';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     id: number;
@@ -159,26 +160,16 @@ params.set('tahap_seleksi_id', tahapId);
                 }
             >
                 <div className="mb-4 flex flex-wrap gap-2">
-                    <select
+                    <Select
                         value={prodiId}
                         onChange={(e) => setProdiId(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Prodi</option>
-                        {prodi.map((p) => (
-                            <option key={p.id} value={p.id}>{p.nama_prodi}</option>
-                        ))}
-                    </select>
-                    <select
+                        options={[{ value: '', label: 'Semua Prodi' }, ...prodi.map((p) => ({ value: p.id, label: p.nama_prodi }))]}
+                    />
+                    <Select
                         value={tahapId}
                         onChange={(e) => setTahapId(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Tahap</option>
-                        {tahap.map((t) => (
-                            <option key={t.id} value={t.id}>{t.nama}</option>
-                        ))}
-                    </select>
+                        options={[{ value: '', label: 'Semua Tahap' }, ...tahap.map((t) => ({ value: t.id, label: t.nama }))]}
+                    />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                 </div>
 

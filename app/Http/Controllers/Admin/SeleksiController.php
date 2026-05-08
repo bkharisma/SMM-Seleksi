@@ -135,4 +135,20 @@ class SeleksiController extends Controller
 
         return redirect()->back()->with('error', $result['message']);
     }
+
+    public function bulkRevokeLulus(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:pendaftar,id',
+        ]);
+
+        $result = $this->selectionService->bulkRevokeLulus($validated['ids']);
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
+    }
 }

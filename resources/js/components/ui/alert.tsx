@@ -5,10 +5,10 @@ interface AlertProps {
 }
 
 const styles = {
-    success: 'bg-green-50 text-green-800 border-green-200',
-    error: 'bg-red-50 text-red-800 border-red-200',
-    warning: 'bg-yellow-50 text-yellow-800 border-yellow-200',
-    info: 'bg-sky-50 text-sky-800 border-sky-200',
+    success: 'bg-green-50 text-green-900 border-green-200',
+    error: 'bg-error-container text-on-error-container border-error',
+    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200',
+    info: 'bg-sky-50 text-sky-900 border-sky-200',
 };
 
 export default function Alert({ type = 'info', message, onClose }: AlertProps) {

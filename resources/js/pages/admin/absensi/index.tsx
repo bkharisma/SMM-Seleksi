@@ -6,6 +6,7 @@ import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
 import Card from '@/components/ui/card';
+import Select from '@/components/ui/select';
 
 interface Ruang {
     id: number;
@@ -118,18 +119,18 @@ export default function AbsensiIndex({ absensi, filters, ruang }: AbsensiIndexPr
                         type="date"
                         value={tanggal}
                         onChange={(e) => setTanggal(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     />
-                    <select
+                    <Select
                         value={jenis}
                         onChange={(e) => setJenis(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Jenis</option>
-                        <option value="psikotes">Psikotes</option>
-                        <option value="wawancara">Wawancara</option>
-                        <option value="kesehatan">Kesehatan</option>
-                    </select>
+                        options={[
+                            { value: '', label: 'Semua Jenis' },
+                            { value: 'psikotes', label: 'Psikotes' },
+                            { value: 'wawancara', label: 'Wawancara' },
+                            { value: 'kesehatan', label: 'Kesehatan' }
+                        ]}
+                    />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                 </div>
 

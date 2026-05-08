@@ -146,9 +146,9 @@ interface Props {
     pendaftar: PendaftarDetail;
 }
 
-const itemStyle = 'flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0';
-const labelStyle = 'text-sm font-medium text-gray-500 dark:text-gray-400';
-const valueStyle = 'text-sm text-gray-900 dark:text-white text-right max-w-[60%]';
+const itemStyle = 'flex items-center justify-between py-2 border-b border-outline-variant last:border-0';
+const labelStyle = 'text-sm font-medium text-on-surface-container';
+const valueStyle = 'text-sm text-on-background text-right max-w-[60%]';
 
 function DetailItem({ label, value, className = '' }: { label: string; value: React.ReactNode; className?: string }) {
     return (
@@ -160,7 +160,7 @@ function DetailItem({ label, value, className = '' }: { label: string; value: Re
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-    return <h4 className="mb-2 mt-4 text-base font-semibold text-gray-800 dark:text-gray-200 first:mt-0">{children}</h4>;
+    return <h4 className="mb-2 mt-4 text-base font-semibold text-on-background first:mt-0">{children}</h4>;
 }
 
 export default function PendaftarShow({ pendaftar }: Props) {
@@ -269,7 +269,7 @@ return '-';
                     )}
                     <DetailItem label="Akun User" value={pendaftar.user?.username || '-'} />
                     {pendaftar.lulus_prodi && (
-                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                        <div className="mt-4 pt-3 border-t border-outline-variant">
                             <Button
                                 variant="danger"
                                 size="sm"
@@ -340,11 +340,11 @@ return '-';
 
                             return (
                                 <div key={nilai.id} className="mb-4 last:mb-0">
-                                    <h5 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    <h5 className="mb-2 text-sm font-semibold text-on-surface">
                                         {ujianName}
                                         {nilai.type && <span className="ml-2"><Badge variant="info">{nilai.type}</Badge></span>}
                                     </h5>
-                                    <div className="rounded-lg border border-gray-200 p-3 dark:border-gray-600">
+                                    <div className="rounded-lg border border-outline-variant p-3">
                                         <DetailItem label="NUP" value={nilai.nup || '-'} />
                                         <DetailItem label="No. Seleksi" value={nilai.nus || '-'} />
                                         {allFields.map((field: string) => {

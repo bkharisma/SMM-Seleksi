@@ -162,7 +162,7 @@ export default function RuangIndex({ ruang, ruangSummary, showSummary, filters }
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                 placeholder="Cari ruang..."
-                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background placeholder:text-on-surface-container/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                             />
                             <Button onClick={handleSearch} size="sm">Cari</Button>
                         </div>

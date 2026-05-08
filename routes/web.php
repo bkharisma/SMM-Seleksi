@@ -189,6 +189,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::get('/seleksi/rekap/{prodi}/export', [SeleksiController::class, 'rekapDetailExport'])->name('seleksi.rekap.detail.export');
     Route::get('/seleksi/rekap/{prodi}', [SeleksiController::class, 'rekapDetail'])->name('seleksi.rekap.detail');
     Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
+    Route::delete('/seleksi/bulk-revoke', [SeleksiController::class, 'bulkRevokeLulus'])->name('seleksi.bulk-revoke');
     Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
 
     // Pembobotan

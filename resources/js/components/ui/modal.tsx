@@ -36,12 +36,12 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
                     isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
                 }`}
             >
-                <div className="relative rounded-xl bg-white shadow-xl dark:bg-gray-800">
-                    <div className="flex items-center justify-between border-b px-6 py-4 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+                <div className="relative rounded-xl bg-surface-container-lowest shadow">
+                    <div className="flex items-center justify-between border-b px-6 py-4 border-outline-variant">
+                        <h3 className="text-lg font-semibold text-on-background">{title}</h3>
                         <button
                             onClick={handleClose}
-                            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+                            className="rounded-lg p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

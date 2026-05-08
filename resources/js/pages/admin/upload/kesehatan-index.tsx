@@ -6,6 +6,8 @@ import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
 import Card from '@/components/ui/card';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     nama_prodi: string;
@@ -112,25 +114,24 @@ export default function KesehatanIndex({ kesehatan, filters }: KesehatanIndexPro
 
             <Card title="Daftar Kesehatan">
                 <div className="mb-4 flex flex-wrap gap-2">
-                    <input
+                    <Input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder="Cari nama, NUP, no ujian..."
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     />
-                    <select
+                    <Select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                    >
-                        <option value="">Semua Status</option>
-                        <option value="Belum Diperiksa">Belum Diperiksa</option>
-                        <option value="Lengkap">Lengkap</option>
-                        <option value="Tidak Lengkap">Tidak Lengkap</option>
-                        <option value="Perbaikan">Perbaikan</option>
-                    </select>
+                        options={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'Belum Diperiksa', label: 'Belum Diperiksa' },
+                            { value: 'Lengkap', label: 'Lengkap' },
+                            { value: 'Tidak Lengkap', label: 'Tidak Lengkap' },
+                            { value: 'Perbaikan', label: 'Perbaikan' }
+                        ]}
+                    />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
                     <Link href="/admin/upload/kesehatan/export">
                         <Button variant="secondary" size="sm">Export Excel</Button>

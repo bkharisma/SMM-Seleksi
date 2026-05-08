@@ -135,7 +135,7 @@ export default function Settings({ settings }: SettingsProps) {
                         />
                     </div>
                     <div>
-                        <label htmlFor="alamat_ptp" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label htmlFor="alamat_ptp" className="mb-1 block text-sm font-medium text-on-surface-container">
                             Alamat PTP
                         </label>
                         <textarea
@@ -143,12 +143,12 @@ export default function Settings({ settings }: SettingsProps) {
                             value={data.alamat_ptp}
                             onChange={(e) => setData('alamat_ptp', e.target.value)}
                             rows={3}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         />
-                        {errors.alamat_ptp && <p className="mt-1 text-sm text-red-600">{errors.alamat_ptp}</p>}
+                        {errors.alamat_ptp && <p className="mt-1 text-sm text-error">{errors.alamat_ptp}</p>}
                     </div>
                     <div>
-                        <label htmlFor="pengumuman_url" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label htmlFor="pengumuman_url" className="mb-1 block text-sm font-medium text-on-surface-container">
                             URL Pengumuman
                         </label>
                         <input
@@ -156,7 +156,7 @@ export default function Settings({ settings }: SettingsProps) {
                             type="url"
                             value={data.pengumuman_url}
                             onChange={(e) => setData('pengumuman_url', e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         />
                         {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
                     </div>
