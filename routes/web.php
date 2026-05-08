@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ProdiController;
 use App\Http\Controllers\Admin\ReferensiController as AdminReferensiController;
 use App\Http\Controllers\Admin\RuangController;
 use App\Http\Controllers\Admin\SeleksiController;
+use App\Http\Controllers\Admin\SeleksiPindahProdiController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\Admin\SurveyController;
 use App\Http\Controllers\Admin\TahapSeleksiController;
@@ -191,6 +192,10 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
     Route::delete('/seleksi/bulk-revoke', [SeleksiController::class, 'bulkRevokeLulus'])->name('seleksi.bulk-revoke');
     Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
+
+    // Seleksi Pindah Prodi
+    Route::get('/seleksi-pindah-prodi', [SeleksiPindahProdiController::class, 'index'])->name('seleksi-pindah-prodi.index');
+    Route::post('/seleksi-pindah-prodi/save', [SeleksiPindahProdiController::class, 'saveKeputusan'])->name('seleksi-pindah-prodi.save');
 
     // Pembobotan
     Route::get('/pembobotan', [PembobotanController::class, 'index'])->name('pembobotan.index');

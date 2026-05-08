@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\JalurPendaftaran;
 use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
 use App\Models\Prodi;
@@ -25,11 +26,15 @@ class SelectionService
             ->first();
     }
 
-    public function getPesertaForSelection(int $tahapId, ?int $prodiId = null, ?int $pilihan = null): Collection
+    public function getPesertaForSelection(int $tahapId, ?int $prodiId = null, ?int $pilihan = null, ?int $jalurId = null): Collection
     {
-        $query = Pendaftar::with(['nilai', 'pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'lulusProdi'])
+        $query = Pendaftar::with(['nilai', 'pil1Prodi', 'pil2Prodi', 'pil3Prodi', 'lulusProdi', 'jalur'])
             ->whereNotNull('noujian')
             ->whereNull('lulus');
+
+        if ($jalurId) {
+            $query->where('jalur_id', $jalurId);
+        }
 
         if ($prodiId) {
             $pilihanCol = $pilihan ? 'pil'.$pilihan : null;
@@ -58,6 +63,7 @@ class SelectionService
             'reasons' => [],
             'scores' => [],
             'total_skor' => 0,
+            'is_referensi' => (bool) $peserta->is_referensi,
         ];
 
         $useWeighted = $peserta->nilai_akhir !== null;
@@ -79,7 +85,7 @@ class SelectionService
                 }
             }
 
-            $result['total_skor'] = ($useWeighted ? (float) $peserta->nilai_akhir : $result['total_skor']) + 99999;
+            $result['total_skor'] = ($useWeighted ? (float) $peserta->nilai_akhir : $result['total_skor']) + 32;
 
             return $result;
         }
@@ -109,7 +115,7 @@ class SelectionService
         return $result;
     }
 
-    public function previewSelection(int $tahapId, int $prodiId, ?int $pilihan = null): array
+    public function previewSelection(int $tahapId, int $prodiId, ?int $pilihan = null, ?int $jalurId = null): array
     {
         $tahap = TahapSeleksi::with('kriteriaKelulusan.prodi')->find($tahapId);
         if (! $tahap) {
@@ -122,67 +128,86 @@ class SelectionService
         }
 
         $prodi = Prodi::find($prodiId);
-        $kuota = $prodi?->kuota_smm;
+        $kuotaTotal = $prodi?->kuota_smm;
 
-        $pesertaList = $this->getPesertaForSelection($tahapId, $prodiId, $pilihan);
+        $sudahLulus = Pendaftar::where('lulus', $prodiId)->count();
+        $sisaKuota = $kuotaTotal ? max(0, $kuotaTotal - $sudahLulus) : null;
 
-        $results = [];
-        $memenuhiKriteria = [];
-        $tidakMemenuhi = [];
+        $kuota = $sisaKuota;
+
+        $pesertaList = $this->getPesertaForSelection($tahapId, $prodiId, $pilihan, $jalurId);
+
+        $eligible = [];
+        $ineligible = [];
 
         foreach ($pesertaList as $peserta) {
             $eval = $this->evaluatePeserta($peserta, $kriteria, $pilihan);
 
-            if ($eval['lulus']) {
-                $memenuhiKriteria[] = $eval;
+            if ($eval['is_referensi'] || $eval['lulus']) {
+                $eligible[] = $eval;
             } else {
-                $tidakMemenuhi[] = $eval;
+                $eval['lulus'] = false;
+                $ineligible[] = $eval;
             }
         }
 
-        if ($kuota && $kuota > 0) {
-            usort($memenuhiKriteria, fn ($a, $b) => $b['total_skor'] <=> $a['total_skor']);
+        usort($eligible, fn ($a, $b) => $b['total_skor'] <=> $a['total_skor']);
 
-            $rank = 1;
-            foreach ($memenuhiKriteria as &$item) {
-                $item['peringkat'] = $rank;
+        $rank = 1;
+        foreach ($eligible as &$item) {
+            $item['peringkat'] = $rank;
 
-                if ($rank > $kuota) {
+            if ($kuota && $kuota > 0) {
+                if ($rank <= $kuota) {
+                    $item['lulus'] = true;
+                } else {
                     $item['lulus'] = false;
                     $item['reasons'][] = "Melebihi kuota (kuota: {$kuota}, peringkat: {$rank})";
                 }
-
-                $rank++;
-            }
-            unset($item);
-        } elseif ($kuota !== null && $kuota <= 0) {
-            foreach ($memenuhiKriteria as &$item) {
+            } elseif ($kuota !== null && $kuota <= 0) {
                 $item['lulus'] = false;
                 $item['reasons'][] = 'Kuota belum ditentukan';
+            } else {
+                $item['lulus'] = true;
             }
-            unset($item);
+
+            $rank++;
         }
+        unset($item);
 
-        $results = array_merge($memenuhiKriteria, $tidakMemenuhi);
+        foreach ($ineligible as &$item) {
+            $item['peringkat'] = null;
+        }
+        unset($item);
 
-        usort($results, fn ($a, $b) => $b['total_skor'] <=> $a['total_skor']);
+        $results = array_merge($eligible, $ineligible);
+
+        usort($results, function ($a, $b) {
+            if ($a['lulus'] !== $b['lulus']) {
+                return $a['lulus'] ? -1 : 1;
+            }
+            return $b['total_skor'] <=> $a['total_skor'];
+        });
 
         $lulusCount = count(array_filter($results, fn ($r) => $r['lulus']));
+        $sisaKuota = $kuota ? max(0, $kuota - $lulusCount) : null;
 
         return [
             'tahap' => $tahap,
             'prodi' => $prodi,
             'kriteria' => $kriteria,
             'pilihan' => $pilihan,
+            'jalur_id' => $jalurId,
             'total' => count($results),
             'lulus' => $lulusCount,
             'tidak_lulus' => count($results) - $lulusCount,
-            'kuota' => $kuota,
+            'kuota' => $kuotaTotal,
+            'sisa_kuota' => $sisaKuota,
             'results' => $results,
         ];
     }
 
-    public function saveSelection(int $tahapId, int $prodiId, array $selectedNup, ?int $pilihan = null): array
+    public function saveSelection(int $tahapId, int $prodiId, array $selectedNup, ?int $pilihan = null, ?int $jalurId = null): array
     {
         $kriteria = $this->getKriteriaForProdiTahap($prodiId, $tahapId);
         if (! $kriteria) {
@@ -217,6 +242,7 @@ class SelectionService
                             'tahap_id' => $tahapId,
                             'prodi_id' => $prodiId,
                             'pilihan' => $pilihan,
+                            'jalur_id' => $jalurId,
                             'scores' => $eval['scores'],
                             'total_skor' => $eval['total_skor'],
                         ]),
@@ -383,7 +409,8 @@ class SelectionService
             ->map(function ($p) {
                 $paramLulus = is_string($p->param_lulus) ? json_decode($p->param_lulus, true) : $p->param_lulus;
                 $totalSkor = $paramLulus['total_skor'] ?? 0;
-                $pilLabel = $paramLulus['pilihan'] ? "Pilihan {$paramLulus['pilihan']}" : '-';
+                $isPindahProdi = isset($paramLulus['pindah_prodi']) && $paramLulus['pindah_prodi'] === true;
+                $pilLabel = isset($paramLulus['pilihan']) ? "Pilihan {$paramLulus['pilihan']}" : '-';
 
                 return [
                     'id' => $p->id,
@@ -396,6 +423,7 @@ class SelectionService
                     'status' => 'Lulus',
                     'lulus_prodi' => $p->lulusProdi?->kode_prodi,
                     'is_referensi' => (bool) $p->is_referensi,
+                    'is_pindah_prodi' => $isPindahProdi,
                 ];
             });
 

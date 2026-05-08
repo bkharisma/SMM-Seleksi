@@ -17,6 +17,9 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
         'psi_bobot' => ['label' => 'Psikotes', 'type' => 'float'],
         'bing_nil' => ['label' => 'Literasi Bahasa Inggris', 'type' => 'float'],
         'waw_nil' => ['label' => 'Wawancara', 'type' => 'float'],
+        'waw_bersedia_pindah' => ['label' => 'Bersedia Pindah Prodi', 'type' => 'bool'],
+        'waw_rekomendasi_prodi_id' => ['label' => 'Rekomendasi Prodi', 'type' => 'int'],
+        'waw_catatan' => ['label' => 'Catatan Wawancara', 'type' => 'string'],
         'kes_hasil' => ['label' => 'Tes Kesehatan', 'type' => 'bool'],
         'kes_tb' => ['label' => 'Tinggi Badan', 'type' => 'float'],
         'kes_bw' => ['label' => 'Buta Warna', 'type' => 'bool'],
@@ -121,6 +124,7 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
                 'int' => $this->toInt($value),
                 'float' => $this->toFloat($value),
                 'bool' => $this->toBool($value),
+                'string' => $this->toString($value),
                 default => $value,
             };
         }
@@ -145,6 +149,15 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
         }
 
         return in_array(strtolower((string) $value), ['1', 'true', 'yes', 'y']);
+    }
+
+    protected function toString($value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (string) $value;
     }
 
     public function getRowCount(): int

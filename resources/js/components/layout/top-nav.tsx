@@ -61,6 +61,7 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
             { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
             { href: '/admin/nilai', label: 'Nilai Ujian', icon: 'emoji_events' },
             { href: '/admin/seleksi', label: 'Seleksi', icon: 'check_circle' },
+            { href: '/admin/seleksi-pindah-prodi', label: 'Seleksi Pindah Prodi', icon: 'swap_horiz' },
             { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
             { href: '/admin/referensi', label: 'Referensi', icon: 'info' },
             { href: '/admin/absensi', label: 'Absensi', icon: 'content_paste' },

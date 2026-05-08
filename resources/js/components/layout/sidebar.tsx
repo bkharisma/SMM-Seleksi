@@ -32,6 +32,7 @@ const menuItems = [
     { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
     { href: '/admin/nilai', label: 'Nilai Ujian', icon: 'grade' },
     { href: '/admin/seleksi', label: 'Seleksi', icon: 'fact_check' },
+    { href: '/admin/seleksi-pindah-prodi', label: 'Seleksi Pindah Prodi', icon: 'swap_horiz' },
     { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
     { href: '/admin/absensi', label: 'Absensi', icon: 'assignment_turned_in' },
     { href: '/admin/pembayaran/bsi', label: 'Pembayaran BSI', icon: 'payments' },

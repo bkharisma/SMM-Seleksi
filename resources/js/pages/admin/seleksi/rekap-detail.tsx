@@ -24,6 +24,7 @@ interface PesertaLulus {
     status: string;
     lulus_prodi: string | null;
     is_referensi: boolean;
+    is_pindah_prodi: boolean;
 }
 
 interface Statistik {
@@ -322,13 +323,23 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">{p.noujian || '-'}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">{p.pilihan}</td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">{p.tahap_lulus || '-'}</td>
-                                            <td className="whitespace-nowrap px-4 py-2 text-center text-sm font-semibold">{p.total_skor}</td>
+                                            <td className="whitespace-nowrap px-4 py-2 text-center text-sm font-semibold">
+                                                {p.total_skor}
+                                                {p.is_referensi && <Star className="inline h-4 w-4 text-amber-500 ml-1" />}
+                                            </td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">
                                                 <span className="inline-block rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">{p.status}</span>
                                             </td>
                                             <td className="whitespace-nowrap px-4 py-2 text-sm">
                                                 {p.lulus_prodi || '-'}
                                                 {p.is_referensi && <Star className="inline h-4 w-4 text-amber-500 ml-1" />}
+                                                {p.is_pindah_prodi && (
+                                                    <span className="inline-flex items-center ml-1" title="Lulus di luar prodi pilihan">
+                                                        <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                                        </svg>
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="whitespace-nowrap px-4 py-2 text-center text-sm">
                                                 <button

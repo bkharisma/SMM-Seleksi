@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\KelulusanDetailExport;
 use App\Exports\KelulusanRekapExport;
 use App\Http\Controllers\Controller;
+use App\Models\JalurPendaftaran;
 use App\Models\Pendaftar;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
@@ -27,12 +28,14 @@ class SeleksiController extends Controller
     public function index(Request $request): Response
     {
         $tahap = TahapSeleksi::active()->orderBy('urutan')->get();
+        $jalur = JalurPendaftaran::active()->get(['id', 'kode_jalur', 'nama_jalur']);
         $prodi = Prodi::active()->get(['id', 'nama_prodi', 'kode_prodi', 'kuota_smm']);
 
         return Inertia::render('admin/seleksi/index', [
             'tahap' => $tahap,
+            'jalur' => $jalur,
             'prodi' => $prodi,
-            'filters' => $request->only(['tahap_id', 'prodi_id', 'pilihan']),
+            'filters' => $request->only(['tahap_id', 'jalur_id', 'prodi_id', 'pilihan']),
         ]);
     }
 
@@ -40,6 +43,7 @@ class SeleksiController extends Controller
     {
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
+            'jalur_id' => 'required|exists:jalur_pendaftaran,id',
             'prodi_id' => 'required|exists:prodi,id',
             'pilihan' => 'nullable|integer|min:1|max:3',
         ]);
@@ -47,17 +51,20 @@ class SeleksiController extends Controller
         $result = $this->selectionService->previewSelection(
             (int) $validated['tahap_id'],
             (int) $validated['prodi_id'],
-            $validated['pilihan'] ?? null
+            $validated['pilihan'] ?? null,
+            (int) $validated['jalur_id']
         );
 
         $tahap = TahapSeleksi::active()->orderBy('urutan')->get();
+        $jalur = JalurPendaftaran::active()->get(['id', 'kode_jalur', 'nama_jalur']);
         $prodi = Prodi::active()->get(['id', 'nama_prodi', 'kode_prodi', 'kuota_smm']);
 
         return Inertia::render('admin/seleksi/preview', [
             'tahap' => $tahap,
+            'jalur' => $jalur,
             'prodi' => $prodi,
             'preview' => $result,
-            'filters' => $request->only(['tahap_id', 'prodi_id', 'pilihan']),
+            'filters' => $request->only(['tahap_id', 'jalur_id', 'prodi_id', 'pilihan']),
         ]);
     }
 
@@ -65,6 +72,7 @@ class SeleksiController extends Controller
     {
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
+            'jalur_id' => 'required|exists:jalur_pendaftaran,id',
             'prodi_id' => 'required|exists:prodi,id',
             'pilihan' => 'nullable|integer|min:1|max:3',
             'selected_nup' => 'required|array|min:1',
@@ -75,7 +83,8 @@ class SeleksiController extends Controller
             (int) $validated['tahap_id'],
             (int) $validated['prodi_id'],
             $validated['selected_nup'],
-            $validated['pilihan'] ?? null
+            $validated['pilihan'] ?? null,
+            (int) $validated['jalur_id']
         );
 
         if ($result['success']) {
