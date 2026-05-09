@@ -57,23 +57,29 @@ class DokumenController extends Controller
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
+        $parameters = [];
+
+        if ($pendaftar->pil1) {
+            $kriteria = KriteriaKelulusan::where('prodi_id', $pendaftar->pil1)
+                ->whereHas('kriteriaUjian', function ($q) {
+                    $q->where('jenis', 'kesehatan');
+                })
+                ->with('kriteriaUjian')
+                ->first();
+
+            if ($kriteria) {
+                foreach ($kriteria->kriteriaUjian as $ku) {
+                    if ($ku->jenis === 'kesehatan' && $ku->parameters) {
+                        $parameters = array_merge($parameters, $ku->parameters);
+                    }
+                }
+            }
+        }
+
         $rules = [
             'namalbg' => 'nullable|string|max:100',
             'lokasi' => 'nullable|string|max:100',
-            'tb' => 'nullable|numeric',
-            'bb' => 'nullable|numeric',
-            'tensi' => 'nullable|string|max:20',
-            'nadi' => 'nullable|string|max:20',
-            'tato' => 'nullable|string|max:20',
-            'tindik' => 'nullable|integer',
-            'bw' => 'nullable|string|max:50',
-            'strab' => 'nullable|integer',
-            'pupil' => 'nullable|string|max:50',
-            'paru' => 'nullable|string|max:50',
-            'sco' => 'nullable|string|max:50',
         ];
-
-        $parameters = $request->input('parameters', []);
 
         foreach ($parameters as $param) {
             $key = 'param_' . $param['nama'];
@@ -94,17 +100,6 @@ class DokumenController extends Controller
             'noujian' => $pendaftar->noujian,
             'namalbg' => $validated['namalbg'] ?? null,
             'lokasi' => $validated['lokasi'] ?? null,
-            'tb' => $validated['tb'] ?? null,
-            'bb' => $validated['bb'] ?? null,
-            'tensi' => $validated['tensi'] ?? null,
-            'nadi' => $validated['nadi'] ?? null,
-            'tato' => $validated['tato'] ?? null,
-            'tindik' => $validated['tindik'] ?? null,
-            'bw' => $validated['bw'] ?? null,
-            'strab' => $validated['strab'] ?? null,
-            'pupil' => $validated['pupil'] ?? null,
-            'paru' => $validated['paru'] ?? null,
-            'sco' => $validated['sco'] ?? null,
         ];
 
         $dynamicParams = [];
@@ -116,7 +111,7 @@ class DokumenController extends Controller
         }
 
         if (! empty($dynamicParams)) {
-            $dataToSave['param_kesehatan'] = json_encode($dynamicParams);
+            $dataToSave['param_kesehatan'] = $dynamicParams;
         }
 
         $dataToSave['status'] = 'Belum Diperiksa';

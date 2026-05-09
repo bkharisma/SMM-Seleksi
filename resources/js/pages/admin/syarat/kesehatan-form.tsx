@@ -99,10 +99,6 @@ export default function SyaratKesehatanForm({ kesehatan }: KesehatanFormProps) {
     const healthFields = [
         { label: 'Lembaga', value: kesehatan.namalbg },
         { label: 'Lokasi', value: kesehatan.lokasi },
-        { label: 'TB (cm)', value: kesehatan.tb },
-        { label: 'BB (kg)', value: kesehatan.bb },
-        { label: 'Tensi', value: kesehatan.tensi },
-        { label: 'Nadi', value: kesehatan.nadi },
     ];
 
     const dynamicParams = kesehatan.param_kesehatan ? Object.entries(kesehatan.param_kesehatan) : [];

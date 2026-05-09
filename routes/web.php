@@ -235,7 +235,9 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('member')->name('member.')
     Route::get('/kartu-peserta', [MemberProfileController::class, 'kartuPeserta'])->name('kartu-peserta');
 
     // Upload Dokumen
-    Route::get('/upload/kesehatan', [MemberDokumenController::class, 'kesehatan'])->name('upload.kesehatan');
+    Route::get('/upload/kesehatan', function () {
+        return redirect()->route('member.dashboard');
+    });
     Route::post('/upload/kesehatan', [MemberDokumenController::class, 'storeKesehatan'])->name('upload.kesehatan.store');
     Route::post('/upload/kesehatan/file', [MemberDokumenController::class, 'uploadKesehatanFile'])->name('upload.kesehatan.file');
     Route::delete('/upload/kesehatan/file/{file}', [MemberDokumenController::class, 'deleteKesehatanFile'])->name('upload.kesehatan.file.delete');

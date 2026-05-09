@@ -17,9 +17,7 @@ interface FileKesehatan {
 interface Kesehatan {
     id: number;
     namalbg: string | null;
-    tb: number | null;
-    bb: number | null;
-    bw: string | null;
+    param_kesehatan: Record<string, any> | null;
     status: string;
     catatan: string | null;
 }
@@ -91,14 +89,12 @@ export default function PesertaDetail({ pendaftar }: PesertaDetailProps) {
                                 <span className="text-gray-500">Lembaga</span>
                                 <span className="font-medium">{pendaftar.kesehatan.namalbg || '-'}</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">TB/BB</span>
-                                <span className="font-medium">{pendaftar.kesehatan.tb ?? '-'}/{pendaftar.kesehatan.bb ?? '-'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Buta Warna</span>
-                                <span className="font-medium">{pendaftar.kesehatan.bw || '-'}</span>
-                            </div>
+                            {pendaftar.kesehatan.param_kesehatan && Object.entries(pendaftar.kesehatan.param_kesehatan).map(([key, value]) => (
+                                <div key={key} className="flex justify-between">
+                                    <span className="text-gray-500">{key}</span>
+                                    <span className="font-medium">{value ?? '-'}</span>
+                                </div>
+                            ))}
                         </div>
                         {pendaftar.kesehatan.catatan && (
                             <div className="rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">

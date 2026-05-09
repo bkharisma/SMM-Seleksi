@@ -7,6 +7,7 @@ use App\Models\KriteriaKelulusan;
 use App\Models\Prodi;
 use App\Models\TahapSeleksi;
 use App\Models\Ujian;
+use App\Traits\HasNilaiFields;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class KriteriaKelulusanController extends Controller
     public function create(): Response
     {
         $tahap = TahapSeleksi::where('active', true)->orderBy('urutan')->get(['id', 'nama', 'urutan']);
-        $ujian = Ujian::where('active', true)->get(['id', 'nama', 'kode', 'tahap_seleksi_id']);
+        $ujian = Ujian::where('active', true)->get(['id', 'nama', 'kode', 'tahap_seleksi_id', 'fields_config']);
 
         return Inertia::render('admin/kriteria/form', [
             'kriteria' => null,
@@ -48,6 +49,7 @@ class KriteriaKelulusanController extends Controller
             'prodi' => Prodi::where('active', true)->get(['id', 'nama_prodi', 'kode_prodi']),
             'tahap' => $tahap,
             'ujian' => $ujian,
+            'health_fields' => $this->getHealthFields(),
         ]);
     }
 
@@ -94,14 +96,32 @@ class KriteriaKelulusanController extends Controller
         $kriteria->load('kriteriaUjian.ujian');
 
         $tahap = TahapSeleksi::where('active', true)->orderBy('urutan')->get(['id', 'nama', 'urutan']);
-        $ujian = Ujian::where('active', true)->get(['id', 'nama', 'kode', 'tahap_seleksi_id']);
+        $ujian = Ujian::where('active', true)->get(['id', 'nama', 'kode', 'tahap_seleksi_id', 'fields_config']);
+
+        $kriteriaUjianData = $kriteria->kriteriaUjian->map(function ($ku) {
+            return [
+                'id' => $ku->id,
+                'ujian_id' => $ku->ujian_id,
+                'jenis' => $ku->jenis,
+                'nilai_standar' => $ku->nilai_standar,
+                'parameters' => is_array($ku->parameters) ? $ku->parameters : [],
+                'ujian' => $ku->ujian ? [
+                    'id' => $ku->ujian->id,
+                    'nama' => $ku->ujian->nama,
+                    'kode' => $ku->ujian->kode,
+                    'tahap_seleksi_id' => $ku->ujian->tahap_seleksi_id,
+                    'fields_config' => $ku->ujian->fields_config,
+                ] : null,
+            ];
+        });
 
         return Inertia::render('admin/kriteria/form', [
             'kriteria' => $kriteria,
-            'kriteriaUjian' => $kriteria->kriteriaUjian,
+            'kriteriaUjian' => $kriteriaUjianData,
             'prodi' => Prodi::where('active', true)->get(['id', 'nama_prodi', 'kode_prodi']),
             'tahap' => $tahap,
             'ujian' => $ujian,
+            'health_fields' => $this->getHealthFields(),
         ]);
     }
 
@@ -150,6 +170,24 @@ class KriteriaKelulusanController extends Controller
         $kriteria->delete();
 
         return redirect()->back()->with('success', 'Kriteria berhasil dihapus.');
+    }
+
+    private function getHealthFields(): array
+    {
+        $reflection = new \ReflectionClass(HasNilaiFields::class);
+        $fieldMeta = $reflection->getConstant('FIELD_META');
+
+        $healthFields = collect($fieldMeta)
+            ->filter(fn ($meta, $key) => str_starts_with($key, 'kes_'))
+            ->map(fn ($meta, $key) => [
+                'key' => $key,
+                'label' => $meta['label'],
+                'type' => $meta['type'] === 'bool' ? 'boolean' : ($meta['type'] === 'float' ? 'number' : 'string'),
+            ])
+            ->values()
+            ->toArray();
+
+        return $healthFields;
     }
 
     private function validateUjianIds(Request $request): void

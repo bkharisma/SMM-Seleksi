@@ -24,6 +24,13 @@ interface UjianData {
     nama: string;
     kode: string;
     tahap_seleksi_id: number | null;
+    fields_config?: Record<string, any>;
+}
+
+interface HealthField {
+    key: string;
+    label: string;
+    type: 'boolean' | 'number' | 'string';
 }
 
 interface KriteriaUjianItem {
@@ -31,7 +38,7 @@ interface KriteriaUjianItem {
     ujian_id: number;
     jenis: 'tes' | 'berkas' | 'kesehatan';
     nilai_standar: string;
-    parameters: ParameterItem[];
+    parameters: ParameterItem[] | null;
     ujian?: UjianData;
 }
 
@@ -39,6 +46,8 @@ interface ParameterItem {
     nama: string;
     tipe_value: 'number' | 'string' | 'boolean';
     nilai: string;
+    field_key?: string;
+    enabled?: boolean;
 }
 
 interface Kriteria {
@@ -56,23 +65,52 @@ interface KriteriaFormProps {
     prodi: Prodi[];
     tahap: Tahap[];
     ujian: UjianData[];
+    health_fields: HealthField[];
 }
 
-export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, ujian }: KriteriaFormProps) {
+export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, ujian, health_fields = [] }: KriteriaFormProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
     const isEdit = !!kriteria;
+
+    const initHealthParameters = (ku: any): ParameterItem[] => {
+        const fieldsConfig = ku.ujian?.fields_config?.fields || [];
+        const existingParams = ku.parameters || [];
+
+        if (!health_fields || health_fields.length === 0) {
+            return [];
+        }
+
+        return health_fields
+            .filter((hf) => fieldsConfig.includes(hf.key))
+            .map((hf) => {
+                const existing = existingParams.find((p: ParameterItem) => p.field_key === hf.key);
+                return {
+                    nama: hf.label,
+                    tipe_value: hf.type,
+                    nilai: existing ? existing.nilai : (hf.type === 'boolean' ? 'Tidak' : ''),
+                    field_key: hf.key,
+                    enabled: existing ? true : false,
+                };
+            });
+    };
 
     const existingKuMap = useMemo(() => {
         const map: Record<number, KriteriaUjianItem> = {};
 
         if (kriteriaUjian && kriteriaUjian.length > 0) {
             kriteriaUjian.forEach((ku) => {
+                let params: ParameterItem[] = [];
+                if (ku.jenis === 'kesehatan') {
+                    params = initHealthParameters(ku);
+                } else {
+                    params = Array.isArray(ku.parameters) ? ku.parameters : [];
+                }
                 map[ku.ujian_id] = {
                     ujian_id: ku.ujian_id,
                     jenis: ku.jenis,
                     nilai_standar: ku.nilai_standar?.toString() || '',
-                    parameters: ku.parameters || [],
+                    parameters: params,
                     ujian: ku.ujian,
                 };
             });
@@ -81,24 +119,28 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
         return map;
     }, [kriteriaUjian]);
 
-    const initialKu = useMemo(() => {
+    const buildInitialKu = (tahapId: number, existingMap: Record<number, KriteriaUjianItem>): KriteriaUjianItem[] => {
         const initial: KriteriaUjianItem[] = [];
-
-        if (kriteria?.tahap_seleksi_id) {
-            const tahapUjian = ujian.filter((u) => u.tahap_seleksi_id === kriteria.tahap_seleksi_id);
-            tahapUjian.forEach((u) => {
-                const existing = existingKuMap[u.id];
-                initial.push({
-                    ujian_id: u.id,
-                    jenis: existing?.jenis || 'tes',
-                    nilai_standar: existing?.nilai_standar || '',
-                    parameters: existing?.parameters || [],
-                    ujian: u,
-                });
+        const tahapUjian = ujian.filter((u) => u.tahap_seleksi_id === tahapId);
+        tahapUjian.forEach((u) => {
+            const existing = existingMap[u.id];
+            const params = existing?.parameters ? [...existing.parameters] : [];
+            initial.push({
+                ujian_id: u.id,
+                jenis: existing?.jenis || 'tes',
+                nilai_standar: existing?.nilai_standar || '',
+                parameters: params,
+                ujian: u,
             });
-        }
-
+        });
         return initial;
+    };
+
+    const initialKu = useMemo(() => {
+        if (kriteria?.tahap_seleksi_id) {
+            return buildInitialKu(kriteria.tahap_seleksi_id, existingKuMap);
+        }
+        return [];
     }, [kriteria, ujian, existingKuMap]);
 
     const { data, setData, post, put, processing, errors } = useForm({
@@ -119,41 +161,66 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const sanitized = (data.kriteria_ujian as any[]).map((ku: any) => ({
-            ujian_id: ku.ujian_id,
-            jenis: ku.jenis,
-            nilai_standar: ku.jenis === 'tes' ? (ku.nilai_standar || null) : null,
-            parameters: (ku.jenis === 'berkas' || ku.jenis === 'kesehatan') ? ku.parameters : null,
-        }));
-        setData('kriteria_ujian', sanitized as any);
+        const sanitized = (data.kriteria_ujian as any[]).map((ku: any) => {
+            let params = null;
+
+            if (ku.jenis === 'kesehatan') {
+                const healthParams = ku.parameters || [];
+                params = healthParams
+                    .filter((p: ParameterItem) => p.enabled)
+                    .map((p: ParameterItem) => ({
+                        nama: p.nama,
+                        tipe_value: p.tipe_value,
+                        nilai: p.nilai,
+                        field_key: p.field_key,
+                    }));
+                if (params.length === 0) {
+                    params = null;
+                }
+            } else if (ku.jenis === 'berkas') {
+                params = ku.parameters;
+            }
+
+            return {
+                ujian_id: ku.ujian_id,
+                jenis: ku.jenis,
+                nilai_standar: ku.jenis === 'tes' ? (ku.nilai_standar || null) : null,
+                parameters: params,
+            };
+        });
+
+        const submitData = {
+            prodi_id: data.prodi_id,
+            tahap_seleksi_id: data.tahap_seleksi_id,
+            ordering: data.ordering,
+            filter_pilihan: data.filter_pilihan,
+            active: data.active,
+            kriteria_ujian: sanitized,
+        };
 
         if (isEdit) {
-            put(`/admin/kriteria/${kriteria!.id}`);
+            put(`/admin/kriteria/${kriteria!.id}`, submitData as any);
         } else {
-            post('/admin/kriteria');
+            post('/admin/kriteria', submitData as any);
         }
     };
 
     const handleTahapChange = (tahapId: string) => {
         setData('tahap_seleksi_id', tahapId);
-        const tahapUjian = ujian.filter((u) => u.tahap_seleksi_id === parseInt(tahapId));
-        const newKu = tahapUjian.map((u) => {
-            const existing = existingKuMap[u.id];
-
-            return {
-                ujian_id: u.id,
-                jenis: existing?.jenis || 'tes',
-                nilai_standar: existing?.nilai_standar || '',
-                parameters: existing?.parameters || [],
-                ujian: u,
-            };
-        });
+        const newKu = buildInitialKu(parseInt(tahapId), existingKuMap);
         setData('kriteria_ujian', newKu as any);
     };
 
     const updateKuField = (index: number, field: string, value: any) => {
         const updated = [...(data.kriteria_ujian as any[])];
         updated[index] = { ...updated[index], [field]: value };
+
+        if (field === 'jenis' && value === 'kesehatan') {
+            updated[index].parameters = initHealthParameters(updated[index]);
+        } else if (field === 'jenis' && value !== 'kesehatan') {
+            updated[index].parameters = [];
+        }
+
         setData('kriteria_ujian', updated as any);
     };
 
@@ -334,72 +401,75 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
                                             </div>
                                         )}
 
-                                        {ku.jenis === 'kesehatan' && (
+                                        {ku.jenis === 'kesehatan' && ku.parameters && ku.parameters.length > 0 && (
                                             <div className="mt-3 space-y-3">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        Parameter Penilaian
-                                                    </span>
-                                                    <Button
-                                                        type="button"
-                                                        size="sm"
-                                                        variant="secondary"
-                                                        onClick={() => addParameter(kuIndex)}
-                                                    >
-                                                        + Tambah Parameter
-                                                    </Button>
-                                                </div>
-                                                {(ku.parameters || []).map((param: ParameterItem, pIndex: number) => (
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Parameter Penilaian
+                                                </span>
+                                                {ku.parameters.map((param: ParameterItem, pIndex: number) => (
                                                     <div
-                                                        key={pIndex}
-                                                        className="grid gap-3 rounded border border-gray-100 p-3 dark:border-gray-600 md:grid-cols-[1fr_120px_1fr_40px]"
+                                                        key={param.field_key || pIndex}
+                                                        className="grid gap-3 rounded border border-gray-100 p-3 dark:border-gray-600 md:grid-cols-[40px_1fr_120px]"
                                                     >
-                                                        <Input
-                                                            id={`ku_${kuIndex}_param_nama_${pIndex}`}
-                                                            label="Syarat"
-                                                            value={param.nama}
-                                                            onChange={(e) =>
-                                                                updateParameter(kuIndex, pIndex, 'nama', e.target.value)
-                                                            }
-                                                            placeholder="Nama syarat"
-                                                        />
-                                                        <Select
-                                                            id={`ku_${kuIndex}_param_tipe_${pIndex}`}
-                                                            label="Tipe"
-                                                            value={param.tipe_value}
-                                                            onChange={(e) =>
-                                                                updateParameter(kuIndex, pIndex, 'tipe_value', e.target.value)
-                                                            }
-                                                            options={[
-                                                                { value: 'number', label: 'Number' },
-                                                                { value: 'string', label: 'String' },
-                                                                { value: 'boolean', label: 'Boolean' },
-                                                            ]}
-                                                        />
-                                                        <Input
-                                                            id={`ku_${kuIndex}_param_nilai_${pIndex}`}
-                                                            label="Nilai"
-                                                            value={param.nilai}
-                                                            onChange={(e) =>
-                                                                updateParameter(kuIndex, pIndex, 'nilai', e.target.value)
-                                                            }
-                                                        />
-                                                        <div className="flex items-end pb-1">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeParameter(kuIndex, pIndex)}
-                                                                className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
-                                                            >
-                                                                ✕
-                                                            </button>
+                                                        <div className="flex items-end pb-2">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={param.enabled || false}
+                                                                onChange={(e) =>
+                                                                    updateParameter(kuIndex, pIndex, 'enabled', e.target.checked)
+                                                                }
+                                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
                                                         </div>
+                                                        <div className="flex items-end pb-2">
+                                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                {param.nama}
+                                                            </span>
+                                                        </div>
+                                                        {param.tipe_value === 'boolean' ? (
+                                                            <Select
+                                                                id={`ku_${kuIndex}_param_nilai_${pIndex}`}
+                                                                label="Nilai"
+                                                                value={param.nilai || 'Tidak'}
+                                                                onChange={(e) =>
+                                                                    updateParameter(kuIndex, pIndex, 'nilai', e.target.value)
+                                                                }
+                                                                options={[
+                                                                    { value: 'Tidak', label: 'Tidak' },
+                                                                    { value: 'Ya', label: 'Ya' },
+                                                                ]}
+                                                            />
+                                                        ) : param.tipe_value === 'number' ? (
+                                                            <Input
+                                                                id={`ku_${kuIndex}_param_nilai_${pIndex}`}
+                                                                label="Nilai"
+                                                                type="number"
+                                                                value={param.nilai || ''}
+                                                                onChange={(e) =>
+                                                                    updateParameter(kuIndex, pIndex, 'nilai', e.target.value)
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <Input
+                                                                id={`ku_${kuIndex}_param_nilai_${pIndex}`}
+                                                                label="Nilai"
+                                                                type="text"
+                                                                value={param.nilai || ''}
+                                                                onChange={(e) =>
+                                                                    updateParameter(kuIndex, pIndex, 'nilai', e.target.value)
+                                                                }
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
-                                                {(!ku.parameters || ku.parameters.length === 0) && (
-                                                    <p className="text-sm text-gray-400">
-                                                        Belum ada parameter. Klik "Tambah Parameter" untuk menambahkan.
-                                                    </p>
-                                                )}
+                                            </div>
+                                        )}
+
+                                        {ku.jenis === 'kesehatan' && (!ku.parameters || ku.parameters.length === 0) && (
+                                            <div className="mt-3">
+                                                <p className="text-sm text-gray-400">
+                                                    Tidak ada field kesehatan yang dikonfigurasi untuk ujian ini.
+                                                </p>
                                             </div>
                                         )}
                                     </div>

@@ -71,17 +71,6 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
     const { data, setData, post, processing, errors } = useForm({
         namalbg: kesehatan?.namalbg || '',
         lokasi: kesehatan?.lokasi || '',
-        tb: kesehatan?.tb?.toString() || '',
-        bb: kesehatan?.bb?.toString() || '',
-        tensi: kesehatan?.tensi || '',
-        nadi: kesehatan?.nadi || '',
-        tato: kesehatan?.tato || '',
-        tindik: kesehatan?.tindik?.toString() || '',
-        bw: kesehatan?.bw || '',
-        strab: kesehatan?.strab?.toString() || '',
-        pupil: kesehatan?.pupil || '',
-        paru: kesehatan?.paru || '',
-        sco: kesehatan?.sco || '',
         ...parameters.reduce((acc, param) => {
             const key = `param_${param.nama}`;
             const existingValue = paramData[param.nama];
@@ -241,44 +230,6 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                     onChange={(e) => setData('lokasi', e.target.value)}
                                     error={errors.lokasi}
                                 />
-                            </div>
-
-                            <div className="border-t pt-4">
-                                <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Fisik</h3>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <Input
-                                        id="tb"
-                                        label="TB (cm)"
-                                        type="number"
-                                        value={data.tb}
-                                        onChange={(e) => setData('tb', e.target.value)}
-                                    />
-                                    <Input
-                                        id="bb"
-                                        label="BB (kg)"
-                                        type="number"
-                                        value={data.bb}
-                                        onChange={(e) => setData('bb', e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="border-t pt-4">
-                                <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Vital Sign</h3>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <Input
-                                        id="tensi"
-                                        label="Tensi"
-                                        value={data.tensi}
-                                        onChange={(e) => setData('tensi', e.target.value)}
-                                    />
-                                    <Input
-                                        id="nadi"
-                                        label="Nadi"
-                                        value={data.nadi}
-                                        onChange={(e) => setData('nadi', e.target.value)}
-                                    />
-                                </div>
                             </div>
 
                             {parameters.length > 0 && (

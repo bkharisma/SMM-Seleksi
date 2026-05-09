@@ -107,6 +107,7 @@ class DashboardController extends Controller
         $activeDashboardType = $dashboardUploadSyarat == 1 ? 'upload_syarat' : 'lengkap';
 
         $kesehatanData = null;
+        $parameters = [];
 
         if ($peserta) {
             if ($peserta->kesehatan) {
@@ -121,6 +122,23 @@ class DashboardController extends Controller
                         ];
                     })->toArray(),
                 ];
+            }
+
+            if ($peserta->pil1) {
+                $kriteria = KriteriaKelulusan::where('prodi_id', $peserta->pil1)
+                    ->whereHas('kriteriaUjian', function ($q) {
+                        $q->where('jenis', 'kesehatan');
+                    })
+                    ->with('kriteriaUjian')
+                    ->first();
+
+                if ($kriteria) {
+                    foreach ($kriteria->kriteriaUjian as $ku) {
+                        if ($ku->jenis === 'kesehatan' && $ku->parameters) {
+                            $parameters = array_merge($parameters, $ku->parameters);
+                        }
+                    }
+                }
             }
         }
 
@@ -171,7 +189,10 @@ class DashboardController extends Controller
                 'lulus_tahap_1_prodi' => $lulusTahap1Prodi,
                 'is_finalized' => $isFinalized,
             ] : null,
-            'kesehatan' => $kesehatanData,
+            'kesehatan' => $peserta ? array_merge($kesehatanData ?? [], [
+                'full' => $peserta->kesehatan,
+                'parameters' => $parameters,
+            ]) : null,
             'profile_completeness' => $profileCompleteness,
             'profile_fields' => $profileFields,
             'details_per_tahap' => $detailsPerTahap,
