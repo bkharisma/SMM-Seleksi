@@ -114,6 +114,8 @@ class DashboardController extends Controller
                 $kesehatanData = [
                     'status' => $peserta->kesehatan->status,
                     'catatan' => $peserta->kesehatan->catatan,
+                    'finalized' => $peserta->kesehatan->finalized,
+                    'finalized_at' => $peserta->kesehatan->finalized_at,
                     'files' => $peserta->fileKesehatan->map(function ($f) {
                         return [
                             'id' => $f->id,

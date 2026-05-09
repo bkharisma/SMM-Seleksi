@@ -123,7 +123,17 @@ class PendaftarUploadController extends Controller
             'catatan' => 'nullable|string|max:500',
         ]);
 
-        $kesehatan->update($validated);
+        $updateData = [
+            'status' => $validated['status'],
+            'catatan' => $validated['status'] === 'Lengkap' ? null : ($validated['catatan'] ?? $kesehatan->catatan),
+        ];
+
+        if (in_array($validated['status'], ['Tidak Lengkap', 'Perbaikan'])) {
+            $updateData['finalized'] = false;
+            $updateData['finalized_at'] = null;
+        }
+
+        $kesehatan->update($updateData);
 
         return redirect()->back()->with('success', 'Status kesehatan berhasil diperbarui.');
     }

@@ -28,6 +28,8 @@ interface Kesehatan {
     param_kesehatan: Record<string, any> | null;
     status: string;
     catatan: string | null;
+    finalized: boolean;
+    finalized_at: string | null;
 }
 
 interface FileKesehatan {
@@ -62,6 +64,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const paramData: Record<string, any> = {};
+
     if (kesehatan?.param_kesehatan) {
         Object.entries(kesehatan.param_kesehatan).forEach(([key, value]) => {
             paramData[key] = value;
@@ -74,6 +77,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
         ...parameters.reduce((acc, param) => {
             const key = `param_${param.nama}`;
             const existingValue = paramData[param.nama];
+
             if (existingValue !== undefined) {
                 acc[key] = param.tipe_value === 'boolean' ? (existingValue ? '1' : '0') : existingValue.toString();
             } else if (param.tipe_value === 'boolean') {
@@ -81,6 +85,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
             } else {
                 acc[key] = '';
             }
+
             return acc;
         }, {} as Record<string, string>),
     });
@@ -129,6 +134,14 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
         });
     };
 
+    const handleFinalize = () => {
+        if (confirm('Apakah Anda yakin ingin memfinalisasi data kesehatan? Setelah difinalisasi, data dan dokumen tidak dapat diubah atau dihapus lagi.')) {
+            router.post('/member/upload/kesehatan/finalize', {}, {
+                preserveScroll: true,
+            });
+        }
+    };
+
     if (!peserta.noujian) {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -171,9 +184,14 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
 
                 {kesehatan && (
                     <div className="mb-4">
-                        <Badge variant={statusColors[kesehatan.status] || 'info'}>
-                            Status: {kesehatan.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                            <Badge variant={statusColors[kesehatan.status] || 'info'}>
+                                Status: {kesehatan.status}
+                            </Badge>
+                            {kesehatan.finalized && (
+                                <Badge variant="success">Finalized</Badge>
+                            )}
+                        </div>
                         {kesehatan.catatan && (kesehatan.status === 'Tidak Lengkap' || kesehatan.status === 'Perbaikan') && (
                             <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
                                 <p className="text-sm font-medium text-red-700 dark:text-red-300">Catatan Admin:</p>
@@ -214,6 +232,11 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
 
                 {activeTab === 'input' && (
                     <Card title="Input Data Kesehatan">
+                        {kesehatan?.finalized && (
+                            <div className="mb-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+                                <p className="text-sm text-blue-700 dark:text-blue-300">Data sudah difinalisasi dan tidak dapat diubah.</p>
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid gap-6 md:grid-cols-2">
                                 <Input
@@ -222,6 +245,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                     value={data.namalbg}
                                     onChange={(e) => setData('namalbg', e.target.value)}
                                     error={errors.namalbg}
+                                    disabled={kesehatan?.finalized}
                                 />
                                 <Input
                                     id="lokasi"
@@ -229,6 +253,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                     value={data.lokasi}
                                     onChange={(e) => setData('lokasi', e.target.value)}
                                     error={errors.lokasi}
+                                    disabled={kesehatan?.finalized}
                                 />
                             </div>
 
@@ -249,7 +274,8 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                         <select
                                                             value={data[key] || '0'}
                                                             onChange={(e) => setData(key, e.target.value)}
-                                                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                                            disabled={kesehatan?.finalized}
                                                         >
                                                             <option value="1">Ya</option>
                                                             <option value="0">Tidak</option>
@@ -274,6 +300,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                     onChange={(e) => setData(key, e.target.value)}
                                                     error={errors[errorKey]}
                                                     placeholder={param.nilai ? `Standar: ${param.nilai}` : undefined}
+                                                    disabled={kesehatan?.finalized}
                                                 />
                                             );
                                         })}
@@ -282,7 +309,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                             )}
 
                             <div className="flex justify-end">
-                                <Button type="submit" isLoading={processing}>Simpan Data</Button>
+                                <Button type="submit" isLoading={processing} disabled={kesehatan?.finalized}>Simpan Data</Button>
                             </div>
                         </form>
                     </Card>
@@ -290,18 +317,25 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
 
                 {activeTab === 'upload' && (
                     <Card title="Upload File Kesehatan">
+                        {kesehatan?.finalized && (
+                            <div className="mb-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+                                <p className="text-sm text-blue-700 dark:text-blue-300">Dokumen sudah difinalisasi dan tidak dapat dihapus.</p>
+                            </div>
+                        )}
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
                                 <input
                                     ref={fileInputRef}
                                     type="file"
-                                    accept=".pdf,.jpeg,.png,.jpg"
+                                    accept=".pdf"
                                     onChange={handleFileChange}
                                     className="hidden"
+                                    disabled={kesehatan?.finalized}
                                 />
                                 <Button
                                     variant="secondary"
                                     onClick={() => fileInputRef.current?.click()}
+                                    disabled={kesehatan?.finalized}
                                 >
                                     Pilih File
                                 </Button>
@@ -310,13 +344,13 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                         <span className="text-sm text-gray-600 dark:text-gray-400">
                                             {fileData.file.name}
                                         </span>
-                                        <Button onClick={handleUploadFile} isLoading={fileProcessing} size="sm">
+                                        <Button onClick={handleUploadFile} isLoading={fileProcessing} size="sm" disabled={kesehatan?.finalized}>
                                             Upload
                                         </Button>
                                     </>
                                 )}
                             </div>
-                            <p className="text-xs text-gray-500">Format: PDF, JPG, PNG. Maks: 5MB</p>
+                            <p className="text-xs text-gray-500">Format: PDF. Maks: 5MB</p>
 
                             {files.length > 0 && (
                                 <div className="mt-4">
@@ -332,19 +366,32 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                 >
                                                     {file.file_lockes.split('/').pop()}
                                                 </a>
-                                                <button
-                                                    onClick={() => {
-                                                        if (confirm('Hapus file ini?')) {
-                                                            router.delete(`/member/upload/kesehatan/file/${file.id}`);
-                                                        }
-                                                    }}
-                                                    className="text-sm text-red-600 hover:text-red-800"
-                                                >
-                                                    Hapus
-                                                </button>
+                                                {!kesehatan?.finalized && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (confirm('Hapus file ini?')) {
+                                                                router.delete(`/member/upload/kesehatan/file/${file.id}`);
+                                                            }
+                                                        }}
+                                                        className="text-sm text-red-600 hover:text-red-800"
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+                            )}
+
+                            {!kesehatan?.finalized && files.length > 0 && (
+                                <div className="mt-6 border-t pt-4">
+                                    <Button onClick={handleFinalize} variant="primary">
+                                        Finalisasi Dokumen
+                                    </Button>
+                                    <p className="mt-2 text-xs text-gray-500">
+                                        Setelah finalisasi, dokumen tidak dapat dihapus atau diubah lagi.
+                                    </p>
                                 </div>
                             )}
                         </div>

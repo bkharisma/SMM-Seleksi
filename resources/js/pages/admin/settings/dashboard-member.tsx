@@ -36,6 +36,7 @@ export default function DashboardMemberSettings({ settings }: DashboardMemberSet
 
     const handleDashboardLengkapToggle = (checked: boolean) => {
         setData('dashboard_lengkap', checked ? '1' : '0');
+
         if (checked) {
             setData('dashboard_upload_syarat', '0');
         }
@@ -43,6 +44,7 @@ export default function DashboardMemberSettings({ settings }: DashboardMemberSet
 
     const handleDashboardUploadSyaratToggle = (checked: boolean) => {
         setData('dashboard_upload_syarat', checked ? '1' : '0');
+
         if (checked) {
             setData('dashboard_lengkap', '0');
         }

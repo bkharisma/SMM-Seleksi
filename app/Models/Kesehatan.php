@@ -18,11 +18,14 @@ class Kesehatan extends Model
         'tensi', 'nadi', 'tato', 'tindik', 'bw', 'strab', 'pupil',
         'paru', 'sco', 'mop', 'amp', 'thc', 'kehamilan', 'status', 'catatan',
         'verifikasi_terakhir', 'diverifikasi_oleh_id', 'param_kesehatan',
+        'finalized', 'finalized_at',
     ];
 
     protected $casts = [
         'verifikasi_terakhir' => 'datetime',
         'param_kesehatan' => 'array',
+        'finalized' => 'boolean',
+        'finalized_at' => 'datetime',
     ];
 
     public function pendaftar()

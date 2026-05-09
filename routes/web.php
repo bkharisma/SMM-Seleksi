@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Admin\JalurPendaftaranController;
+use App\Http\Controllers\Admin\KelulusanRekapController;
 use App\Http\Controllers\Admin\KriteriaKelulusanController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\NilaiUjianController;
@@ -133,6 +134,13 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/syarat/kesehatan/{kesehatan}/status', [VerifikasiController::class, 'updateKesehatanStatus'])->name('syarat.kesehatan.status');
     Route::get('/syarat/peserta/{pendaftar}', [VerifikasiController::class, 'showPesertaDetail'])->name('syarat.peserta');
 
+    // Rekap Kelulusan (Syarat)
+    Route::get('/syarat/rekap', [KelulusanRekapController::class, 'index'])->name('syarat.rekap');
+    Route::get('/syarat/rekap/{prodi}', [KelulusanRekapController::class, 'detail'])->name('syarat.rekap.detail');
+    Route::get('/syarat/rekap/{prodi}/export', [KelulusanRekapController::class, 'exportTahap2Detail'])->name('syarat.rekap.export');
+    Route::post('/syarat/rekap/finalisasi', [KelulusanRekapController::class, 'finalisasi'])->name('syarat.rekap.finalisasi');
+    Route::post('/syarat/rekap/revert-finalisasi', [KelulusanRekapController::class, 'revertFinalisasi'])->name('syarat.rekap.revert-finalisasi');
+
     // Jalur Pendaftaran
     Route::resource('jalur-pendaftaran', JalurPendaftaranController::class)->except(['show']);
     Route::patch('/jalur-pendaftaran/{jalur}/toggle-status', [JalurPendaftaranController::class, 'toggleStatus'])->name('jalur-pendaftaran.toggle-status');
@@ -241,6 +249,7 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('member')->name('member.')
     Route::post('/upload/kesehatan', [MemberDokumenController::class, 'storeKesehatan'])->name('upload.kesehatan.store');
     Route::post('/upload/kesehatan/file', [MemberDokumenController::class, 'uploadKesehatanFile'])->name('upload.kesehatan.file');
     Route::delete('/upload/kesehatan/file/{file}', [MemberDokumenController::class, 'deleteKesehatanFile'])->name('upload.kesehatan.file.delete');
+    Route::post('/upload/kesehatan/finalize', [MemberDokumenController::class, 'finalizeKesehatan'])->name('upload.kesehatan.finalize');
 });
 
 // API routes (public)

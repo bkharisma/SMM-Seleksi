@@ -50,6 +50,7 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
         icon: 'description',
         items: [
             { href: '/admin/syarat', label: 'Verifikasi Syarat', icon: 'fact_check' },
+            { href: '/admin/syarat/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
         ],
     },
     {

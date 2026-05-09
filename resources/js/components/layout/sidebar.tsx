@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -25,7 +26,10 @@ const menuItems = [
     { href: '/admin/peminat', label: 'Peminat', icon: 'group' },
     { href: '/admin/peserta', label: 'Peserta', icon: 'badge' },
     { label: 'Syarat', divider: true },
-    { href: '/admin/syarat', label: 'Verifikasi Syarat', icon: 'fact_check' },
+    { href: '/admin/syarat', label: 'Verifikasi Syarat Kelulusan', icon: 'fact_check', children: [
+        { href: '/admin/syarat', label: 'Verifikasi Syarat', icon: 'fact_check' },
+        { href: '/admin/syarat/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
+    ]},
     { href: '/admin/syarat/kesehatan', label: 'Kesehatan', icon: 'favorite' },
     { label: 'Seleksi', divider: true },
     { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'tune' },
@@ -43,6 +47,19 @@ const menuItems = [
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const { url } = usePage() as any;
+    const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+
+    const toggleMenu = (href: string) => {
+        const newExpanded = new Set(expandedMenus);
+
+        if (newExpanded.has(href)) {
+            newExpanded.delete(href);
+        } else {
+            newExpanded.add(href);
+        }
+
+        setExpandedMenus(newExpanded);
+    };
 
     return (
         <>
@@ -80,7 +97,56 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             );
                         }
 
-                        const isActive = url.startsWith((item as any).href);
+                        const hasChildren = 'children' in item && item.children;
+                        const isActive = hasChildren
+                            ? (item.children as any[]).some((child: any) => url.startsWith(child.href))
+                            : url.startsWith((item as any).href);
+                        const isExpanded = hasChildren && expandedMenus.has((item as any).href);
+
+                        if (hasChildren) {
+                            return (
+                                <div key={(item as any).href}>
+                                    <button
+                                        onClick={() => toggleMenu((item as any).href)}
+                                        className={`flex w-full items-center justify-between gap-xs rounded-lg px-sm py-2 text-label-md transition-colors ${
+                                            isActive
+                                                ? 'bg-primary-container text-on-primary-container font-bold'
+                                                : 'text-on-surface-variant hover:bg-surface-variant'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-xs">
+                                            <span className="material-symbols-outlined text-lg">{(item as any).icon}</span>
+                                            {(item as any).label}
+                                        </div>
+                                        <span className="material-symbols-outlined text-lg">
+                                            {isExpanded ? 'expand_less' : 'expand_more'}
+                                        </span>
+                                    </button>
+                                    {isExpanded && (
+                                        <div className="ml-lg mt-1 space-y-1">
+                                            {(item.children as any[]).map((child: any) => {
+                                                const isChildActive = url.startsWith(child.href);
+
+                                                return (
+                                                    <Link
+                                                        key={child.href}
+                                                        href={child.href}
+                                                        className={`flex items-center gap-xs rounded-lg px-sm py-2 text-label-sm transition-colors ${
+                                                            isChildActive
+                                                                ? 'bg-primary-container/50 text-on-primary-container font-semibold'
+                                                                : 'text-on-surface-variant hover:bg-surface-variant'
+                                                        }`}
+                                                    >
+                                                        <span className="material-symbols-outlined text-base">{child.icon}</span>
+                                                        {child.label}
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
 
                         return (
                             <Link

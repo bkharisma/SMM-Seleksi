@@ -15,19 +15,25 @@ class VerifikasiController extends Controller
 {
     public function index(Request $request): Response
     {
+        $totalLulus = Pendaftar::whereNotNull('lulus')->count();
+
         $kesehatanCount = Kesehatan::selectRaw('status, COUNT(*) as count')
+            ->whereHas('pendaftar', function ($q) {
+                $q->whereNotNull('lulus');
+            })
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        $totalKesehatan = Kesehatan::count();
+        $belumUpload = Pendaftar::whereNotNull('lulus')
+            ->whereDoesntHave('kesehatan')
+            ->count();
 
-        $query = Kesehatan::with(['pendaftar' => function ($q) {
-            $q->with(['pil1Prodi', 'lulusProdi']);
-        }, 'diverifikasiOleh']);
+        $query = Pendaftar::whereNotNull('lulus')
+            ->with(['pil1Prodi', 'lulusProdi', 'kesehatan', 'kesehatan.diverifikasiOleh']);
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('pendaftar', function ($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
                     ->orWhere('kode_pendaftar', 'like', "%{$search}%")
                     ->orWhere('noujian', 'like', "%{$search}%");
@@ -35,24 +41,46 @@ class VerifikasiController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('kesehatan.status', $request->status);
+            if ($request->status === 'Belum Upload') {
+                $query->whereDoesntHave('kesehatan');
+            } else {
+                $query->whereHas('kesehatan', function ($q) use ($request) {
+                    $q->where('status', $request->status);
+                });
+            }
         }
 
         $sort = $request->get('sort', 'id');
         $order = $request->get('order', 'desc');
-        $query->orderBy($sort, $order);
 
-        $kesehatan = $query->paginate(15)->withQueryString();
+        if ($sort === 'status') {
+            $query->leftJoin('kesehatan', 'pendaftar.id', '=', 'kesehatan.pendaftar_id')
+                ->orderByRaw('COALESCE(kesehatan.status, "Belum Upload") ' . $order)
+                ->select('pendaftar.*');
+        } else {
+            $query->orderBy($sort, $order);
+        }
+
+        $peserta = $query->paginate(15)->withQueryString();
+
+        $peserta->getCollection()->transform(function ($item) {
+            $data = $item->toArray();
+            $data['kesehatan_status'] = $item->kesehatan ? $item->kesehatan->status : 'Belum Upload';
+            $data['kesehatan_id'] = $item->kesehatan ? $item->kesehatan->id : null;
+            $data['kesehatan_data'] = $item->kesehatan ? $item->kesehatan->toArray() : null;
+            return $data;
+        });
 
         return Inertia::render('admin/syarat/index', [
             'kesehatan_stats' => [
-                'total' => $totalKesehatan,
+                'total_lulus' => $totalLulus,
+                'belum_upload' => $belumUpload,
                 'belum_diperiksa' => $kesehatanCount['Belum Diperiksa'] ?? 0,
                 'lengkap' => $kesehatanCount['Lengkap'] ?? 0,
                 'tidak_lengkap' => $kesehatanCount['Tidak Lengkap'] ?? 0,
                 'perbaikan' => $kesehatanCount['Perbaikan'] ?? 0,
             ],
-            'kesehatan' => $kesehatan,
+            'kesehatan' => $peserta,
             'filters' => $request->only(['search', 'status']),
         ]);
     }
@@ -75,12 +103,19 @@ class VerifikasiController extends Controller
             'catatan' => 'nullable|string|max:500',
         ]);
 
-        $kesehatan->update([
+        $updateData = [
             'status' => $validated['status'],
-            'catatan' => $validated['catatan'] ?? null,
+            'catatan' => $validated['status'] === 'Lengkap' ? null : ($validated['catatan'] ?? $kesehatan->catatan),
             'verifikasi_terakhir' => now(),
             'diverifikasi_oleh_id' => Auth::id(),
-        ]);
+        ];
+
+        if (in_array($validated['status'], ['Tidak Lengkap', 'Perbaikan'])) {
+            $updateData['finalized'] = false;
+            $updateData['finalized_at'] = null;
+        }
+
+        $kesehatan->update($updateData);
 
         return redirect()->back()->with('success', 'Status kesehatan berhasil diperbarui.');
     }

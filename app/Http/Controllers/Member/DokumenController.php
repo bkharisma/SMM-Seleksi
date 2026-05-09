@@ -57,6 +57,11 @@ class DokumenController extends Controller
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
+        $kesehatan = $pendaftar->kesehatan;
+        if ($kesehatan && $kesehatan->finalized) {
+            return redirect()->back()->with('error', 'Data kesehatan sudah difinalisasi dan tidak dapat diubah.');
+        }
+
         $parameters = [];
 
         if ($pendaftar->pil1) {
@@ -114,7 +119,12 @@ class DokumenController extends Controller
             $dataToSave['param_kesehatan'] = $dynamicParams;
         }
 
-        $dataToSave['status'] = 'Belum Diperiksa';
+        $previousStatus = $kesehatan ? $kesehatan->status : null;
+        if (in_array($previousStatus, ['Tidak Lengkap', 'Perbaikan'])) {
+            $dataToSave['status'] = 'Perbaikan';
+        } else {
+            $dataToSave['status'] = 'Belum Diperiksa';
+        }
 
         $pendaftar->kesehatan()->updateOrCreate([], $dataToSave);
 
@@ -130,8 +140,13 @@ class DokumenController extends Controller
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
+        $kesehatan = $pendaftar->kesehatan;
+        if ($kesehatan && $kesehatan->finalized) {
+            return redirect()->back()->with('error', 'Dokumen sudah difinalisasi dan tidak dapat diubah.');
+        }
+
         $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'file' => 'required|file|mimes:pdf|max:5120',
         ]);
 
         $existingCount = $pendaftar->fileKesehatan()->count();
@@ -145,16 +160,56 @@ class DokumenController extends Controller
             'file_lockes' => $path,
         ]);
 
+        $previousStatus = $kesehatan ? $kesehatan->status : null;
+        if (in_array($previousStatus, ['Tidak Lengkap', 'Perbaikan'])) {
+            $kesehatan->update(['status' => 'Perbaikan']);
+        }
+
         return redirect()->back()->with('success', 'File kesehatan berhasil diupload.');
     }
 
     public function deleteKesehatanFile(FileKesehatan $file): RedirectResponse
     {
+        $user = request()->user();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
+
+        $kesehatan = $pendaftar->kesehatan;
+        if ($kesehatan && $kesehatan->finalized) {
+            return redirect()->back()->with('error', 'Dokumen sudah difinalisasi dan tidak dapat dihapus.');
+        }
+
         if (Storage::disk('public')->exists($file->file_lockes)) {
             Storage::disk('public')->delete($file->file_lockes);
         }
         $file->delete();
 
         return redirect()->back()->with('success', 'File berhasil dihapus.');
+    }
+
+    public function finalizeKesehatan(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
+
+        $kesehatan = $pendaftar->kesehatan;
+
+        if (! $kesehatan) {
+            return redirect()->back()->with('error', 'Data kesehatan belum tersedia.');
+        }
+
+        if ($kesehatan->finalized) {
+            return redirect()->back()->with('error', 'Data kesehatan sudah difinalisasi.');
+        }
+
+        $previousStatus = $kesehatan->status;
+        $newStatus = in_array($previousStatus, ['Tidak Lengkap', 'Perbaikan']) ? 'Perbaikan' : 'Belum Diperiksa';
+
+        $kesehatan->update([
+            'finalized' => true,
+            'finalized_at' => now(),
+            'status' => $newStatus,
+        ]);
+
+        return redirect()->back()->with('success', 'Data kesehatan berhasil difinalisasi.');
     }
 }

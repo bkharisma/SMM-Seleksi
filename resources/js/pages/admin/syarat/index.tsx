@@ -1,11 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
 
@@ -13,26 +13,26 @@ interface Prodi {
     nama_prodi: string;
 }
 
-interface Peserta {
+interface PesertaData {
+    id: number;
     nup: string;
     noujian: string | null;
     nama: string;
     pil1_prodi: Prodi | null;
     lulus_prodi: Prodi | null;
-}
-
-interface Kesehatan {
-    id: number;
-    noujian: string;
-    namalbg: string | null;
-    tb: number | null;
-    bb: number | null;
-    status: string;
-    peserta: Peserta | null;
+    kesehatan_status: string;
+    kesehatan_id: number | null;
+    kesehatan_data: {
+        id: number;
+        noujian: string;
+        namalbg: string | null;
+        tb: number | null;
+        bb: number | null;
+    } | null;
 }
 
 interface PaginatedData {
-    data: Kesehatan[];
+    data: PesertaData[];
     links: { url: string | null; label: string; active: boolean }[];
     from: number;
     to: number;
@@ -43,7 +43,8 @@ interface PaginatedData {
 }
 
 interface SyaratStats {
-    total: number;
+    total_lulus: number;
+    belum_upload: number;
     belum_diperiksa: number;
     lengkap: number;
     tidak_lengkap: number;
@@ -56,11 +57,12 @@ interface SyaratIndexProps {
     filters: { search?: string; status?: string };
 }
 
-const statusColors: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
+const statusColors: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
     'Lengkap': 'success',
     'Tidak Lengkap': 'danger',
     'Perbaikan': 'warning',
     'Belum Diperiksa': 'info',
+    'Belum Upload': 'neutral',
 };
 
 export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: SyaratIndexProps) {
@@ -78,12 +80,33 @@ export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: Sya
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (status) params.set('status', status);
+
+        if (search) {
+params.set('search', search);
+}
+
+        if (status) {
+params.set('status', status);
+}
+
         router.get(`/admin/syarat?${params.toString()}`, {}, { preserveState: true });
     };
 
     const stats = [
+        {
+            label: 'Total Lulus',
+            value: kesehatan_stats.total_lulus,
+            border: 'border-l-blue-400',
+            bg: 'bg-blue-50',
+            text: 'text-blue-600',
+        },
+        {
+            label: 'Belum Upload',
+            value: kesehatan_stats.belum_upload,
+            border: 'border-l-gray-400',
+            bg: 'bg-gray-50',
+            text: 'text-gray-600',
+        },
         {
             label: 'Belum Diperiksa',
             value: kesehatan_stats.belum_diperiksa,
@@ -117,28 +140,32 @@ export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: Sya
     const columns = [
         { key: 'noujian', label: 'No. Ujian', sortable: true },
         {
-            key: 'peserta',
+            key: 'nama',
             label: 'Nama',
-            render: (item: Kesehatan) => item.peserta?.nama || '-',
+            render: (item: PesertaData) => item.nama || '-',
         },
         {
             key: 'lulus_prodi',
             label: 'Lulus Thp-1',
-            render: (item: Kesehatan) => item.peserta?.lulus_prodi?.nama_prodi || '-',
+            render: (item: PesertaData) => item.lulus_prodi?.nama_prodi || '-',
         },
-        { key: 'namalbg', label: 'Lembaga' },
+        {
+            key: 'namalbg',
+            label: 'Lembaga',
+            render: (item: PesertaData) => item.kesehatan_data?.namalbg || '-',
+        },
         {
             key: 'tb_bb',
             label: 'TB/BB',
-            render: (item: Kesehatan) => `${item.tb || '-'} / ${item.bb || '-'}`,
+            render: (item: PesertaData) => `${item.kesehatan_data?.tb || '-'} / ${item.kesehatan_data?.bb || '-'}`,
         },
         {
             key: 'status',
             label: 'Status',
             sortable: true,
-            render: (item: Kesehatan) => (
-                <Badge variant={statusColors[item.status] || 'info'}>
-                    {item.status}
+            render: (item: PesertaData) => (
+                <Badge variant={statusColors[item.kesehatan_status] || 'info'}>
+                    {item.kesehatan_status}
                 </Badge>
             ),
         },
@@ -154,14 +181,9 @@ export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: Sya
                 </div>
             )}
 
-            <Card title="Surat Keterangan Sehat">
+            <Card title="Verifikasi Syarat Kelulusan ">
                 <div className="space-y-4">
-                    <div className="flex items-baseline gap-2 border-b border-gray-200 pb-4 dark:border-gray-700">
-                        <span className="text-4xl font-bold text-gray-900 dark:text-white">{kesehatan_stats.total}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Total Peserta</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
                         {stats.map((stat) => (
                             <div
                                 key={stat.label}
@@ -189,6 +211,7 @@ export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: Sya
                         onChange={(e) => setStatus(e.target.value)}
                         options={[
                             { value: '', label: 'Semua Status' },
+                            { value: 'Belum Upload', label: 'Belum Upload' },
                             { value: 'Belum Diperiksa', label: 'Belum Diperiksa' },
                             { value: 'Lengkap', label: 'Lengkap' },
                             { value: 'Tidak Lengkap', label: 'Tidak Lengkap' },
@@ -202,10 +225,14 @@ export default function SyaratIndex({ kesehatan_stats, kesehatan, filters }: Sya
                     data={kesehatan.data}
                     columns={columns}
                     pagination={kesehatan}
-                    actions={(item: Kesehatan) => (
-                        <Link href={`/admin/syarat/kesehatan/${item.id}`} className="text-sm text-blue-600 hover:text-blue-800">
-                            Verifikasi
-                        </Link>
+                    actions={(item: PesertaData) => (
+                        item.kesehatan_id ? (
+                            <Link href={`/admin/syarat/kesehatan/${item.kesehatan_id}`} className="text-sm text-blue-600 hover:text-blue-800">
+                                Verifikasi
+                            </Link>
+                        ) : (
+                            <span className="text-sm text-gray-400">-</span>
+                        )
                     )}
                 />
             </Card>

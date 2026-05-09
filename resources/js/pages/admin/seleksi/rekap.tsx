@@ -5,8 +5,8 @@ import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
-import Select from '@/components/ui/select';
 import Modal from '@/components/ui/modal';
+import Select from '@/components/ui/select';
 
 interface Prodi {
     id: number;
@@ -66,17 +66,21 @@ export default function SeleksiRekap({ rekap, prodi, is_finalized, filters }: Se
 
     const handleFilter = () => {
         const params = new URLSearchParams();
+
         if (prodiId) {
             params.set('prodi_id', prodiId);
         }
+
         router.get(`/admin/seleksi/rekap?${params.toString()}`, {}, { preserveState: true });
     };
 
     const handleExport = () => {
         const params = new URLSearchParams();
+
         if (prodiId) {
             params.set('prodi_id', prodiId);
         }
+
         window.location.href = `/admin/seleksi/export?${params.toString()}`;
     };
 
@@ -93,11 +97,24 @@ export default function SeleksiRekap({ rekap, prodi, is_finalized, filters }: Se
     };
 
     const getKuotaStatus = (item: RekapProdi) => {
-        if (!item.kuota) return null;
+        if (!item.kuota) {
+return null;
+}
+
         const pct = Math.round((item.total_lulus / item.kuota) * 100);
-        if (pct > 100) return { label: `Overload (${pct}%)`, variant: 'danger' as const };
-        if (pct === 100) return { label: 'Penuh', variant: 'success' as const };
-        if (pct >= 75) return { label: `${pct}%`, variant: 'warning' as const };
+
+        if (pct > 100) {
+return { label: `Overload (${pct}%)`, variant: 'danger' as const };
+}
+
+        if (pct === 100) {
+return { label: 'Penuh', variant: 'success' as const };
+}
+
+        if (pct >= 75) {
+return { label: `${pct}%`, variant: 'warning' as const };
+}
+
         return { label: `${pct}%`, variant: 'danger' as const };
     };
 
@@ -173,6 +190,7 @@ export default function SeleksiRekap({ rekap, prodi, is_finalized, filters }: Se
 
                 {(() => {
                     const overloaded = rekap.rekap_per_prodi.filter((item) => item.kuota && item.total_lulus > item.kuota);
+
                     if (overloaded.length > 0) {
                         return (
                             <Alert
@@ -181,6 +199,7 @@ export default function SeleksiRekap({ rekap, prodi, is_finalized, filters }: Se
                             />
                         );
                     }
+
                     return null;
                 })()}
 
@@ -235,6 +254,7 @@ export default function SeleksiRekap({ rekap, prodi, is_finalized, filters }: Se
                                 {rekap.rekap_per_prodi.map((item) => {
                                     const status = getKuotaStatus(item);
                                     const isOverload = item.kuota && item.total_lulus > item.kuota;
+
                                     return (
                                         <tr
                                             key={item.prodi_id}

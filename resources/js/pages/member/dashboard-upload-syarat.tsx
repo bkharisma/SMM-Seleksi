@@ -34,6 +34,8 @@ interface KesehatanFull {
 interface KesehatanData {
     status: string | null;
     catatan: string | null;
+    finalized: boolean;
+    finalized_at: string | null;
     files: FileKesehatan[];
     full: KesehatanFull | null;
     parameters: Parameter[];
@@ -69,6 +71,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
     parametersRef.current = kesehatan?.parameters || [];
 
     const paramData: Record<string, any> = {};
+
     if (kesehatan?.full?.param_kesehatan) {
         Object.entries(kesehatan.full.param_kesehatan).forEach(([key, value]) => {
             paramData[key] = value;
@@ -81,6 +84,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
         ...(kesehatan?.parameters || []).reduce((acc, param) => {
             const key = `param_${param.nama}`;
             const existingValue = paramData[param.nama];
+
             if (existingValue !== undefined) {
                 acc[key] = param.tipe_value === 'boolean' ? (existingValue ? '1' : '0') : existingValue.toString();
             } else if (param.tipe_value === 'boolean') {
@@ -88,6 +92,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
             } else {
                 acc[key] = '';
             }
+
             return acc;
         }, {} as Record<string, string>),
     });
@@ -136,6 +141,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
             preserveScroll: true,
             onSuccess: () => {
                 setFileData('file', null);
+
                 if (fileInputRef.current) {
                     fileInputRef.current.value = '';
                 }
@@ -146,6 +152,14 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
     const handleDeleteFile = (fileId: number) => {
         if (confirm('Hapus file ini?')) {
             router.delete(`/member/upload/kesehatan/file/${fileId}`, {
+                preserveScroll: true,
+            });
+        }
+    };
+
+    const handleFinalize = () => {
+        if (confirm('Apakah Anda yakin ingin memfinalisasi data kesehatan? Setelah difinalisasi, data dan dokumen tidak dapat diubah atau dihapus lagi.')) {
+            router.post('/member/upload/kesehatan/finalize', {}, {
                 preserveScroll: true,
             });
         }
@@ -270,9 +284,14 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                 <Card title="Data Kesehatan">
                                     {kesehatan && (
                                         <div className="mb-4">
-                                            <Badge variant={getDocStatusVariant(kesehatan.status)}>
-                                                Status: {getDocStatusLabel(kesehatan.status)}
-                                            </Badge>
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant={getDocStatusVariant(kesehatan.status)}>
+                                                    Status: {getDocStatusLabel(kesehatan.status)}
+                                                </Badge>
+                                                {kesehatan.finalized && (
+                                                    <Badge variant="success">Finalized</Badge>
+                                                )}
+                                            </div>
                                             {kesehatan.catatan && (kesehatan.status === 'Tidak Lengkap' || kesehatan.status === 'Perbaikan') && (
                                                 <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
                                                     <p className="text-sm font-medium text-red-700 dark:text-red-300">Catatan Admin:</p>
@@ -295,6 +314,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                 value={data.namalbg}
                                                 onChange={(e) => setData('namalbg', e.target.value)}
                                                 error={errors.namalbg}
+                                                disabled={kesehatan?.finalized}
                                             />
                                             <Input
                                                 id="lokasi"
@@ -302,6 +322,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                 value={data.lokasi}
                                                 onChange={(e) => setData('lokasi', e.target.value)}
                                                 error={errors.lokasi}
+                                                disabled={kesehatan?.finalized}
                                             />
                                         </div>
 
@@ -322,7 +343,8 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                                     <select
                                                                         value={data[key] || '0'}
                                                                         onChange={(e) => setData(key, e.target.value)}
-                                                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                                                        disabled={kesehatan?.finalized}
                                                                     >
                                                                         <option value="1">Ya</option>
                                                                         <option value="0">Tidak</option>
@@ -347,6 +369,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                                 onChange={(e) => setData(key, e.target.value)}
                                                                 error={errors[errorKey]}
                                                                 placeholder={param.nilai ? `Standar: ${param.nilai}` : undefined}
+                                                                disabled={kesehatan?.finalized}
                                                             />
                                                         );
                                                     })}
@@ -355,12 +378,17 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                         )}
 
                                         <div className="flex justify-end">
-                                            <Button type="submit" isLoading={processing}>Simpan Data</Button>
+                                            <Button type="submit" isLoading={processing} disabled={kesehatan?.finalized}>Simpan Data</Button>
                                         </div>
                                     </form>
                                 </Card>
 
                                 <Card title="Upload Dokumen Kesehatan">
+                                    {kesehatan?.finalized && (
+                                        <div className="mb-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+                                            <p className="text-sm text-blue-700 dark:text-blue-300">Dokumen sudah difinalisasi dan tidak dapat dihapus.</p>
+                                        </div>
+                                    )}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-4">
                                             <input
@@ -369,10 +397,12 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                 accept=".pdf,.jpeg,.png,.jpg"
                                                 onChange={handleFileChange}
                                                 className="hidden"
+                                                disabled={kesehatan?.finalized}
                                             />
                                             <Button
                                                 variant="secondary"
                                                 onClick={() => fileInputRef.current?.click()}
+                                                disabled={kesehatan?.finalized}
                                             >
                                                 Pilih File
                                             </Button>
@@ -381,7 +411,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                     <span className="text-sm text-gray-600 dark:text-gray-400">
                                                         {fileData.file.name}
                                                     </span>
-                                                    <Button onClick={handleUploadFile} isLoading={fileProcessing} size="sm">
+                                                    <Button onClick={handleUploadFile} isLoading={fileProcessing} size="sm" disabled={kesehatan?.finalized}>
                                                         Upload
                                                     </Button>
                                                 </>
@@ -403,15 +433,28 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                             >
                                                                 {file.file_lockes.split('/').pop()}
                                                             </a>
-                                                            <button
-                                                                onClick={() => handleDeleteFile(file.id)}
-                                                                className="text-sm text-red-600 hover:text-red-800"
-                                                            >
-                                                                Hapus
-                                                            </button>
+                                                            {!kesehatan?.finalized && (
+                                                                <button
+                                                                    onClick={() => handleDeleteFile(file.id)}
+                                                                    className="text-sm text-red-600 hover:text-red-800"
+                                                                >
+                                                                    Hapus
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ))}
                                                 </div>
+                                            </div>
+                                        )}
+
+                                        {!kesehatan?.finalized && kesehatan?.files && kesehatan.files.length > 0 && (
+                                            <div className="mt-6 border-t pt-4">
+                                                <Button onClick={handleFinalize} variant="primary">
+                                                    Finalisasi Dokumen
+                                                </Button>
+                                                <p className="mt-2 text-xs text-gray-500">
+                                                    Setelah finalisasi, dokumen tidak dapat dihapus atau diubah lagi.
+                                                </p>
                                             </div>
                                         )}
                                     </div>

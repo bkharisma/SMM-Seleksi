@@ -85,6 +85,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
             .filter((hf) => fieldsConfig.includes(hf.key))
             .map((hf) => {
                 const existing = existingParams.find((p: ParameterItem) => p.field_key === hf.key);
+
                 return {
                     nama: hf.label,
                     tipe_value: hf.type,
@@ -101,11 +102,13 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
         if (kriteriaUjian && kriteriaUjian.length > 0) {
             kriteriaUjian.forEach((ku) => {
                 let params: ParameterItem[] = [];
+
                 if (ku.jenis === 'kesehatan') {
                     params = initHealthParameters(ku);
                 } else {
                     params = Array.isArray(ku.parameters) ? ku.parameters : [];
                 }
+
                 map[ku.ujian_id] = {
                     ujian_id: ku.ujian_id,
                     jenis: ku.jenis,
@@ -133,6 +136,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
                 ujian: u,
             });
         });
+
         return initial;
     };
 
@@ -140,6 +144,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
         if (kriteria?.tahap_seleksi_id) {
             return buildInitialKu(kriteria.tahap_seleksi_id, existingKuMap);
         }
+
         return [];
     }, [kriteria, ujian, existingKuMap]);
 
@@ -174,6 +179,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
                         nilai: p.nilai,
                         field_key: p.field_key,
                     }));
+
                 if (params.length === 0) {
                     params = null;
                 }

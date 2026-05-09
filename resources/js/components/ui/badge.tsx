@@ -1,6 +1,6 @@
 interface BadgeProps {
     children: React.ReactNode;
-    variant?: 'default' | 'success' | 'danger' | 'warning' | 'info';
+    variant?: 'default' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
 }
 
 const variants = {
@@ -9,6 +9,7 @@ const variants = {
     danger: 'bg-error-container text-on-error-container',
     warning: 'bg-yellow-100 text-yellow-800',
     info: 'bg-sky-100 text-sky-800',
+    neutral: 'bg-gray-100 text-gray-800',
 };
 
 export default function Badge({ children, variant = 'default' }: BadgeProps) {
