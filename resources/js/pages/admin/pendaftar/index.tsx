@@ -56,9 +56,10 @@ interface Props {
     prodi: { id: number; nama_prodi: string; kode_prodi: string }[];
     ruang: { id: number; nomor_ruang: string }[];
     jalur: { id: number; nama_jalur: string; kode_jalur: string }[];
+    is_finalized: boolean;
 }
 
-export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur }: Props) {
+export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur, is_finalized }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [prodiId, setProdiId] = useState(filters.prodi_id || '');
     const [ruangId, setRuangId] = useState(filters.ruang_id || '');
@@ -131,12 +132,31 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (prodiId) params.set('prodi_id', prodiId);
-        if (ruangId) params.set('ruang_id', ruangId);
-        if (jalurId) params.set('jalur_id', jalurId);
-        if (lulus) params.set('lulus', lulus);
-        if (noujian) params.set('noujian', noujian);
+
+        if (search) {
+params.set('search', search);
+}
+
+        if (prodiId) {
+params.set('prodi_id', prodiId);
+}
+
+        if (ruangId) {
+params.set('ruang_id', ruangId);
+}
+
+        if (jalurId) {
+params.set('jalur_id', jalurId);
+}
+
+        if (lulus) {
+params.set('lulus', lulus);
+}
+
+        if (noujian) {
+params.set('noujian', noujian);
+}
+
         router.get(`/admin/pendaftar?${params.toString()}`, {}, { preserveState: true });
     };
 
@@ -227,10 +247,12 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
         },
         {
             key: 'lulus_prodi',
-            label: 'Lulus',
+            label: 'Lulus Thp-1',
             render: (item: Pendaftar) =>
                 item.lulus_prodi ? (
                     <Badge variant="success">{item.lulus_prodi.kode_prodi || item.lulus_prodi.nama_prodi}</Badge>
+                ) : is_finalized ? (
+                    <Badge variant="danger">Tidak Lulus</Badge>
                 ) : (
                     <Badge variant="info">Belum</Badge>
                 ),
@@ -335,7 +357,8 @@ export default function PendaftarIndex({ pendaftar, filters, prodi, ruang, jalur
                     >
                         <option value="">Semua</option>
                         <option value="lulus">Lulus</option>
-                        <option value="belum">Belum Lulus</option>
+                        <option value="tidak_lulus">Tidak Lulus</option>
+                        <option value="belum">Belum</option>
                     </select>
                 </div>
                 <div>

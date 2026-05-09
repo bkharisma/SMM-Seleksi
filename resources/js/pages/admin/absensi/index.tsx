@@ -1,11 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 import Select from '@/components/ui/select';
 
 interface Ruang {
@@ -58,8 +58,15 @@ export default function AbsensiIndex({ absensi, filters, ruang }: AbsensiIndexPr
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (tanggal) params.set('tanggal', tanggal);
-        if (jenis) params.set('jenis', jenis);
+
+        if (tanggal) {
+params.set('tanggal', tanggal);
+}
+
+        if (jenis) {
+params.set('jenis', jenis);
+}
+
         router.get(`/admin/absensi?${params.toString()}`, {}, { preserveState: true });
     };
 

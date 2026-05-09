@@ -1,11 +1,11 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 
 interface Prodi {
     id: number;
@@ -49,8 +49,15 @@ export default function ProdiIndex({ prodi, filters }: ProdiIndexProps) {
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (jenjang) params.set('jenjang', jenjang);
+
+        if (search) {
+params.set('search', search);
+}
+
+        if (jenjang) {
+params.set('jenjang', jenjang);
+}
+
         router.get(`/admin/prodi?${params.toString()}`, {}, { preserveState: true });
     };
 

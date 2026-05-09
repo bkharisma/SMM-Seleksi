@@ -1,10 +1,10 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
 
 interface EducationLevel {
     code: string;
@@ -38,6 +38,7 @@ export default function EducationForm({ education }: EducationFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (isEdit) {
             put(`/admin/education/${education!.code}`);
         } else {

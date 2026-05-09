@@ -1,12 +1,12 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import { Search, X, CheckCircle, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import Button from '@/components/ui/button';
-import Card from '@/components/ui/card';
 import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
-import { Search, X, CheckCircle, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 
 interface ProdiInfo {
     id: number;
@@ -67,17 +67,23 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
+
+        if (search) {
+params.set('search', search);
+}
+
         router.get(`/admin/seleksi-pindah-prodi?${params.toString()}`, {}, { preserveState: true });
     };
 
     const handleSelectPeserta = (nup: string) => {
         const newSelected = new Set(selectedPeserta);
+
         if (newSelected.has(nup)) {
             newSelected.delete(nup);
         } else {
             newSelected.add(nup);
         }
+
         setSelectedPeserta(newSelected);
     };
 
@@ -91,6 +97,7 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
 
     const handleShowDetail = (p: PesertaData) => {
         setDetailPeserta(p);
+
         if (!prodiTujuan[p.nup] && p.waw_rekomendasi_prodi) {
             setProdiTujuan(prev => ({ ...prev, [p.nup]: p.waw_rekomendasi_prodi!.id }));
         }
@@ -102,8 +109,10 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
 
     const handleSaveSingle = (nup: string) => {
         const prodiId = prodiTujuan[nup];
+
         if (!prodiId) {
             alert('Pilih prodi tujuan terlebih dahulu');
+
             return;
         }
 
@@ -119,7 +128,9 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
     };
 
     const handleBulkSave = () => {
-        if (selectedPeserta.size === 0) return;
+        if (selectedPeserta.size === 0) {
+return;
+}
 
         const selections = Array.from(selectedPeserta).map(nup => ({
             nup,
@@ -128,6 +139,7 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
 
         if (!bulkProdiId) {
             alert('Pilih prodi tujuan terlebih dahulu');
+
             return;
         }
 
@@ -153,6 +165,7 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
     const sortedPeserta = useMemo(() => {
         return [...peserta].sort((a, b) => {
             let comparison = 0;
+
             switch (sortColumn) {
                 case 'nup':
                     comparison = a.nup.localeCompare(b.nup);
@@ -181,6 +194,7 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
                 default:
                     comparison = 0;
             }
+
             return sortDirection === 'asc' ? comparison : -comparison;
         });
     }, [peserta, sortColumn, sortDirection]);
@@ -191,6 +205,7 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
         if (sortColumn !== column) {
             return <ArrowUpDown className="h-3 w-3 opacity-50" />;
         }
+
         return sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />;
     };
 

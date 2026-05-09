@@ -1,11 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 
 interface Prodi {
     id: number;
@@ -72,19 +72,37 @@ export default function PesertaIndex({ peserta, filters, prodi, ruang }: Peserta
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (prodiId) params.set('prodi_id', prodiId);
-        if (ruangId) params.set('ruang_id', ruangId);
-        if (status) params.set('status', status);
-        if (lulus) params.set('lulus', lulus);
+
+        if (search) {
+params.set('search', search);
+}
+
+        if (prodiId) {
+params.set('prodi_id', prodiId);
+}
+
+        if (ruangId) {
+params.set('ruang_id', ruangId);
+}
+
+        if (status) {
+params.set('status', status);
+}
+
+        if (lulus) {
+params.set('lulus', lulus);
+}
+
         router.get(`/admin/peserta?${params.toString()}`, {}, { preserveState: true });
     };
 
     const handleGenerateNoUjian = () => {
         if (selectedIds.length === 0) {
             alert('Pilih peserta terlebih dahulu');
+
             return;
         }
+
         if (confirm(`Generate nomor ujian untuk ${selectedIds.length} peserta?`)) {
             router.post('/admin/peserta/generate-noujian', { peserta_ids: selectedIds });
         }

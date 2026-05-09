@@ -11,10 +11,19 @@ class FileRaport extends Model
 
     protected $table = 'file_raport';
 
-    protected $fillable = ['pendaftar_id', 'file_loc'];
+    protected $fillable = ['pendaftar_id', 'file_loc', 'is_revisi', 'revisi_dari_id'];
+
+    protected $casts = [
+        'is_revisi' => 'boolean',
+    ];
 
     public function pendaftar()
     {
         return $this->belongsTo(Pendaftar::class);
+    }
+
+    public function revisiDari()
+    {
+        return $this->belongsTo(FileRaport::class, 'revisi_dari_id');
     }
 }

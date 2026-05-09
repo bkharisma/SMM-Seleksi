@@ -29,7 +29,7 @@ interface UjianData {
 interface KriteriaUjianItem {
     id?: number;
     ujian_id: number;
-    jenis: 'tes' | 'berkas';
+    jenis: 'tes' | 'berkas' | 'kesehatan';
     nilai_standar: string;
     parameters: ParameterItem[];
     ujian?: UjianData;
@@ -123,7 +123,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
             ujian_id: ku.ujian_id,
             jenis: ku.jenis,
             nilai_standar: ku.jenis === 'tes' ? (ku.nilai_standar || null) : null,
-            parameters: ku.jenis === 'berkas' ? ku.parameters : null,
+            parameters: (ku.jenis === 'berkas' || ku.jenis === 'kesehatan') ? ku.parameters : null,
         }));
         setData('kriteria_ujian', sanitized as any);
 
@@ -247,6 +247,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
                                             options={[
                                                 { value: 'tes', label: 'Ujian Tes / CBT' },
                                                 { value: 'berkas', label: 'Upload Berkas' },
+                                                { value: 'kesehatan', label: 'Cek Kesehatan' },
                                             ]}
                                         />
 
@@ -265,6 +266,75 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
                                         )}
 
                                         {ku.jenis === 'berkas' && (
+                                            <div className="mt-3 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Parameter Penilaian
+                                                    </span>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant="secondary"
+                                                        onClick={() => addParameter(kuIndex)}
+                                                    >
+                                                        + Tambah Parameter
+                                                    </Button>
+                                                </div>
+                                                {(ku.parameters || []).map((param: ParameterItem, pIndex: number) => (
+                                                    <div
+                                                        key={pIndex}
+                                                        className="grid gap-3 rounded border border-gray-100 p-3 dark:border-gray-600 md:grid-cols-[1fr_120px_1fr_40px]"
+                                                    >
+                                                        <Input
+                                                            id={`ku_${kuIndex}_param_nama_${pIndex}`}
+                                                            label="Syarat"
+                                                            value={param.nama}
+                                                            onChange={(e) =>
+                                                                updateParameter(kuIndex, pIndex, 'nama', e.target.value)
+                                                            }
+                                                            placeholder="Nama syarat"
+                                                        />
+                                                        <Select
+                                                            id={`ku_${kuIndex}_param_tipe_${pIndex}`}
+                                                            label="Tipe"
+                                                            value={param.tipe_value}
+                                                            onChange={(e) =>
+                                                                updateParameter(kuIndex, pIndex, 'tipe_value', e.target.value)
+                                                            }
+                                                            options={[
+                                                                { value: 'number', label: 'Number' },
+                                                                { value: 'string', label: 'String' },
+                                                                { value: 'boolean', label: 'Boolean' },
+                                                            ]}
+                                                        />
+                                                        <Input
+                                                            id={`ku_${kuIndex}_param_nilai_${pIndex}`}
+                                                            label="Nilai"
+                                                            value={param.nilai}
+                                                            onChange={(e) =>
+                                                                updateParameter(kuIndex, pIndex, 'nilai', e.target.value)
+                                                            }
+                                                        />
+                                                        <div className="flex items-end pb-1">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeParameter(kuIndex, pIndex)}
+                                                                className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {(!ku.parameters || ku.parameters.length === 0) && (
+                                                    <p className="text-sm text-gray-400">
+                                                        Belum ada parameter. Klik "Tambah Parameter" untuk menambahkan.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {ku.jenis === 'kesehatan' && (
                                             <div className="mt-3 space-y-3">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">

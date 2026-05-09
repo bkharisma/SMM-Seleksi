@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import PortalLayout from '@/components/layout/portal-layout';
-import Card from '@/components/ui/card';
 import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 
 interface VaInfo {
     virtual_account: string;

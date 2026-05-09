@@ -1,10 +1,10 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
 
 interface Periode {
     id: number;
@@ -24,7 +24,10 @@ export default function PeriodeForm({ periode }: PeriodeFormProps) {
     const isEdit = !!periode;
 
     const formatDate = (date: string) => {
-        if (!date) return '';
+        if (!date) {
+return '';
+}
+
         return date.split('T')[0];
     };
 
@@ -44,6 +47,7 @@ export default function PeriodeForm({ periode }: PeriodeFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (isEdit) {
             put(`/admin/periode/${periode!.id}`);
         } else {

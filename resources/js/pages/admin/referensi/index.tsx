@@ -6,10 +6,10 @@ import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
-import Modal from '@/components/ui/modal';
-import Textarea from '@/components/ui/textarea';
 import Input from '@/components/ui/input';
+import Modal from '@/components/ui/modal';
 import Select from '@/components/ui/select';
+import Textarea from '@/components/ui/textarea';
 import { FIELD_LABELS, BOOL_FIELDS } from '@/lib/nilai';
 
 interface ProdiData {
@@ -148,15 +148,18 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
     const handleRowClick = async (id: number) => {
         if (expandedRow === id) {
             setExpandedRow(null);
+
             return;
         }
 
         if (nilaiCache[id] !== undefined) {
             setExpandedRow(id);
+
             return;
         }
 
         setNilaiLoading(id);
+
         try {
             const res = await fetch(`/admin/referensi/${id}/nilai`);
             const data: NilaiResponse = await res.json();
@@ -184,11 +187,16 @@ export default function ReferensiIndex({ pendaftar, prodi, filters }: Props) {
                     <div className="grid gap-1 sm:grid-cols-2">
                         {allFields.map((field: string) => {
                             const val = (nilai as any)[field];
-                            if (val === null || val === undefined || val === '') return null;
+
+                            if (val === null || val === undefined || val === '') {
+return null;
+}
+
                             const label = labels[field] || FIELD_LABELS[field] || field;
                             const display = BOOL_FIELDS.includes(field)
                                 ? (val === true || val === 1 || val === '1' ? 'Ya' : 'Tidak')
                                 : String(val);
+
                             return (
                                 <div key={field} className="flex items-center justify-between py-1 text-sm">
                                     <span className="text-on-surface-container">{label}</span>

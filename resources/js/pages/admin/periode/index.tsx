@@ -1,11 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 
 interface Periode {
     id: number;

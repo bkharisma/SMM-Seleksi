@@ -14,7 +14,7 @@ class Pendaftar extends Model
     protected $fillable = [
         'kode_pendaftar', 'noujian', 'nama', 'tanggal_lahir', 'email', 'no_hp',
         'pil1', 'pil2', 'pil3',
-        'lulus', 'lulus_tahap', 'param_lulus', 'nilai_akhir',
+        'lulus', 'lulus_tahap', 'finalisasi', 'param_lulus', 'nilai_akhir',
         'user_id', 'ruang_id', 'ruang_kelompok', 'jalur_id',
         'tempat_lahir', 'jenis_kelamin', 'alamat', 'agama',
         'nama_ayah', 'nama_ibu', 'hp_ayah', 'hp_ibu',
@@ -98,6 +98,11 @@ class Pendaftar extends Model
     public function getIsLulusAttribute(): bool
     {
         return $this->lulus !== null;
+    }
+
+    public function getNupAttribute(): string
+    {
+        return $this->kode_pendaftar;
     }
 
     public function getNamaLengkapAttribute(): string

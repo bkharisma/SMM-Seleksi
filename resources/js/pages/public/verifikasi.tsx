@@ -1,10 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import PortalLayout from '@/components/layout/portal-layout';
-import Card from '@/components/ui/card';
-import Badge from '@/components/ui/badge';
-import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
 import { useState } from 'react';
+import PortalLayout from '@/components/layout/portal-layout';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
+import Input from '@/components/ui/input';
 
 interface PesertaData {
     nup: string;
@@ -33,6 +33,7 @@ export default function Verifikasi({ peserta }: VerifikasiProps) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (noujian.trim()) {
             window.location.href = `/verifikasi/${noujian.trim()}`;
         }

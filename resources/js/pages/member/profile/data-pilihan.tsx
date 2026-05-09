@@ -1,9 +1,9 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
 
 interface Prodi {
     id: number;

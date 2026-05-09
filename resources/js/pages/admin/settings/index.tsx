@@ -1,11 +1,12 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
+import Toggle from '@/components/ui/toggle';
 
 interface SettingsProps {
     settings: {
@@ -19,6 +20,8 @@ interface SettingsProps {
         tahun_akademik: string;
         pengumuman_url: string;
         max_pilihan: number;
+        dashboard_lengkap: number;
+        dashboard_upload_syarat: number;
     };
 }
 
@@ -37,6 +40,8 @@ export default function Settings({ settings }: SettingsProps) {
         tahun_akademik: settings.tahun_akademik,
         pengumuman_url: settings.pengumuman_url,
         max_pilihan: settings.max_pilihan.toString(),
+        dashboard_lengkap: settings.dashboard_lengkap.toString(),
+        dashboard_upload_syarat: settings.dashboard_upload_syarat.toString(),
     });
 
     useEffect(() => {
@@ -49,6 +54,22 @@ export default function Settings({ settings }: SettingsProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         put('/admin/settings');
+    };
+
+    const handleDashboardLengkapToggle = (checked: boolean) => {
+        setData('dashboard_lengkap', checked ? '1' : '0');
+
+        if (checked) {
+            setData('dashboard_upload_syarat', '0');
+        }
+    };
+
+    const handleDashboardUploadSyaratToggle = (checked: boolean) => {
+        setData('dashboard_upload_syarat', checked ? '1' : '0');
+
+        if (checked) {
+            setData('dashboard_lengkap', '0');
+        }
     };
 
     return (
@@ -159,6 +180,43 @@ export default function Settings({ settings }: SettingsProps) {
                             className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         />
                         {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
+                    </div>
+
+                    <div className="border-t border-outline-variant pt-6">
+                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Dashboard Member</h3>
+                        <p className="mb-4 text-sm text-on-surface-variant">
+                            Pilih tipe dashboard yang akan ditampilkan untuk member. Hanya satu dashboard yang dapat aktif dalam satu waktu.
+                        </p>
+                        <div className="space-y-4 rounded-lg bg-surface-container-low p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium text-on-surface">Dashboard Lengkap</p>
+                                    <p className="text-sm text-on-surface-variant">
+                                        Menampilkan profil, nilai, jadwal, hasil seleksi, dan kelulusan
+                                    </p>
+                                </div>
+                                <Toggle
+                                    id="dashboard_lengkap"
+                                    checked={data.dashboard_lengkap === '1'}
+                                    onChange={handleDashboardLengkapToggle}
+                                    label={data.dashboard_lengkap === '1' ? 'Aktif' : 'Nonaktif'}
+                                />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium text-on-surface">Dashboard Upload Syarat</p>
+                                    <p className="text-sm text-on-surface-variant">
+                                        Menampilkan form upload dokumen persyaratan (kesehatan, rapor, foto)
+                                    </p>
+                                </div>
+                                <Toggle
+                                    id="dashboard_upload_syarat"
+                                    checked={data.dashboard_upload_syarat === '1'}
+                                    onChange={handleDashboardUploadSyaratToggle}
+                                    label={data.dashboard_upload_syarat === '1' ? 'Aktif' : 'Nonaktif'}
+                                />
+                            </div>
+                        </div>
                     </div>
                     <div className="flex justify-end">
                         <Button type="submit" isLoading={processing}>

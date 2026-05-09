@@ -1,11 +1,11 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import PortalLayout from '@/components/layout/portal-layout';
+import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
-import Alert from '@/components/ui/alert';
 
 interface ScoreDetail {
     [key: string]: number | null;

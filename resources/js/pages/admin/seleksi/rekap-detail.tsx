@@ -2,9 +2,9 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowDown, ArrowUp, ArrowUpDown, Star } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
-import Alert from '@/components/ui/alert';
 
 interface ProdiDetail {
     id: number;
@@ -70,6 +70,7 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
 
     const handleSelectAll = (checked: boolean) => {
         setAllSelected(checked);
+
         if (checked && detail.peserta) {
             setSelectedIds(new Set(detail.peserta.map(p => p.id)));
         } else {
@@ -79,19 +80,27 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
 
     const handleSelectOne = (id: number, checked: boolean) => {
         const newSelected = new Set(selectedIds);
+
         if (checked) {
             newSelected.add(id);
         } else {
             newSelected.delete(id);
         }
+
         setSelectedIds(newSelected);
         setAllSelected(newSelected.size === detail.peserta?.length);
     };
 
     const handleBulkRevoke = () => {
         const count = selectedIds.size;
-        if (count === 0) return;
-        if (!confirm(`Batalkan kelulusan ${count} peserta yang dipilih?`)) return;
+
+        if (count === 0) {
+return;
+}
+
+        if (!confirm(`Batalkan kelulusan ${count} peserta yang dipilih?`)) {
+return;
+}
 
         setProcessing(true);
         router.delete('/admin/seleksi/bulk-revoke', {
@@ -114,9 +123,13 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
     };
 
     const sortedPeserta = useMemo(() => {
-        if (!detail.peserta) return [];
+        if (!detail.peserta) {
+return [];
+}
+
         return [...detail.peserta].sort((a, b) => {
             let comparison = 0;
+
             switch (sortColumn) {
                 case 'nup':
                     comparison = a.nup.localeCompare(b.nup);
@@ -131,6 +144,7 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
                     comparison = a.total_skor - b.total_skor;
                     break;
             }
+
             return sortDirection === 'asc' ? comparison : -comparison;
         });
     }, [detail.peserta, sortColumn, sortDirection]);

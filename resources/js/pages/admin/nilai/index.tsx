@@ -156,10 +156,13 @@ params.set('search', search);
                     if (!res.ok) {
                         throw new Error('Server error: ' + res.status);
                     }
+
                     const ct = res.headers.get('content-type');
+
                     if (ct && ct.includes('application/json')) {
                         return res.json();
                     }
+
                     return res.text().then((t) => {
                         throw new Error(t || 'Empty response');
                     });
@@ -167,9 +170,11 @@ params.set('search', search);
                 .then((data) => {
                     setUploadStatus(data.success ? 'success' : 'error');
                     setUploadMessage(data.message || 'Import selesai');
+
                     if (data.download_error_url) {
                         setUploadErrorUrl(data.download_error_url);
                     }
+
                     router.reload();
                 })
                 .catch((err) => {
@@ -222,17 +227,20 @@ return;
     const handleToggle = (id: number) => {
         setSelectedIds((prev) => {
             const next = new Set(prev);
+
             if (next.has(id)) {
                 next.delete(id);
             } else {
                 next.add(id);
             }
+
             return next;
         });
     };
 
     const handleToggleAll = () => {
         const allIds = new Set(nilai.data.map((item) => item.id));
+
         if (allIds.size > 0 && selectedIds.size === allIds.size) {
             setSelectedIds(new Set());
         } else {
@@ -241,8 +249,14 @@ return;
     };
 
     const handleBulkDelete = () => {
-        if (selectedIds.size === 0) return;
-        if (!confirm(`Hapus ${selectedIds.size} data nilai terpilih?`)) return;
+        if (selectedIds.size === 0) {
+return;
+}
+
+        if (!confirm(`Hapus ${selectedIds.size} data nilai terpilih?`)) {
+return;
+}
+
         router.delete('/admin/nilai-bulk', {
             data: { ids: Array.from(selectedIds) },
             onSuccess: () => setSelectedIds(new Set()),
@@ -250,7 +264,10 @@ return;
     };
 
     const handleDeleteAll = () => {
-        if (deleteAllConfirm !== 'YA') return;
+        if (deleteAllConfirm !== 'YA') {
+return;
+}
+
         router.delete('/admin/nilai-bulk', {
             data: { all: true, ujian_id: ujian.id },
             onSuccess: () => {

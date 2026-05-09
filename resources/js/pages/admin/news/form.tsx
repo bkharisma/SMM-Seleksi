@@ -1,13 +1,13 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import FileUpload from '@/components/ui/file-upload';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
-import FileUpload from '@/components/ui/file-upload';
 
 interface News {
     id: number;
@@ -48,6 +48,7 @@ export default function NewsForm({ news }: NewsFormProps) {
 
     const handleImageChange = (file: File | null) => {
         setImageFile(file);
+
         if (file) {
             setData('img', file);
             const reader = new FileReader();
@@ -60,6 +61,7 @@ export default function NewsForm({ news }: NewsFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (isEdit) {
             put(`/admin/news/${news!.id}`);
         } else {

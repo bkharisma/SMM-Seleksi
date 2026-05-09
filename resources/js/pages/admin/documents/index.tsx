@@ -1,9 +1,9 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
 import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 
 interface Document {
     name: string;
@@ -53,8 +53,14 @@ export default function DocumentsIndex({ documents }: DocumentsProps) {
     };
 
     const formatSize = (bytes: number) => {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        if (bytes < 1024) {
+return bytes + ' B';
+}
+
+        if (bytes < 1024 * 1024) {
+return (bytes / 1024).toFixed(1) + ' KB';
+}
+
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     };
 

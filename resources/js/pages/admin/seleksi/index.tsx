@@ -1,9 +1,9 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
-import Alert from '@/components/ui/alert';
 import Select from '@/components/ui/select';
 
 interface Prodi {
@@ -67,9 +67,11 @@ export default function SeleksiIndex({ tahap, jalur, prodi, filters }: SeleksiIn
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!tahapId || !jalurId || !prodiId) {
             return;
         }
+
         router.post('/admin/seleksi/preview', {
             tahap_id: tahapId,
             jalur_id: jalurId,

@@ -1,10 +1,10 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import Card from '@/components/ui/card';
-import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
 import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
+import Input from '@/components/ui/input';
 
 interface Peserta {
     noujian: string | null;
@@ -16,8 +16,6 @@ interface Kesehatan {
     lokasi: string | null;
     tb: number | null;
     bb: number | null;
-    ow: number | null;
-    obesitas: number | null;
     tensi: string | null;
     nadi: string | null;
     tato: string | null;
@@ -27,10 +25,7 @@ interface Kesehatan {
     pupil: string | null;
     paru: string | null;
     sco: string | null;
-    mop: number | null;
-    amp: number | null;
-    thc: number | null;
-    kehamilan: number | null;
+    param_kesehatan: Record<string, any> | null;
     status: string;
     catatan: string | null;
 }
@@ -40,10 +35,17 @@ interface FileKesehatan {
     file_lockes: string;
 }
 
+interface Parameter {
+    nama: string;
+    tipe_value: 'number' | 'string' | 'boolean';
+    nilai: string;
+}
+
 interface KesehatanUploadProps {
     peserta: Peserta;
     kesehatan: Kesehatan | null;
     files: FileKesehatan[];
+    parameters: Parameter[];
 }
 
 const statusColors: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
@@ -53,19 +55,24 @@ const statusColors: Record<string, 'success' | 'warning' | 'danger' | 'info'> = 
     'Belum Diperiksa': 'info',
 };
 
-export default function KesehatanUpload({ peserta, kesehatan, files }: KesehatanUploadProps) {
+export default function KesehatanUpload({ peserta, kesehatan, files, parameters }: KesehatanUploadProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
     const [activeTab, setActiveTab] = useState<'input' | 'upload'>('input');
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const paramData: Record<string, any> = {};
+    if (kesehatan?.param_kesehatan) {
+        Object.entries(kesehatan.param_kesehatan).forEach(([key, value]) => {
+            paramData[key] = value;
+        });
+    }
 
     const { data, setData, post, processing, errors } = useForm({
         namalbg: kesehatan?.namalbg || '',
         lokasi: kesehatan?.lokasi || '',
         tb: kesehatan?.tb?.toString() || '',
         bb: kesehatan?.bb?.toString() || '',
-        ow: kesehatan?.ow?.toString() || '',
-        obesitas: kesehatan?.obesitas?.toString() || '',
         tensi: kesehatan?.tensi || '',
         nadi: kesehatan?.nadi || '',
         tato: kesehatan?.tato || '',
@@ -75,13 +82,21 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
         pupil: kesehatan?.pupil || '',
         paru: kesehatan?.paru || '',
         sco: kesehatan?.sco || '',
-        mop: kesehatan?.mop?.toString() || '',
-        amp: kesehatan?.amp?.toString() || '',
-        thc: kesehatan?.thc?.toString() || '',
-        kehamilan: kesehatan?.kehamilan?.toString() || '',
+        ...parameters.reduce((acc, param) => {
+            const key = `param_${param.nama}`;
+            const existingValue = paramData[param.nama];
+            if (existingValue !== undefined) {
+                acc[key] = param.tipe_value === 'boolean' ? (existingValue ? '1' : '0') : existingValue.toString();
+            } else if (param.tipe_value === 'boolean') {
+                acc[key] = '0';
+            } else {
+                acc[key] = '';
+            }
+            return acc;
+        }, {} as Record<string, string>),
     });
 
-    const { data: fileData, setData: setFileData, post: postFile, processing: fileProcessing } = useForm({
+    const { data: fileData, setData: setFileData, processing: fileProcessing } = useForm({
         file: null as File | null,
     });
 
@@ -90,6 +105,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
         }
+
         if (flash?.error) {
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
@@ -98,7 +114,12 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/member/upload/kesehatan');
+        post('/member/upload/kesehatan', {
+            data: {
+                ...data,
+                parameters: parameters,
+            },
+        });
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +129,10 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
     };
 
     const handleUploadFile = () => {
-        if (!fileData.file) return;
+        if (!fileData.file) {
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', fileData.file);
         router.post('/member/upload/kesehatan/file', formData as any, {
@@ -161,10 +185,17 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
                         <Badge variant={statusColors[kesehatan.status] || 'info'}>
                             Status: {kesehatan.status}
                         </Badge>
-                        {kesehatan.catatan && (
-                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                Catatan: {kesehatan.catatan}
-                            </p>
+                        {kesehatan.catatan && (kesehatan.status === 'Tidak Lengkap' || kesehatan.status === 'Perbaikan') && (
+                            <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
+                                <p className="text-sm font-medium text-red-700 dark:text-red-300">Catatan Admin:</p>
+                                <p className="text-sm text-red-600 dark:text-red-400">{kesehatan.catatan}</p>
+                                <p className="mt-1 text-xs text-red-500">Silakan perbaiki dan upload ulang dokumen Anda.</p>
+                            </div>
+                        )}
+                        {kesehatan.status === 'Lengkap' && kesehatan.catatan && (
+                            <div className="mt-2 rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
+                                <p className="text-sm text-green-700 dark:text-green-300">Catatan: {kesehatan.catatan}</p>
+                            </div>
                         )}
                     </div>
                 )}
@@ -214,7 +245,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
 
                             <div className="border-t pt-4">
                                 <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Fisik</h3>
-                                <div className="grid gap-4 md:grid-cols-4">
+                                <div className="grid gap-4 md:grid-cols-2">
                                     <Input
                                         id="tb"
                                         label="TB (cm)"
@@ -228,20 +259,6 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
                                         type="number"
                                         value={data.bb}
                                         onChange={(e) => setData('bb', e.target.value)}
-                                    />
-                                    <Input
-                                        id="ow"
-                                        label="OW"
-                                        type="number"
-                                        value={data.ow}
-                                        onChange={(e) => setData('ow', e.target.value)}
-                                    />
-                                    <Input
-                                        id="obesitas"
-                                        label="Obesitas"
-                                        type="number"
-                                        value={data.obesitas}
-                                        onChange={(e) => setData('obesitas', e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -264,89 +281,54 @@ export default function KesehatanUpload({ peserta, kesehatan, files }: Kesehatan
                                 </div>
                             </div>
 
-                            <div className="border-t pt-4">
-                                <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Pemeriksaan</h3>
-                                <div className="grid gap-4 md:grid-cols-3">
-                                    <Input
-                                        id="tato"
-                                        label="Tato"
-                                        value={data.tato}
-                                        onChange={(e) => setData('tato', e.target.value)}
-                                    />
-                                    <Input
-                                        id="tindik"
-                                        label="Tindik"
-                                        type="number"
-                                        value={data.tindik}
-                                        onChange={(e) => setData('tindik', e.target.value)}
-                                    />
-                                    <Input
-                                        id="bw"
-                                        label="Buta Warna"
-                                        value={data.bw}
-                                        onChange={(e) => setData('bw', e.target.value)}
-                                    />
-                                    <Input
-                                        id="strab"
-                                        label="Strabismus"
-                                        type="number"
-                                        value={data.strab}
-                                        onChange={(e) => setData('strab', e.target.value)}
-                                    />
-                                    <Input
-                                        id="pupil"
-                                        label="Pupil"
-                                        value={data.pupil}
-                                        onChange={(e) => setData('pupil', e.target.value)}
-                                    />
-                                    <Input
-                                        id="paru"
-                                        label="Paru-paru"
-                                        value={data.paru}
-                                        onChange={(e) => setData('paru', e.target.value)}
-                                    />
-                                    <Input
-                                        id="sco"
-                                        label="Scoliosis"
-                                        value={data.sco}
-                                        onChange={(e) => setData('sco', e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                            {parameters.length > 0 && (
+                                <div className="border-t pt-4">
+                                    <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Pemeriksaan</h3>
+                                    <div className="grid gap-4 md:grid-cols-3">
+                                        {parameters.map((param) => {
+                                            const key = `param_${param.nama}`;
+                                            const errorKey = key;
 
-                            <div className="border-t pt-4">
-                                <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Tes Narkoba</h3>
-                                <div className="grid gap-4 md:grid-cols-3">
-                                    <Input
-                                        id="mop"
-                                        label="Morphin"
-                                        type="number"
-                                        value={data.mop}
-                                        onChange={(e) => setData('mop', e.target.value)}
-                                    />
-                                    <Input
-                                        id="amp"
-                                        label="Amphetamine"
-                                        type="number"
-                                        value={data.amp}
-                                        onChange={(e) => setData('amp', e.target.value)}
-                                    />
-                                    <Input
-                                        id="thc"
-                                        label="THC"
-                                        type="number"
-                                        value={data.thc}
-                                        onChange={(e) => setData('thc', e.target.value)}
-                                    />
-                                    <Input
-                                        id="kehamilan"
-                                        label="Kehamilan"
-                                        type="number"
-                                        value={data.kehamilan}
-                                        onChange={(e) => setData('kehamilan', e.target.value)}
-                                    />
+                                            if (param.tipe_value === 'boolean') {
+                                                return (
+                                                    <div key={param.nama}>
+                                                        <label className="mb-1 block text-sm font-medium text-on-surface-container">
+                                                            {param.nama}
+                                                        </label>
+                                                        <select
+                                                            value={data[key] || '0'}
+                                                            onChange={(e) => setData(key, e.target.value)}
+                                                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                        >
+                                                            <option value="1">Ya</option>
+                                                            <option value="0">Tidak</option>
+                                                        </select>
+                                                        {param.nilai && (
+                                                            <p className="mt-1 text-xs text-gray-500">Standar: {param.nilai}</p>
+                                                        )}
+                                                        {errors[errorKey] && (
+                                                            <p className="mt-1 text-xs text-red-600">{errors[errorKey]}</p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }
+
+                                            return (
+                                                <Input
+                                                    key={param.nama}
+                                                    id={key}
+                                                    label={param.nama}
+                                                    type={param.tipe_value === 'number' ? 'number' : 'text'}
+                                                    value={data[key] || ''}
+                                                    onChange={(e) => setData(key, e.target.value)}
+                                                    error={errors[errorKey]}
+                                                    placeholder={param.nilai ? `Standar: ${param.nilai}` : undefined}
+                                                />
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="flex justify-end">
                                 <Button type="submit" isLoading={processing}>Simpan Data</Button>

@@ -61,7 +61,7 @@ class KriteriaKelulusanController extends Controller
             'active' => 'boolean',
             'kriteria_ujian' => 'required|array|min:1',
             'kriteria_ujian.*.ujian_id' => 'required',
-            'kriteria_ujian.*.jenis' => 'required|in:tes,berkas',
+            'kriteria_ujian.*.jenis' => 'required|in:tes,berkas,kesehatan',
             'kriteria_ujian.*.nilai_standar' => 'nullable|numeric',
             'kriteria_ujian.*.parameters' => 'nullable|array',
             'kriteria_ujian.*.parameters.*.nama' => 'required|string|max:128',
@@ -81,7 +81,7 @@ class KriteriaKelulusanController extends Controller
                     'ujian_id' => $ku['ujian_id'],
                     'jenis' => $ku['jenis'],
                     'nilai_standar' => $ku['jenis'] === 'tes' ? ($ku['nilai_standar'] ?? null) : null,
-                    'parameters' => $ku['jenis'] === 'berkas' ? ($ku['parameters'] ?? null) : null,
+                    'parameters' => ($ku['jenis'] === 'berkas' || $ku['jenis'] === 'kesehatan') ? ($ku['parameters'] ?? null) : null,
                 ]);
             }
         });
@@ -115,7 +115,7 @@ class KriteriaKelulusanController extends Controller
             'active' => 'boolean',
             'kriteria_ujian' => 'required|array|min:1',
             'kriteria_ujian.*.ujian_id' => 'required',
-            'kriteria_ujian.*.jenis' => 'required|in:tes,berkas',
+            'kriteria_ujian.*.jenis' => 'required|in:tes,berkas,kesehatan',
             'kriteria_ujian.*.nilai_standar' => 'nullable|numeric',
             'kriteria_ujian.*.parameters' => 'nullable|array',
             'kriteria_ujian.*.parameters.*.nama' => 'required|string|max:128',
@@ -137,7 +137,7 @@ class KriteriaKelulusanController extends Controller
                     'ujian_id' => $ku['ujian_id'],
                     'jenis' => $ku['jenis'],
                     'nilai_standar' => $ku['jenis'] === 'tes' ? ($ku['nilai_standar'] ?? null) : null,
-                    'parameters' => $ku['jenis'] === 'berkas' ? ($ku['parameters'] ?? null) : null,
+                    'parameters' => ($ku['jenis'] === 'berkas' || $ku['jenis'] === 'kesehatan') ? ($ku['parameters'] ?? null) : null,
                 ]);
             }
         });

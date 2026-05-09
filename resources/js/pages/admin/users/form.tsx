@@ -1,9 +1,9 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
-import Alert from '@/components/ui/alert';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
 

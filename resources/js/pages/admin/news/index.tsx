@@ -1,11 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
 
@@ -51,8 +51,15 @@ export default function NewsIndex({ news, filters }: NewsIndexProps) {
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (search) params.set('search', search);
-        if (status) params.set('status', status);
+
+        if (search) {
+params.set('search', search);
+}
+
+        if (status) {
+params.set('status', status);
+}
+
         router.get(`/admin/news?${params.toString()}`, {}, { preserveState: true });
     };
 
@@ -63,7 +70,10 @@ export default function NewsIndex({ news, filters }: NewsIndexProps) {
     };
 
     const formatDate = (date: string | null) => {
-        if (!date) return '-';
+        if (!date) {
+return '-';
+}
+
         return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     };
 

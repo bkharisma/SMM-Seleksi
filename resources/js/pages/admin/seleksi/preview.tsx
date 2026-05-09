@@ -2,9 +2,9 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Select from '@/components/ui/select';
 
@@ -87,7 +87,10 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
     }, [preview]);
 
     const handleToggleAll = () => {
-        if (!preview?.results) return;
+        if (!preview?.results) {
+return;
+}
+
         const lulusNup = preview.results
             .filter((r) => r.lulus)
             .map((r) => r.nup);
@@ -109,6 +112,7 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
         if (selectedNup.length === 0) {
             return;
         }
+
         setProcessing(true);
         router.post('/admin/seleksi/save', {
             tahap_id: tahapId,
@@ -123,7 +127,11 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
 
     const handleRepreview = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!tahapId || !jalurId || !prodiId) return;
+
+        if (!tahapId || !jalurId || !prodiId) {
+return;
+}
+
         router.post('/admin/seleksi/preview', {
             tahap_id: tahapId,
             jalur_id: jalurId,
@@ -308,6 +316,7 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
                                     <tbody className="divide-y divide-outline-variant">
                                         {preview.results.map((result) => {
                                             const hasWarning = result.reasons.some(r => r.includes('di bawah standar') || r.includes('Melebihi kuota'));
+
                                             return (
                                                 <tr key={result.nup} className={hasWarning ? 'bg-red-50' : ''}>
                                                     <td className="whitespace-nowrap px-4 py-2 text-sm text-on-surface">{result.nup}</td>

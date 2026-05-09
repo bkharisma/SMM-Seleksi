@@ -57,8 +57,10 @@ class PendaftarController extends Controller
         if ($request->filled('lulus')) {
             if ($request->lulus === 'lulus') {
                 $query->whereNotNull('lulus');
+            } elseif ($request->lulus === 'tidak_lulus') {
+                $query->whereNull('lulus')->where('finalisasi', true);
             } elseif ($request->lulus === 'belum') {
-                $query->whereNull('lulus');
+                $query->whereNull('lulus')->where('finalisasi', false);
             }
         }
 
@@ -76,12 +78,15 @@ class PendaftarController extends Controller
 
         $pendaftar = $query->paginate(15)->withQueryString();
 
+        $isFinalized = Pendaftar::where('finalisasi', true)->exists();
+
         return Inertia::render('admin/pendaftar/index', [
             'pendaftar' => $pendaftar,
             'filters' => $request->only(['search', 'prodi_id', 'ruang_id', 'jalur_id', 'lulus', 'noujian']),
             'prodi' => Prodi::where('active', true)->get(['id', 'nama_prodi', 'kode_prodi']),
             'ruang' => Ruang::where('active', true)->get(['id', 'nomor_ruang']),
             'jalur' => JalurPendaftaran::where('active', true)->get(['id', 'nama_jalur', 'kode_jalur']),
+            'is_finalized' => $isFinalized,
         ]);
     }
 

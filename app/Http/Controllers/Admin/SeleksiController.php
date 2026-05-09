@@ -100,10 +100,12 @@ class SeleksiController extends Controller
         $prodiId = $request->filled('prodi_id') ? (int) $request->prodi_id : null;
         $rekap = $this->selectionService->getRekapKelulusan($prodiId);
         $prodi = Prodi::active()->get(['id', 'nama_prodi', 'kode_prodi']);
+        $isFinalized = $this->selectionService->isFinalized();
 
         return Inertia::render('admin/seleksi/rekap', [
             'rekap' => $rekap,
             'prodi' => $prodi,
+            'is_finalized' => $isFinalized,
             'filters' => $request->only(['prodi_id']),
         ]);
     }
@@ -153,6 +155,28 @@ class SeleksiController extends Controller
         ]);
 
         $result = $this->selectionService->bulkRevokeLulus($validated['ids']);
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
+    }
+
+    public function finalisasi(Request $request): RedirectResponse
+    {
+        $result = $this->selectionService->finalisasiSeleksi();
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
+    }
+
+    public function revertFinalisasi(Request $request): RedirectResponse
+    {
+        $result = $this->selectionService->revertFinalisasi();
 
         if ($result['success']) {
             return redirect()->back()->with('success', $result['message']);

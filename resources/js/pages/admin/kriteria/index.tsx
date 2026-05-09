@@ -121,11 +121,16 @@ params.set('tahap_seleksi_id', tahapId);
             key: 'jenis',
             label: 'Tipe Ujian',
             render: (item: Kriteria) => {
-                const types = item.kriteria_ujian?.map((ku) => (
-                    <Badge key={ku.id} variant={ku.jenis === 'tes' ? 'info' : 'warning'}>
-                        {ku.jenis === 'tes' ? 'Tes' : 'Berkas'}
-                    </Badge>
-                ));
+                const types = item.kriteria_ujian?.map((ku) => {
+                    const variant = ku.jenis === 'tes' ? 'info' : ku.jenis === 'kesehatan' ? 'success' : 'warning';
+                    const label = ku.jenis === 'tes' ? 'Tes' : ku.jenis === 'kesehatan' ? 'Kesehatan' : 'Berkas';
+
+                    return (
+                        <Badge key={ku.id} variant={variant}>
+                            {label}
+                        </Badge>
+                    );
+                });
 
                 return <div className="flex flex-wrap gap-1">{types}</div>;
             },

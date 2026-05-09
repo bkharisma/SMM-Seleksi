@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\FileKesehatan;
-use App\Models\FileRaport;
+use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,101 +14,37 @@ use Inertia\Response;
 
 class DokumenController extends Controller
 {
-    public function raport(Request $request): Response
-    {
-        $user = $request->user();
-        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
-
-        $raport = $pendaftar->raport;
-        $files = $pendaftar->fileRaport;
-
-        return Inertia::render('member/upload/raport', [
-            'peserta' => $pendaftar,
-            'raport' => $raport,
-            'files' => $files,
-        ]);
-    }
-
-    public function storeRaport(Request $request): RedirectResponse
-    {
-        $user = $request->user();
-        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
-
-        if (! $pendaftar->noujian) {
-            return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
-        }
-
-        $validated = $request->validate([
-            'npsn' => 'required|string|max:20',
-            'akreditasi' => 'nullable|string|max:2',
-            'ahuruf' => 'nullable|string|max:2',
-            'anilai' => 'nullable|numeric',
-            'x_1peng' => 'nullable|numeric',
-            'x_1ket' => 'nullable|numeric',
-            'x_2peng' => 'nullable|numeric',
-            'x_2ket' => 'nullable|numeric',
-            'xi_1peng' => 'nullable|numeric',
-            'xi_1ket' => 'nullable|numeric',
-            'xi_2peng' => 'nullable|numeric',
-            'xi_2ket' => 'nullable|numeric',
-            'xii_1peng' => 'nullable|numeric',
-            'xii_1ket' => 'nullable|numeric',
-            'xii_2peng' => 'nullable|numeric',
-            'xii_2ket' => 'nullable|numeric',
-        ]);
-
-        $pendaftar->raport()->updateOrCreate(
-            [],
-            array_merge($validated, ['status' => 'Belum Diperiksa'])
-        );
-
-        return redirect()->back()->with('success', 'Data raport berhasil disimpan.');
-    }
-
-    public function uploadRaportFile(Request $request): RedirectResponse
-    {
-        $user = $request->user();
-        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
-
-        if (! $pendaftar->noujian) {
-            return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
-        }
-
-        $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf|max:5120',
-        ]);
-
-        $path = $validated['file']->store('raport', 'public');
-
-        $pendaftar->fileRaport()->create([
-            'file_loc' => $path,
-        ]);
-
-        return redirect()->back()->with('success', 'File raport berhasil diupload.');
-    }
-
-    public function deleteRaportFile(FileRaport $file): RedirectResponse
-    {
-        if (Storage::disk('public')->exists($file->file_loc)) {
-            Storage::disk('public')->delete($file->file_loc);
-        }
-        $file->delete();
-
-        return redirect()->back()->with('success', 'File berhasil dihapus.');
-    }
-
     public function kesehatan(Request $request): Response
     {
         $user = $request->user();
-        $pendaftar = Pendaftar::where('user_id', $user->id)->firstOrFail();
+        $pendaftar = Pendaftar::where('user_id', $user->id)
+            ->with(['kesehatan', 'fileKesehatan'])
+            ->firstOrFail();
 
-        $kesehatan = $pendaftar->kesehatan;
-        $files = $pendaftar->fileKesehatan;
+        $parameters = [];
+
+        if ($pendaftar->pil1) {
+            $kriteria = KriteriaKelulusan::where('prodi_id', $pendaftar->pil1)
+                ->whereHas('kriteriaUjian', function ($q) {
+                    $q->where('jenis', 'kesehatan');
+                })
+                ->with('kriteriaUjian')
+                ->first();
+
+            if ($kriteria) {
+                foreach ($kriteria->kriteriaUjian as $ku) {
+                    if ($ku->jenis === 'kesehatan' && $ku->parameters) {
+                        $parameters = array_merge($parameters, $ku->parameters);
+                    }
+                }
+            }
+        }
 
         return Inertia::render('member/upload/kesehatan', [
             'peserta' => $pendaftar,
-            'kesehatan' => $kesehatan,
-            'files' => $files,
+            'kesehatan' => $pendaftar->kesehatan,
+            'files' => $pendaftar->fileKesehatan,
+            'parameters' => $parameters,
         ]);
     }
 
@@ -121,13 +57,11 @@ class DokumenController extends Controller
             return redirect()->back()->with('error', 'Nomor ujian belum tersedia.');
         }
 
-        $validated = $request->validate([
+        $rules = [
             'namalbg' => 'nullable|string|max:100',
             'lokasi' => 'nullable|string|max:100',
             'tb' => 'nullable|numeric',
             'bb' => 'nullable|numeric',
-            'ow' => 'nullable|numeric',
-            'obesitas' => 'nullable|integer',
             'tensi' => 'nullable|string|max:20',
             'nadi' => 'nullable|string|max:20',
             'tato' => 'nullable|string|max:20',
@@ -137,16 +71,57 @@ class DokumenController extends Controller
             'pupil' => 'nullable|string|max:50',
             'paru' => 'nullable|string|max:50',
             'sco' => 'nullable|string|max:50',
-            'mop' => 'nullable|integer',
-            'amp' => 'nullable|integer',
-            'thc' => 'nullable|integer',
-            'kehamilan' => 'nullable|integer',
-        ]);
+        ];
 
-        $pendaftar->kesehatan()->updateOrCreate(
-            [],
-            array_merge($validated, ['status' => 'Belum Diperiksa'])
-        );
+        $parameters = $request->input('parameters', []);
+
+        foreach ($parameters as $param) {
+            $key = 'param_' . $param['nama'];
+            $tipe = $param['tipe_value'] ?? 'string';
+
+            if ($tipe === 'number') {
+                $rules[$key] = 'nullable|numeric';
+            } elseif ($tipe === 'boolean') {
+                $rules[$key] = 'nullable|boolean';
+            } else {
+                $rules[$key] = 'nullable|string|max:255';
+            }
+        }
+
+        $validated = $request->validate($rules);
+
+        $dataToSave = [
+            'noujian' => $pendaftar->noujian,
+            'namalbg' => $validated['namalbg'] ?? null,
+            'lokasi' => $validated['lokasi'] ?? null,
+            'tb' => $validated['tb'] ?? null,
+            'bb' => $validated['bb'] ?? null,
+            'tensi' => $validated['tensi'] ?? null,
+            'nadi' => $validated['nadi'] ?? null,
+            'tato' => $validated['tato'] ?? null,
+            'tindik' => $validated['tindik'] ?? null,
+            'bw' => $validated['bw'] ?? null,
+            'strab' => $validated['strab'] ?? null,
+            'pupil' => $validated['pupil'] ?? null,
+            'paru' => $validated['paru'] ?? null,
+            'sco' => $validated['sco'] ?? null,
+        ];
+
+        $dynamicParams = [];
+        foreach ($parameters as $param) {
+            $key = 'param_' . $param['nama'];
+            if (isset($validated[$key])) {
+                $dynamicParams[$param['nama']] = $validated[$key];
+            }
+        }
+
+        if (! empty($dynamicParams)) {
+            $dataToSave['param_kesehatan'] = json_encode($dynamicParams);
+        }
+
+        $dataToSave['status'] = 'Belum Diperiksa';
+
+        $pendaftar->kesehatan()->updateOrCreate([], $dataToSave);
 
         return redirect()->back()->with('success', 'Data kesehatan berhasil disimpan.');
     }
@@ -164,7 +139,12 @@ class DokumenController extends Controller
             'file' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
 
-        $path = $validated['file']->store('kesehatan', 'public');
+        $existingCount = $pendaftar->fileKesehatan()->count();
+        $counter = $existingCount + 1;
+        $extension = $validated['file']->getClientOriginalExtension();
+        $filename = "KESEHATAN-{$pendaftar->noujian}-{$counter}.{$extension}";
+
+        $path = $validated['file']->storeAs('kesehatan', $filename, 'public');
 
         $pendaftar->fileKesehatan()->create([
             'file_lockes' => $path,

@@ -11,10 +11,19 @@ class FileKesehatan extends Model
 
     protected $table = 'file_kesehatan';
 
-    protected $fillable = ['pendaftar_id', 'file_lockes'];
+    protected $fillable = ['pendaftar_id', 'file_lockes', 'is_revisi', 'revisi_dari_id'];
+
+    protected $casts = [
+        'is_revisi' => 'boolean',
+    ];
 
     public function pendaftar()
     {
         return $this->belongsTo(Pendaftar::class);
+    }
+
+    public function revisiDari()
+    {
+        return $this->belongsTo(FileKesehatan::class, 'revisi_dari_id');
     }
 }

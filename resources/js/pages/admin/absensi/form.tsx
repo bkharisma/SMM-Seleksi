@@ -1,12 +1,12 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
-import Badge from '@/components/ui/badge';
 
 interface Ruang {
     id: number;
@@ -68,6 +68,7 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
         } else {
             setSelectedPeserta(peserta.map(p => p.id));
         }
+
         setSelectAll(!selectAll);
     };
 

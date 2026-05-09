@@ -284,28 +284,44 @@ class SelectionService
         foreach ($prodiList as $prodi) {
             $lulusKeProdi = $pesertaLulus->where('lulus', $prodi->id);
 
+            $lulusNormal = $lulusKeProdi->filter(function ($p) {
+                $paramLulus = is_string($p->param_lulus) ? json_decode($p->param_lulus, true) : $p->param_lulus;
+                return !isset($paramLulus['pindah_prodi']) || $paramLulus['pindah_prodi'] !== true;
+            });
+
             $pilCounts = [
-                'pil1' => $lulusKeProdi->where('pil1', $prodi->id)->count(),
-                'pil2' => $lulusKeProdi->where('pil2', $prodi->id)->count(),
-                'pil3' => $lulusKeProdi->where('pil3', $prodi->id)->count(),
+                'pil1' => $lulusNormal->where('pil1', $prodi->id)->count(),
+                'pil2' => $lulusNormal->where('pil2', $prodi->id)->count(),
+                'pil3' => $lulusNormal->where('pil3', $prodi->id)->count(),
             ];
+
+            $totalPesertaProdi = Pendaftar::where('pil1', $prodi->id)->count();
+
+            $diluarPilihan = $lulusKeProdi->filter(function ($p) {
+                $paramLulus = is_string($p->param_lulus) ? json_decode($p->param_lulus, true) : $p->param_lulus;
+                return isset($paramLulus['pindah_prodi']) && $paramLulus['pindah_prodi'] === true;
+            })->count();
+
+            $totalLulusProdi = $lulusKeProdi->count();
 
             $rekapPerProdi[] = [
                 'prodi_id' => $prodi->id,
                 'nama_prodi' => $prodi->nama_prodi,
                 'kode_prodi' => $prodi->kode_prodi,
-                'total_lulus' => $lulusKeProdi->count(),
+                'total_peserta' => $totalPesertaProdi,
+                'total_lulus' => $totalLulusProdi,
+                'tidak_lulus' => max(0, $totalPesertaProdi - $totalLulusProdi),
                 'kuota' => $prodi->kuota_smm,
                 'pilihan_1' => $pilCounts['pil1'],
                 'pilihan_2' => $pilCounts['pil2'],
                 'pilihan_3' => $pilCounts['pil3'],
-                'pilihan_4' => 0,
-                'tersisa' => $prodi->kuota_smm ? $prodi->kuota_smm - $lulusKeProdi->count() : null,
+                'diluar_pilihan' => $diluarPilihan,
+                'tersisa' => $prodi->kuota_smm ? $prodi->kuota_smm - $totalLulusProdi : null,
             ];
         }
 
         $totalLulus = $pesertaLulus->count();
-        $totalPeserta = Pendaftar::count();
+        $totalPeserta = Pendaftar::whereNotNull('pil1')->count();
 
         $nilaiLulus = (clone $query)->whereNotNull('nilai_akhir')->pluck('nilai_akhir');
         $statistik = null;
@@ -402,7 +418,7 @@ class SelectionService
             return ['error' => 'Program studi tidak ditemukan'];
         }
 
-        $peserta = Pendaftar::with(['lulusTahap', 'lulusProdi', 'nilai'])
+        $peserta = Pendaftar::with(['jalur', 'lulusTahap', 'lulusProdi', 'nilai'])
             ->where('lulus', $prodiId)
             ->orderBy('nama')
             ->get()
@@ -410,7 +426,11 @@ class SelectionService
                 $paramLulus = is_string($p->param_lulus) ? json_decode($p->param_lulus, true) : $p->param_lulus;
                 $totalSkor = $paramLulus['total_skor'] ?? 0;
                 $isPindahProdi = isset($paramLulus['pindah_prodi']) && $paramLulus['pindah_prodi'] === true;
-                $pilLabel = isset($paramLulus['pilihan']) ? "Pilihan {$paramLulus['pilihan']}" : '-';
+                if ($isPindahProdi) {
+                    $pilLabel = 'Diluar Prodi Pilihan';
+                } else {
+                    $pilLabel = isset($paramLulus['pilihan']) ? "Pilihan {$paramLulus['pilihan']}" : '-';
+                }
 
                 return [
                     'id' => $p->id,
@@ -418,7 +438,7 @@ class SelectionService
                     'nama' => $p->nama,
                     'noujian' => $p->noujian,
                     'pilihan' => $pilLabel,
-                    'tahap_lulus' => $p->lulusTahap?->nama,
+                    'tahap_lulus' => $p->jalur?->kode_jalur ?? '-',
                     'total_skor' => $totalSkor,
                     'status' => 'Lulus',
                     'lulus_prodi' => $p->lulusProdi?->kode_prodi,
@@ -522,5 +542,65 @@ class SelectionService
 
             return ['success' => false, 'message' => 'Gagal membatalkan kelulusan: ' . $e->getMessage()];
         }
+    }
+
+    public function finalisasiSeleksi(): array
+    {
+        $updated = 0;
+
+        DB::beginTransaction();
+        try {
+            $alreadyFinalized = Pendaftar::where('finalisasi', true)->count();
+            if ($alreadyFinalized > 0) {
+                return ['success' => false, 'message' => 'Seleksi sudah difinalisasi sebelumnya. Gunakan revert terlebih dahulu.'];
+            }
+
+            $count = Pendaftar::whereNull('lulus')->whereNull('noujian')->count();
+
+            Pendaftar::whereNull('lulus')->update(['finalisasi' => true]);
+            $updated = Pendaftar::where('finalisasi', true)->count();
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => "Finalisasi berhasil. {$updated} peserta yang tidak lulus telah ditandai.",
+                'updated' => $updated,
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return ['success' => false, 'message' => 'Gagal memfinalisasi: '.$e->getMessage()];
+        }
+    }
+
+    public function revertFinalisasi(): array
+    {
+        DB::beginTransaction();
+        try {
+            $count = Pendaftar::where('finalisasi', true)->count();
+            if ($count === 0) {
+                return ['success' => false, 'message' => 'Tidak ada data yang perlu direvert.'];
+            }
+
+            Pendaftar::where('finalisasi', true)->update(['finalisasi' => false]);
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => "Revert finalisasi berhasil. {$count} peserta dikembalikan ke status awal.",
+                'reverted' => $count,
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return ['success' => false, 'message' => 'Gagal revert finalisasi: '.$e->getMessage()];
+        }
+    }
+
+    public function isFinalized(): bool
+    {
+        return Pendaftar::where('finalisasi', true)->exists();
     }
 }

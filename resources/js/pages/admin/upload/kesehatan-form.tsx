@@ -1,12 +1,12 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Select from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
-import Badge from '@/components/ui/badge';
 
 interface Prodi {
     nama_prodi: string;

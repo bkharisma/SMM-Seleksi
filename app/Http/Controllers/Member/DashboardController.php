@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
 use App\Models\TahapSeleksi;
+use App\Models\Setup;
 use App\Services\SelectionService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,7 +26,7 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         $peserta = Pendaftar::where('user_id', $user->id)
-            ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian', 'raport', 'kesehatan'])
+            ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian', 'kesehatan', 'fileKesehatan'])
             ->first();
 
         $profileCompleteness = 0;
@@ -100,6 +101,48 @@ class DashboardController extends Controller
                 ];
             });
 
+        $dashboardLengkap = Setup::get('dashboard_lengkap', 1);
+        $dashboardUploadSyarat = Setup::get('dashboard_upload_syarat', 0);
+
+        $activeDashboardType = $dashboardUploadSyarat == 1 ? 'upload_syarat' : 'lengkap';
+
+        $kesehatanData = null;
+
+        if ($peserta) {
+            if ($peserta->kesehatan) {
+                $kesehatanData = [
+                    'status' => $peserta->kesehatan->status,
+                    'catatan' => $peserta->kesehatan->catatan,
+                    'files' => $peserta->fileKesehatan->map(function ($f) {
+                        return [
+                            'id' => $f->id,
+                            'file_lockes' => $f->file_lockes,
+                            'is_revisi' => $f->is_revisi,
+                        ];
+                    })->toArray(),
+                ];
+            }
+        }
+
+        $lulusTahap1 = false;
+        $lulusTahap1Prodi = null;
+        $isFinalized = $this->selectionService->isFinalized();
+
+        if ($isFinalized) {
+            if ($peserta->lulus !== null) {
+                $lulusTahap1 = true;
+                $lulusTahap1Prodi = $peserta->lulusProdi?->nama_prodi;
+            }
+        } else {
+            foreach ($detailsPerTahap as $tahap) {
+                if ($tahap['urutan'] === 1 && $tahap['lulus']) {
+                    $lulusTahap1 = true;
+                    $lulusTahap1Prodi = $peserta->lulusProdi?->nama_prodi;
+                    break;
+                }
+            }
+        }
+
         return Inertia::render('member/dashboard', [
             'peserta' => $peserta ? [
                 'id' => $peserta->id,
@@ -112,19 +155,28 @@ class DashboardController extends Controller
                 'lulus_tahap' => $peserta->lulus_tahap,
                 'pil1_prodi' => $peserta->pil1Prodi?->nama_prodi,
                 'foto' => $peserta->foto,
+                'email' => $peserta->email,
+                'tanggal_lahir' => $peserta->tanggal_lahir,
+                'jenis_kelamin' => $peserta->jenis_kelamin,
+                'no_hp' => $peserta->no_hp,
                 'nilai' => [
                     'psikotes' => $peserta->nilai?->firstWhere('type', 'psikotes')?->skor_akhir,
                     'inggris' => $peserta->nilai?->firstWhere('type', 'bhs_inggris')?->skor_akhir,
                     'wawancara' => $peserta->nilai?->firstWhere('type', 'wawancara')?->skor_akhir,
                     'kesehatan' => $peserta->nilai?->firstWhere('type', 'kesehatan')?->skor_akhir,
                 ],
-                'raport_status' => $peserta->raport?->status,
                 'kesehatan_status' => $peserta->kesehatan?->status,
+                'kesehatan_catatan' => $peserta->kesehatan?->catatan,
+                'lulus_tahap_1' => $lulusTahap1,
+                'lulus_tahap_1_prodi' => $lulusTahap1Prodi,
+                'is_finalized' => $isFinalized,
             ] : null,
+            'kesehatan' => $kesehatanData,
             'profile_completeness' => $profileCompleteness,
             'profile_fields' => $profileFields,
             'details_per_tahap' => $detailsPerTahap,
             'jadwal' => $jadwal,
+            'active_dashboard_type' => $activeDashboardType,
         ]);
     }
 }

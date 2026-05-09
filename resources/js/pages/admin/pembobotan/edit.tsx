@@ -48,6 +48,7 @@ export default function PembobotanEdit({ tahap, ujian, pembobotan }: Props) {
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
         }
+
         if (flash?.error) {
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 5000);
@@ -83,6 +84,7 @@ export default function PembobotanEdit({ tahap, ujian, pembobotan }: Props) {
         if (!confirm('Apakah Anda yakin ingin mereset semua nilai akhir yang sudah dihitung untuk tahap ini?')) {
             return;
         }
+
         setProcessing(true);
         router.delete(`/admin/pembobotan/${tahap.id}/reset-nilai-akhir`, {
             onFinish: () => setProcessing(false),

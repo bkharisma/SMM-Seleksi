@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
-import Card from '@/components/ui/card';
 import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
+import DashboardUploadSyarat from './dashboard-upload-syarat';
 
 interface ScoreDetail {
     [key: string]: number | null;
@@ -13,12 +14,6 @@ interface TahapDetail {
     scores: ScoreDetail;
 }
 
-interface ProfileField {
-    key: string;
-    label: string;
-    check: boolean;
-}
-
 interface JadwalItem {
     nama_jadwal: string;
     tgl_awal: string | null;
@@ -27,6 +22,24 @@ interface JadwalItem {
     jam_akhir: string | null;
     keterangan: string | null;
     jenis: string | null;
+}
+
+interface FileKesehatan {
+    id: number;
+    file_lockes: string;
+    is_revisi: boolean;
+}
+
+interface KesehatanData {
+    status: string | null;
+    catatan: string | null;
+    files: FileKesehatan[];
+}
+
+interface ProfileField {
+    key: string;
+    label: string;
+    check: boolean;
 }
 
 interface MemberDashboardProps {
@@ -41,22 +54,45 @@ interface MemberDashboardProps {
         lulus_tahap: string | null;
         pil1_prodi: string | null;
         foto: string | null;
+        tempat_lahir: string | null;
+        tanggal_lahir: string | null;
+        jenis_kelamin: string | null;
+        agama: string | null;
+        no_hp: string | null;
+        alamat: string | null;
+        nama_ibu: string | null;
+        nama_sekolah: string | null;
+        foto_lengkap: boolean;
+        email: string | null;
         nilai: {
             psikotes: number | null;
             inggris: number | null;
             wawancara: number | null;
             kesehatan: number | null;
         };
-        raport_status: string | null;
         kesehatan_status: string | null;
+        kesehatan_catatan: string | null;
+        lulus_tahap_1: boolean;
+        lulus_tahap_1_prodi: string | null;
     } | null;
+    kesehatan: KesehatanData | null;
     profile_completeness: number;
     profile_fields: ProfileField[];
     details_per_tahap: TahapDetail[];
     jadwal: JadwalItem[];
+    active_dashboard_type: 'lengkap' | 'upload_syarat';
 }
 
-export default function Dashboard({ peserta, profile_completeness, profile_fields, details_per_tahap, jadwal }: MemberDashboardProps) {
+export default function Dashboard({ peserta, kesehatan, profile_completeness, profile_fields, details_per_tahap, jadwal, active_dashboard_type }: MemberDashboardProps) {
+    if (active_dashboard_type === 'upload_syarat') {
+        return (
+            <DashboardUploadSyarat
+                peserta={peserta}
+                kesehatan={kesehatan}
+            />
+        );
+    }
+
     const getDocStatusVariant = (status: string | null) => {
         switch (status) {
             case 'Lengkap': return 'success';
@@ -154,19 +190,16 @@ export default function Dashboard({ peserta, profile_completeness, profile_field
                             </Card>
 
                             <Card title="Status Dokumen">
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">Raport</span>
-                                        <Badge variant={getDocStatusVariant(peserta.raport_status)}>
-                                            {getDocStatusLabel(peserta.raport_status)}
-                                        </Badge>
-                                    </div>
-                                    <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
+                                <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
+                                    <div className="flex items-center justify-between">
                                         <span className="text-sm text-gray-600 dark:text-gray-400">Surat Keterangan Sehat</span>
                                         <Badge variant={getDocStatusVariant(peserta.kesehatan_status)}>
                                             {getDocStatusLabel(peserta.kesehatan_status)}
                                         </Badge>
                                     </div>
+                                    {peserta.kesehatan_catatan && (peserta.kesehatan_status === 'Tidak Lengkap' || peserta.kesehatan_status === 'Perbaikan') && (
+                                        <p className="mt-2 text-xs text-red-600 dark:text-red-400">⚠ {peserta.kesehatan_catatan}</p>
+                                    )}
                                 </div>
                             </Card>
                         </div>
@@ -247,7 +280,7 @@ export default function Dashboard({ peserta, profile_completeness, profile_field
                                 Update Profil
                             </Link>
                             <Link
-                                href="/member/upload/raport"
+                                href="/member/upload/kesehatan"
                                 className="block rounded-lg border border-gray-300 px-4 py-3 text-center font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                             >
                                 Upload Dokumen

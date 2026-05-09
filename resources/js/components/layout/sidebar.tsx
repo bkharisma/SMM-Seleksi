@@ -20,13 +20,13 @@ const menuItems = [
     { href: '/admin/education', label: 'Jenjang Pendidikan', icon: 'school' },
     { label: 'Konten', divider: true },
     { href: '/admin/news', label: 'Berita', icon: 'newspaper' },
-    { href: '/admin/documents', label: 'Dokumen', icon: 'folder' },
+    { href: '/admin/documents', label: 'Dokumen Admin', icon: 'folder' },
     { label: 'Peserta', divider: true },
     { href: '/admin/peminat', label: 'Peminat', icon: 'group' },
     { href: '/admin/peserta', label: 'Peserta', icon: 'badge' },
-    { label: 'Dokumen', divider: true },
-    { href: '/admin/upload/raport', label: 'Verifikasi Raport', icon: 'description' },
-    { href: '/admin/upload/kesehatan', label: 'Verifikasi Kesehatan', icon: 'favorite' },
+    { label: 'Syarat', divider: true },
+    { href: '/admin/syarat', label: 'Verifikasi Syarat', icon: 'fact_check' },
+    { href: '/admin/syarat/kesehatan', label: 'Kesehatan', icon: 'favorite' },
     { label: 'Seleksi', divider: true },
     { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'tune' },
     { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
@@ -36,6 +36,9 @@ const menuItems = [
     { href: '/admin/seleksi/rekap', label: 'Rekap Kelulusan', icon: 'bar_chart' },
     { href: '/admin/absensi', label: 'Absensi', icon: 'assignment_turned_in' },
     { href: '/admin/pembayaran/bsi', label: 'Pembayaran BSI', icon: 'payments' },
+    { label: 'Pengaturan', divider: true },
+    { href: '/admin/settings', label: 'Pengaturan Sistem', icon: 'settings' },
+    { href: '/admin/settings/dashboard-member', label: 'Dashboard Member', icon: 'dashboard' },
 ];
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {

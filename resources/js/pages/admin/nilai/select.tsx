@@ -1,10 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
-import DataTable from '@/components/ui/data-table';
-import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
+import DataTable from '@/components/ui/data-table';
 
 interface TahapSeleksi {
     id: number;
@@ -59,6 +59,7 @@ export default function NilaiSelect({ ujian, filters }: SelectUjianProps) {
             label: 'Field Nilai',
             render: (item: Ujian) => {
                 const fields = item.fields_config?.fields;
+
                 return fields && fields.length > 0 ? (
                     <Badge variant="info">{fields.length} field</Badge>
                 ) : (

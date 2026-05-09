@@ -1,10 +1,10 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
 
 interface Provinsi {
     kode_prop: string;
@@ -93,7 +93,10 @@ export default function DataPribadi({ peserta, provinsi, kabupaten }: ProfilePro
     };
 
     const handleUploadFoto = () => {
-        if (!fotoData.foto) return;
+        if (!fotoData.foto) {
+return;
+}
+
         const formData = new FormData();
         formData.append('foto', fotoData.foto);
         router.post('/member/upload-foto', formData as any, {

@@ -35,7 +35,7 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
         icon: 'article',
         items: [
             { href: '/admin/news', label: 'Berita', icon: 'newspaper' },
-            { href: '/admin/documents', label: 'Dokumen', icon: 'folder' },
+            { href: '/admin/documents', label: 'Dokumen Admin', icon: 'folder' },
         ],
     },
     {
@@ -46,11 +46,10 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
         ],
     },
     {
-        title: 'Dokumen',
+        title: 'Syarat',
         icon: 'description',
         items: [
-            { href: '/admin/upload/raport', label: 'Verifikasi Raport', icon: 'description' },
-            { href: '/admin/upload/kesehatan', label: 'Verifikasi Kesehatan', icon: 'favorite' },
+            { href: '/admin/syarat', label: 'Verifikasi Syarat', icon: 'fact_check' },
         ],
     },
     {

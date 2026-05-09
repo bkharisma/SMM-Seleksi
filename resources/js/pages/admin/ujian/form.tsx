@@ -1,12 +1,12 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
+import Alert from '@/components/ui/alert';
+import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea';
-import Button from '@/components/ui/button';
-import Alert from '@/components/ui/alert';
 
 interface Tahap {
     id: number;
@@ -45,6 +45,7 @@ export default function UjianForm({ ujian, tahap }: UjianFormProps) {
 
     const handleFieldToggle = (fieldName: string) => {
         const currentFields = [...(data.fields_config.fields || [])];
+
         if (currentFields.includes(fieldName)) {
             setData('fields_config', { fields: currentFields.filter((f) => f !== fieldName) });
         } else {
@@ -57,6 +58,9 @@ export default function UjianForm({ ujian, tahap }: UjianFormProps) {
         { name: 'psi_bobot', label: 'Psikotes' },
         { name: 'bing_nil', label: 'Literasi Bahasa Inggris' },
         { name: 'waw_nil', label: 'Wawancara' },
+        { name: 'waw_bersedia_pindah', label: 'Bersedia Pindah Prodi' },
+        { name: 'waw_rekomendasi_prodi_id', label: 'Rekomendasi Prodi' },
+        { name: 'waw_catatan', label: 'Catatan Wawancara' },
         { name: 'kes_hasil', label: 'Tes Kesehatan' },
         { name: 'kes_tb', label: 'Tinggi Badan' },
         { name: 'kes_bw', label: 'Buta Warna' },
@@ -75,6 +79,7 @@ export default function UjianForm({ ujian, tahap }: UjianFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (isEdit) {
             put(`/admin/ujian/${ujian!.id}`);
         } else {

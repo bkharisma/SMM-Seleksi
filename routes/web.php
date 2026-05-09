@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\RuangController;
 use App\Http\Controllers\Admin\SeleksiController;
 use App\Http\Controllers\Admin\SeleksiPindahProdiController;
 use App\Http\Controllers\Admin\SetupController;
+use App\Http\Controllers\Admin\VerifikasiController;
 use App\Http\Controllers\Admin\SurveyController;
 use App\Http\Controllers\Admin\TahapSeleksiController;
 use App\Http\Controllers\Admin\UjianController;
@@ -78,6 +79,8 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     // Settings
     Route::get('/settings', [SetupController::class, 'index'])->name('settings');
     Route::put('/settings', [SetupController::class, 'update'])->name('settings.update');
+    Route::get('/settings/dashboard-member', [SetupController::class, 'dashboardMember'])->name('settings.dashboard-member');
+    Route::put('/settings/dashboard-member', [SetupController::class, 'updateDashboardMember'])->name('settings.update-dashboard-member');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -124,6 +127,12 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/documents/upload', [DocumentController::class, 'upload'])->name('documents.upload');
     Route::delete('/documents/{filename}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 
+    // Syarat (Verifikasi Dokumen Terpadu)
+    Route::get('/syarat', [VerifikasiController::class, 'index'])->name('syarat.index');
+    Route::get('/syarat/kesehatan/{kesehatan}', [VerifikasiController::class, 'showKesehatanDetail'])->name('syarat.kesehatan.show');
+    Route::post('/syarat/kesehatan/{kesehatan}/status', [VerifikasiController::class, 'updateKesehatanStatus'])->name('syarat.kesehatan.status');
+    Route::get('/syarat/peserta/{pendaftar}', [VerifikasiController::class, 'showPesertaDetail'])->name('syarat.peserta');
+
     // Jalur Pendaftaran
     Route::resource('jalur-pendaftaran', JalurPendaftaranController::class)->except(['show']);
     Route::patch('/jalur-pendaftaran/{jalur}/toggle-status', [JalurPendaftaranController::class, 'toggleStatus'])->name('jalur-pendaftaran.toggle-status');
@@ -144,10 +153,6 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/pendaftar/{pendaftar}/upload-foto', [PendaftarController::class, 'uploadFoto'])->name('pendaftar.upload-foto');
 
     // Upload Dokumen Admin
-    Route::get('/upload/raport', [PendaftarUploadController::class, 'raportIndex'])->name('upload.raport-index');
-    Route::get('/upload/raport/{raport}', [PendaftarUploadController::class, 'raportShow'])->name('upload.raport-show');
-    Route::post('/upload/raport/{raport}/status', [PendaftarUploadController::class, 'updateRaportStatus'])->name('upload.raport-status');
-    Route::get('/upload/raport/export', [PendaftarUploadController::class, 'exportRaport'])->name('upload.raport-export');
     Route::get('/upload/kesehatan', [PendaftarUploadController::class, 'kesehatanIndex'])->name('upload.kesehatan-index');
     Route::get('/upload/kesehatan/{kesehatan}', [PendaftarUploadController::class, 'kesehatanShow'])->name('upload.kesehatan-show');
     Route::post('/upload/kesehatan/{kesehatan}/status', [PendaftarUploadController::class, 'updateKesehatanStatus'])->name('upload.kesehatan-status');
@@ -192,6 +197,8 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
     Route::delete('/seleksi/bulk-revoke', [SeleksiController::class, 'bulkRevokeLulus'])->name('seleksi.bulk-revoke');
     Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
+    Route::post('/seleksi/finalisasi', [SeleksiController::class, 'finalisasi'])->name('seleksi.finalisasi');
+    Route::post('/seleksi/revert-finalisasi', [SeleksiController::class, 'revertFinalisasi'])->name('seleksi.revert-finalisasi');
 
     // Seleksi Pindah Prodi
     Route::get('/seleksi-pindah-prodi', [SeleksiPindahProdiController::class, 'index'])->name('seleksi-pindah-prodi.index');
@@ -228,10 +235,6 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('member')->name('member.')
     Route::get('/kartu-peserta', [MemberProfileController::class, 'kartuPeserta'])->name('kartu-peserta');
 
     // Upload Dokumen
-    Route::get('/upload/raport', [MemberDokumenController::class, 'raport'])->name('upload.raport');
-    Route::post('/upload/raport', [MemberDokumenController::class, 'storeRaport'])->name('upload.raport.store');
-    Route::post('/upload/raport/file', [MemberDokumenController::class, 'uploadRaportFile'])->name('upload.raport.file');
-    Route::delete('/upload/raport/file/{file}', [MemberDokumenController::class, 'deleteRaportFile'])->name('upload.raport.file.delete');
     Route::get('/upload/kesehatan', [MemberDokumenController::class, 'kesehatan'])->name('upload.kesehatan');
     Route::post('/upload/kesehatan', [MemberDokumenController::class, 'storeKesehatan'])->name('upload.kesehatan.store');
     Route::post('/upload/kesehatan/file', [MemberDokumenController::class, 'uploadKesehatanFile'])->name('upload.kesehatan.file');
