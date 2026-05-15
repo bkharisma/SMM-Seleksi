@@ -64,22 +64,24 @@ export default function DataPribadi({ peserta, provinsi, kabupaten }: ProfilePro
         kodepos: peserta.kodepos || '',
     });
 
-    const { data: fotoData, setData: setFotoData, post: postFoto, processing: fotoProcessing } = useForm({
+    const { data: fotoData, setData: setFotoData } = useForm({
         foto: null as File | null,
     });
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     useEffect(() => {
         if (data.kode_prop) {
-            setKabupatenList(kabupaten.filter(k => k.kode_prop === data.kode_prop));
+            setTimeout(() => setKabupatenList(kabupaten.filter(k => k.kode_prop === data.kode_prop)), 0);
         }
-    }, [data.kode_prop]);
+    }, [data.kode_prop, kabupaten]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

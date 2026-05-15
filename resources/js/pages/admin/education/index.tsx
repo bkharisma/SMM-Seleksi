@@ -37,8 +37,10 @@ export default function EducationIndex({ education, filters }: EducationIndexPro
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

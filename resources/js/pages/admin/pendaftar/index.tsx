@@ -178,14 +178,6 @@ params.set('noujian', noujian);
         }
     };
 
-    const handleSelectAll = (checked: boolean) => {
-        if (checked) {
-            setSelectedIds(pendaftar.data.map((p) => p.id));
-        } else {
-            setSelectedIds([]);
-        }
-    };
-
     const handleSelect = (id: number, checked: boolean) => {
         if (checked) {
             setSelectedIds((prev) => [...prev, id]);

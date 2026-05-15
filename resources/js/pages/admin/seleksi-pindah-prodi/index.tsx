@@ -1,12 +1,20 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { Search, X, CheckCircle, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
+
+function SortIcon({ column, sortColumn, sortDirection }: { column: string; sortColumn: string; sortDirection: 'asc' | 'desc' }) {
+    if (sortColumn !== column) {
+        return <ArrowUpDown className="h-3 w-3 opacity-50" />;
+    }
+
+    return sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />;
+}
 
 interface ProdiInfo {
     id: number;
@@ -59,8 +67,10 @@ export default function SeleksiPindahProdiIndex({ peserta, prodiWithKuota, filte
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 5000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 5000);
+            }, 0);
         }
     }, [flash]);
 
@@ -162,8 +172,7 @@ return;
         }
     };
 
-    const sortedPeserta = useMemo(() => {
-        return [...peserta].sort((a, b) => {
+    const sortedPeserta = [...peserta].sort((a, b) => {
             let comparison = 0;
 
             switch (sortColumn) {
@@ -197,17 +206,8 @@ return;
 
             return sortDirection === 'asc' ? comparison : -comparison;
         });
-    }, [peserta, sortColumn, sortDirection]);
 
     const prodiTersedia = prodiWithKuota.filter(p => p.tersedia);
-
-    const SortIcon = ({ column }: { column: string }) => {
-        if (sortColumn !== column) {
-            return <ArrowUpDown className="h-3 w-3 opacity-50" />;
-        }
-
-        return sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />;
-    };
 
     return (
         <AdminLayout title="Seleksi Pindah Prodi">
@@ -308,50 +308,50 @@ return;
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('nup')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
                                             NUP
-                                            <SortIcon column="nup" />
+                                            <SortIcon column="nup" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('noujian')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
                                             No Ujian
-                                            <SortIcon column="noujian" />
+                                            <SortIcon column="noujian" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Nama</th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('pil1')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
                                             Pil 1
-                                            <SortIcon column="pil1" />
+                                            <SortIcon column="pil1" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('pil2')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
                                             Pil 2
-                                            <SortIcon column="pil2" />
+                                            <SortIcon column="pil2" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('pil3')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
                                             Pil 3
-                                            <SortIcon column="pil3" />
+                                            <SortIcon column="pil3" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('nilai_akhir')} className="inline-flex items-center gap-1 mx-auto hover:text-gray-700 dark:hover:text-gray-300">
                                             Nilai Akhir
-                                            <SortIcon column="nilai_akhir" />
+                                            <SortIcon column="nilai_akhir" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('bersedia_pindah')} className="inline-flex items-center gap-1 mx-auto hover:text-gray-700 dark:hover:text-gray-300">
                                             Bersedia Pindah
-                                            <SortIcon column="bersedia_pindah" />
+                                            <SortIcon column="bersedia_pindah" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('rec_prodi')} className="inline-flex items-center gap-1 mx-auto hover:text-gray-700 dark:hover:text-gray-300">
                                             Rec Prodi
-                                            <SortIcon column="rec_prodi" />
+                                            <SortIcon column="rec_prodi" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
                                     <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider">Aksi</th>

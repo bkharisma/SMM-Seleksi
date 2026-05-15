@@ -61,7 +61,7 @@ interface SeleksiPreviewProps {
 }
 
 export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }: SeleksiPreviewProps) {
-    const { flash, errors } = usePage().props as any;
+    const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
     const [selectedNup, setSelectedNup] = useState<string[]>([]);
     const [processing, setProcessing] = useState(false);
@@ -72,8 +72,10 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 5000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 5000);
+            }, 0);
         }
     }, [flash]);
 
@@ -82,7 +84,7 @@ export default function SeleksiPreview({ tahap, jalur, prodi, preview, filters }
             const lulusNup = preview.results
                 .filter((r) => r.lulus)
                 .map((r) => r.nup);
-            setSelectedNup(lulusNup);
+            setTimeout(() => setSelectedNup(lulusNup), 0);
         }
     }, [preview]);
 

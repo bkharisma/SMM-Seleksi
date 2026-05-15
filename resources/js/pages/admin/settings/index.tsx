@@ -51,13 +51,15 @@ export default function Settings({ settings }: SettingsProps) {
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     useEffect(() => {
-        setLogoPreview(app?.logo_url || null);
+        setTimeout(() => setLogoPreview(app?.logo_url || null), 0);
     }, [app?.logo_url]);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -83,6 +85,7 @@ export default function Settings({ settings }: SettingsProps) {
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('logo', file);
             const reader = new FileReader();
@@ -95,7 +98,10 @@ export default function Settings({ settings }: SettingsProps) {
 
     const handleUploadLogo = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.logo) return;
+
+        if (!data.logo) {
+return;
+}
 
         setLogoProcessing(true);
         const formData = new FormData();
@@ -105,6 +111,7 @@ export default function Settings({ settings }: SettingsProps) {
             onSuccess: () => {
                 setLogoProcessing(false);
                 setData('logo', null);
+
                 if (fileInputRef.current) {
                     fileInputRef.current.value = '';
                 }

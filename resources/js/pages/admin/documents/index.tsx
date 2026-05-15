@@ -21,14 +21,16 @@ export default function DocumentsIndex({ documents }: DocumentsProps) {
     const [showAlert, setShowAlert] = useState(false);
     const [uploading, setUploading] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { post, processing, errors, reset } = useForm({
         file: null as File | null,
     });
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

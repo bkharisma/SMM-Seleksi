@@ -50,8 +50,10 @@ export default function UsersIndex({ users, roles, filters }: UsersIndexProps) {
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

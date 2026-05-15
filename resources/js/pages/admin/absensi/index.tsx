@@ -43,7 +43,7 @@ interface AbsensiIndexProps {
     ruang: Ruang[];
 }
 
-export default function AbsensiIndex({ absensi, filters, ruang }: AbsensiIndexProps) {
+export default function AbsensiIndex({ absensi, filters }: AbsensiIndexProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
     const [tanggal, setTanggal] = useState(filters.tanggal || '');
@@ -51,8 +51,10 @@ export default function AbsensiIndex({ absensi, filters, ruang }: AbsensiIndexPr
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

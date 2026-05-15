@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import { getStoredTheme, setStoredTheme } from '@/lib/theme';
 import Badge from '@/components/ui/badge';
 import Card from '@/components/ui/card';
+import { getStoredTheme, setStoredTheme, applyTheme } from '@/lib/theme';
 import DashboardUploadSyarat from './dashboard-upload-syarat';
 
 interface ScoreDetail {
@@ -89,6 +89,10 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
     const [themeOpen, setThemeOpen] = useState(false);
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>(getStoredTheme());
     const themeRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        applyTheme(getStoredTheme());
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -203,7 +207,7 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
                                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                                             Selamat datang, {peserta.nama}
                                         </h2>
-                                        <p className="text-sm text-gray-500">NUP: {peserta.nup}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">NUP: {peserta.nup}</p>
                                     </div>
                                 </div>
                                 <Badge variant={peserta.status ? 'success' : 'danger'}>
@@ -252,9 +256,9 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
                                         <div key={field.key} className="flex items-center justify-between">
                                             <span className="text-gray-600 dark:text-gray-400">{field.label}</span>
                                             {field.check ? (
-                                                <span className="text-green-600">✓</span>
+                                                <span className="text-green-600 dark:text-green-400">✓</span>
                                             ) : (
-                                                <span className="text-red-500">✗</span>
+                                                <span className="text-red-500 dark:text-red-400">✗</span>
                                             )}
                                         </div>
                                     ))}
@@ -286,7 +290,7 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
                                                     Tahap {tahap.urutan}: {tahap.tahap_nama}
                                                 </span>
                                                 {Object.keys(tahap.scores).length > 0 && (
-                                                    <div className="mt-1 flex gap-3 text-xs text-gray-500">
+                                                    <div className="mt-1 flex gap-3 text-xs text-gray-500 dark:text-gray-400">
                                                         {Object.entries(tahap.scores).map(([key, val]) => (
                                                             <span key={key}>{key.toUpperCase()}: {val !== null ? val : '-'}</span>
                                                         ))}
@@ -316,7 +320,7 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
                                                 {item.jam_awal && ` (${item.jam_awal}${item.jam_akhir ? ` - ${item.jam_akhir}` : ''})`}
                                             </p>
                                             {item.keterangan && (
-                                                <p className="mt-1 text-xs text-gray-500">{item.keterangan}</p>
+                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{item.keterangan}</p>
                                             )}
                                         </div>
                                     ))}

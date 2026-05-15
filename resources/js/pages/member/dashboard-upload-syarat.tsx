@@ -1,11 +1,11 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import { getStoredTheme, setStoredTheme } from '@/lib/theme';
 import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
+import { getStoredTheme, setStoredTheme, applyTheme } from '@/lib/theme';
 
 interface FileKesehatan {
     id: number;
@@ -72,6 +72,10 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
     const themeRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        applyTheme(getStoredTheme());
+    }, []);
+
+    useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
                 setThemeOpen(false);
@@ -88,8 +92,6 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
         setThemeOpen(false);
     };
 
-    const parametersRef = useRef<Parameter[]>(kesehatan?.parameters || []);
-    parametersRef.current = kesehatan?.parameters || [];
 
     const paramData: Record<string, any> = {};
 
@@ -120,7 +122,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
 
     transform((formData) => ({
         ...formData,
-        parameters: parametersRef.current,
+        parameters: kesehatan?.parameters || [],
     }));
 
     const { data: fileData, setData: setFileData, processing: fileProcessing } = useForm({
@@ -129,8 +131,10 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
@@ -286,7 +290,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                                             Selamat datang, {peserta.nama}
                                         </h2>
-                                        <p className="text-sm text-gray-500">NUP: {peserta.nup}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">NUP: {peserta.nup}</p>
                                     </div>
                                 </div>
                                 <Badge variant={peserta.status ? 'success' : 'danger'}>
@@ -423,7 +427,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                                         <p className="mt-1 text-xs text-gray-500">Standar: {param.nilai}</p>
                                                                     )}
                                                                     {errors[errorKey] && (
-                                                                        <p className="mt-1 text-xs text-red-600">{errors[errorKey]}</p>
+                                                                        <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors[errorKey]}</p>
                                                                     )}
                                                                 </div>
                                                             );
@@ -506,7 +510,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                                             {!kesehatan?.finalized && (
                                                                 <button
                                                                     onClick={() => handleDeleteFile(file.id)}
-                                                                    className="text-sm text-red-600 hover:text-red-800"
+                                                                    className="text-sm text-red-600 hover:text-red-800 dark:hover:text-red-300"
                                                                 >
                                                                     Hapus
                                                                 </button>

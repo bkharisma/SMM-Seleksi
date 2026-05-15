@@ -51,14 +51,15 @@ export default function PeminatIndex({ peminat, filters }: PeminatIndexProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
     const [search, setSearch] = useState(filters.search || '');
-    const [prodiId, setProdiId] = useState(filters.prodi_id || '');
     const [status, setStatus] = useState(filters.status || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

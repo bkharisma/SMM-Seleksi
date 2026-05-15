@@ -40,18 +40,22 @@ export default function PembobotanEdit({ tahap, ujian, pembobotan }: Props) {
             const existing = pembobotan?.bobot_config?.[u.id.toString()];
             initial[u.id.toString()] = existing !== undefined ? String(existing) : '';
         });
-        setBobot(initial);
+        setTimeout(() => setBobot(initial), 0);
     }, [ujian, pembobotan]);
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
 
         if (flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 5000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 5000);
+            }, 0);
         }
     }, [flash]);
 

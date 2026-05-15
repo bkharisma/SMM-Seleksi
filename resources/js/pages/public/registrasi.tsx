@@ -50,8 +50,10 @@ export default function Registrasi({ periode, aktif, biaya, maxPilihan, prodi, s
 
     useEffect(() => {
         if (flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 5000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 5000);
+            }, 0);
         }
     }, [flash]);
 

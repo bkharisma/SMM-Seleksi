@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\JalurPendaftaran;
 use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
 use App\Models\PendaftarNilai;
@@ -49,6 +50,12 @@ beforeEach(function () {
         'active' => true,
     ]);
 
+    JalurPendaftaran::create([
+        'kode_jalur' => 'REG',
+        'nama_jalur' => 'Reguler',
+        'active' => true,
+    ]);
+
     $this->actingAs($admin);
 });
 
@@ -88,6 +95,7 @@ test('seleksi preview shows candidates', function () {
         'tahap_id' => 1,
         'prodi_id' => 1,
         'pilihan' => 1,
+        'jalur_id' => 1,
     ]);
 
     $response->assertOk();
@@ -120,6 +128,7 @@ test('seleksi save marks peserta as lulus', function () {
         'tahap_id' => 1,
         'prodi_id' => 1,
         'pilihan' => 1,
+        'jalur_id' => 1,
         'selected_nup' => ['250001'],
     ]);
 
@@ -158,7 +167,7 @@ test('can check kelulusan as public with valid nup', function () {
         'nama' => 'Test Peserta',
         'pil1' => 1,
         'lulus' => 1,
-        'lulus_tahap' => 'Tahap 1',
+        'lulus_tahap' => 1,
     ]);
 
     $user = User::create([

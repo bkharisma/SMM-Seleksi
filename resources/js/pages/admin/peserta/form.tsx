@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Alert from '@/components/ui/alert';
@@ -95,18 +95,20 @@ export default function PesertaForm({ peserta, prodi, ruang, provinsi, kabupaten
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     useEffect(() => {
         if (data.kode_prop) {
-            setKabupatenList(kabupaten.filter(k => k.kode_prop === data.kode_prop));
+            setTimeout(() => setKabupatenList(kabupaten.filter(k => k.kode_prop === data.kode_prop)), 0);
         } else {
-            setKabupatenList(kabupaten);
+            setTimeout(() => setKabupatenList(kabupaten), 0);
         }
-    }, [data.kode_prop]);
+    }, [data.kode_prop, kabupaten]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

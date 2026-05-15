@@ -120,7 +120,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
         }
 
         return map;
-    }, [kriteriaUjian]);
+    }, [kriteriaUjian, initHealthParameters]);
 
     const buildInitialKu = (tahapId: number, existingMap: Record<number, KriteriaUjianItem>): KriteriaUjianItem[] => {
         const initial: KriteriaUjianItem[] = [];
@@ -146,7 +146,7 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
         }
 
         return [];
-    }, [kriteria, ujian, existingKuMap]);
+    }, [kriteria, existingKuMap, buildInitialKu]);
 
     const { data, setData, post, put, processing, errors } = useForm({
         prodi_id: kriteria?.prodi_id?.toString() || '',
@@ -159,8 +159,10 @@ export default function KriteriaForm({ kriteria, kriteriaUjian, prodi, tahap, uj
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

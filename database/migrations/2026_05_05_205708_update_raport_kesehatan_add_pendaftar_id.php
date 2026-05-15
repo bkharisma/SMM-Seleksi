@@ -16,6 +16,7 @@ return new class extends Migration
         });
 
         Schema::table('file_raport', function (Blueprint $table) {
+            $table->dropIndex(['noujian']);
             $table->dropColumn('noujian');
             $table->foreignId('pendaftar_id')->nullable()->after('id')->constrained('pendaftar')->onDelete('cascade');
         });
@@ -25,6 +26,7 @@ return new class extends Migration
         });
 
         Schema::table('file_kesehatan', function (Blueprint $table) {
+            $table->dropIndex(['noujian']);
             $table->dropColumn('noujian');
             $table->foreignId('pendaftar_id')->nullable()->after('id')->constrained('pendaftar')->onDelete('cascade');
         });
@@ -39,6 +41,7 @@ return new class extends Migration
             $table->dropForeign(['pendaftar_id']);
             $table->dropColumn('pendaftar_id');
             $table->string('noujian', 20)->after('id');
+            $table->index('noujian');
         });
 
         Schema::table('kesehatan', function (Blueprint $table) {
@@ -50,6 +53,7 @@ return new class extends Migration
             $table->dropForeign(['pendaftar_id']);
             $table->dropColumn('pendaftar_id');
             $table->string('noujian', 20)->after('id');
+            $table->index('noujian');
         });
 
         Schema::table('raport', function (Blueprint $table) {

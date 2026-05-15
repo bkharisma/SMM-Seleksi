@@ -41,7 +41,10 @@ export default function JadwalPage({ jadwal }: JadwalPageProps) {
     };
 
     const formatDate = (date: string | null) => {
-        if (!date) return '-';
+        if (!date) {
+return '-';
+}
+
         return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     };
 

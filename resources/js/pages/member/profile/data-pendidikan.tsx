@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import Alert from '@/components/ui/alert';
 import Button from '@/components/ui/button';
@@ -33,7 +33,7 @@ interface PendidikanProps {
     education: EducationLevel[];
 }
 
-export default function DataPendidikan({ peserta, education }: PendidikanProps) {
+export default function DataPendidikan({ peserta }: PendidikanProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
 
@@ -56,8 +56,10 @@ export default function DataPendidikan({ peserta, education }: PendidikanProps) 
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 

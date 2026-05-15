@@ -31,7 +31,10 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
     const { app } = usePage().props as any;
 
     const formatDate = (date: string | null) => {
-        if (!date) return '-';
+        if (!date) {
+return '-';
+}
+
         return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
@@ -43,6 +46,7 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
             daftar: 'edit_note',
             lainnya: 'event',
         };
+
         return icons[jenis || ''] || 'event';
     };
 
@@ -54,6 +58,7 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
             daftar: 'bg-secondary-container text-on-secondary-container',
             lainnya: 'bg-surface-variant text-on-surface',
         };
+
         return colors[jenis || ''] || 'bg-surface-variant text-on-surface';
     };
     const [themeOpen, setThemeOpen] = useState(false);

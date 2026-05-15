@@ -96,13 +96,17 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
 
         if (flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
@@ -196,7 +200,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                             <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
                                 <p className="text-sm font-medium text-red-700 dark:text-red-300">Catatan Admin:</p>
                                 <p className="text-sm text-red-600 dark:text-red-400">{kesehatan.catatan}</p>
-                                <p className="mt-1 text-xs text-red-500">Silakan perbaiki dan upload ulang dokumen Anda.</p>
+                                <p className="mt-1 text-xs text-red-500 dark:text-red-400">Silakan perbaiki dan upload ulang dokumen Anda.</p>
                             </div>
                         )}
                         {kesehatan.status === 'Lengkap' && kesehatan.catatan && (
@@ -281,10 +285,10 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                             <option value="0">Tidak</option>
                                                         </select>
                                                         {param.nilai && (
-                                                            <p className="mt-1 text-xs text-gray-500">Standar: {param.nilai}</p>
+                                                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Standar: {param.nilai}</p>
                                                         )}
                                                         {errors[errorKey] && (
-                                                            <p className="mt-1 text-xs text-red-600">{errors[errorKey]}</p>
+                                                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors[errorKey]}</p>
                                                         )}
                                                     </div>
                                                 );
@@ -350,7 +354,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                     </>
                                 )}
                             </div>
-                            <p className="text-xs text-gray-500">Format: PDF. Maks: 5MB</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Format: PDF. Maks: 5MB</p>
 
                             {files.length > 0 && (
                                 <div className="mt-4">
@@ -362,7 +366,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                     href={`/storage/${file.file_lockes}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-sm text-blue-600 hover:underline"
+                                                    className="text-sm text-blue-600 hover:underline dark:text-blue-400"
                                                 >
                                                     {file.file_lockes.split('/').pop()}
                                                 </a>
@@ -373,7 +377,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                                                 router.delete(`/member/upload/kesehatan/file/${file.id}`);
                                                             }
                                                         }}
-                                                        className="text-sm text-red-600 hover:text-red-800"
+                                                        className="text-sm text-red-600 hover:text-red-800 dark:hover:text-red-300"
                                                     >
                                                         Hapus
                                                     </button>
@@ -389,7 +393,7 @@ export default function KesehatanUpload({ peserta, kesehatan, files, parameters 
                                     <Button onClick={handleFinalize} variant="primary">
                                         Finalisasi Dokumen
                                     </Button>
-                                    <p className="mt-2 text-xs text-gray-500">
+                                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                         Setelah finalisasi, dokumen tidak dapat dihapus atau diubah lagi.
                                     </p>
                                 </div>

@@ -16,14 +16,9 @@ return new class extends Migration
         Schema::dropIfExists('mnoujian');
         Schema::dropIfExists('peserta');
         Schema::dropIfExists('peminat');
+        Schema::dropIfExists('survey');
         Schema::enableForeignKeyConstraints();
-    }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
         Schema::create('survey', function (Blueprint $table) {
             $table->id();
             $table->string('keterangan')->nullable();
@@ -33,7 +28,7 @@ return new class extends Migration
         Schema::create('peminat', function (Blueprint $table) {
             $table->id();
             $table->string('nup', 50)->unique();
-            $table->string('spmb', 20);
+            $table->string('spmb', 20)->nullable();
             $table->string('nama', 200);
             $table->string('pwd')->nullable();
             $table->string('email', 150)->nullable();
@@ -102,8 +97,24 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('datetime_expired')->nullable();
             $table->decimal('payment_amount', 15, 2)->nullable();
+            $table->decimal('cumulative_payment_amount', 15, 2)->nullable();
             $table->timestamp('datetime_payment')->nullable();
+            $table->timestamp('datetime_payment_iso8601')->nullable();
             $table->timestamps();
         });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('bsi_pembayaran');
+        Schema::dropIfExists('mnoujian');
+        Schema::dropIfExists('peserta');
+        Schema::dropIfExists('peminat');
+        Schema::dropIfExists('survey');
+        Schema::enableForeignKeyConstraints();
     }
 };

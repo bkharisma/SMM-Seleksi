@@ -84,7 +84,7 @@ test('creates bsi pembayaran record in database', function () {
     $payment = BsiPembayaran::where('peminat_id', $peminat->id)->first();
     expect($payment)->not->toBeNull();
     expect($payment->trx_amount)->toBe(200000);
-    expect($payment->virtual_account)->toBe((int) $result['virtual_account']);
+    expect($payment->virtual_account)->toBe((string) $result['virtual_account']);
 });
 
 test('check payment returns correct status', function () {

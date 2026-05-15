@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('kode_pendaftar', 20)->unique()->comment('Kode pendaftar dari Excel');
             $table->string('noujian', 20)->unique()->nullable()->comment('Nomor ujian untuk login');
             $table->string('nama', 200);
-            $table->date('tanggal_lahir');
+            $table->date('tanggal_lahir')->nullable();
             $table->string('email', 150)->nullable();
             $table->string('no_hp', 20)->nullable();
 

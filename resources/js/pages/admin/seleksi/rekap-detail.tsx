@@ -57,8 +57,10 @@ export default function RekapDetail({ detail }: RekapDetailProps) {
 
     useEffect(() => {
         if (flash?.success || flash?.error) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 5000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 5000);
+            }, 0);
         }
     }, [flash]);
 

@@ -1,5 +1,4 @@
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 
 interface DashboardProps {
@@ -15,7 +14,7 @@ interface DashboardProps {
     monthly_registration: Array<{ month: string; count: number }>;
 }
 
-export default function Dashboard({ stats, prodi_distribution, monthly_registration }: DashboardProps) {
+export default function Dashboard({ stats }: DashboardProps) {
     const statCards = [
         {
             label: 'Total Pendaftar',

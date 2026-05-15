@@ -27,7 +27,6 @@ interface NewsFormProps {
 export default function NewsForm({ news }: NewsFormProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(news?.img ? `/storage/${news.img}` : null);
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [pdfName, setPdfName] = useState<string | null>(news?.pdf ? news.pdf.split('/').pop() ?? null : null);
@@ -45,14 +44,14 @@ export default function NewsForm({ news }: NewsFormProps) {
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     const handleImageChange = (file: File | null) => {
-        setImageFile(file);
-
         if (file) {
             setData('img', file);
             const reader = new FileReader();

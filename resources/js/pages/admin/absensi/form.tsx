@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Alert from '@/components/ui/alert';
@@ -47,14 +47,16 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
 
     useEffect(() => {
         if (flash?.success) {
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     useEffect(() => {
         setData('peserta_ids', selectedPeserta);
-    }, [selectedPeserta]);
+    }, [selectedPeserta, setData]);
 
     const togglePeserta = (id: number) => {
         setSelectedPeserta(prev =>
@@ -76,10 +78,6 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
         e.preventDefault();
         post('/admin/absensi');
     };
-
-    const filteredPeserta = selectedPeserta.length > 0
-        ? peserta.filter(p => selectedPeserta.includes(p.id))
-        : peserta;
 
     return (
         <AdminLayout title="Tambah Sesi Absensi">

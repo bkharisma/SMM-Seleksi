@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
-import { getStoredTheme, setStoredTheme, toggleTheme, getEffectiveTheme } from '@/lib/theme';
+import { getStoredTheme, setStoredTheme } from '@/lib/theme';
 
 interface NavItem {
     href?: string;
@@ -89,12 +89,15 @@ export default function TopNav() {
     const navRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        setLogoUrl(app?.logo_url || null);
+        if (app?.logo_url !== undefined) {
+            setTimeout(() => setLogoUrl(app?.logo_url || null), 0);
+        }
     }, [app?.logo_url]);
 
     useEffect(() => {
-        setCurrentTheme(getStoredTheme());
-    }, [getStoredTheme()]);
+        const stored = getStoredTheme();
+        setTimeout(() => setCurrentTheme(stored), 0);
+    }, []);
 
     const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
         setStoredTheme(theme);

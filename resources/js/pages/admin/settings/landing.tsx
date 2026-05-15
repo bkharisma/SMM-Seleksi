@@ -31,15 +31,18 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
 
     useEffect(() => {
         if (flash?.success) {
-            setAlertType('success');
-            setAlertMessage(flash.success);
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => {
+                setAlertType('success');
+                setAlertMessage(flash.success);
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 3000);
+            }, 0);
         }
     }, [flash]);
 
     const handleHeroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('hero_image', file);
             const reader = new FileReader();
@@ -52,7 +55,10 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
 
     const handleUploadHero = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.hero_image) return;
+
+        if (!data.hero_image) {
+return;
+}
 
         setHeroProcessing(true);
         const formData = new FormData();
@@ -62,12 +68,14 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
             onSuccess: () => {
                 setHeroProcessing(false);
                 setData('hero_image', null);
+
                 if (heroFileInputRef.current) {
                     heroFileInputRef.current.value = '';
                 }
             },
             onError: () => {
                 setHeroProcessing(false);
+
                 if (errors?.image) {
                     setAlertType('error');
                     setAlertMessage(errors.image);
@@ -86,6 +94,7 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
 
     const handleAccreditationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('accreditation_image', file);
             const reader = new FileReader();
@@ -98,7 +107,10 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
 
     const handleUploadAccreditation = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.accreditation_image) return;
+
+        if (!data.accreditation_image) {
+return;
+}
 
         setAccreditationProcessing(true);
         const formData = new FormData();
@@ -108,12 +120,14 @@ export default function LandingSettings({ settings }: LandingSettingsProps) {
             onSuccess: () => {
                 setAccreditationProcessing(false);
                 setData('accreditation_image', null);
+
                 if (accreditationFileInputRef.current) {
                     accreditationFileInputRef.current.value = '';
                 }
             },
             onError: () => {
                 setAccreditationProcessing(false);
+
                 if (errors?.image) {
                     setAlertType('error');
                     setAlertMessage(errors.image);
