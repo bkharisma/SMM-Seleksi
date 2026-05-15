@@ -95,6 +95,8 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::delete('/settings/landing/hero-image', [SetupController::class, 'deleteHeroImage'])->name('settings.delete-hero-image');
     Route::post('/settings/landing/accreditation-image', [SetupController::class, 'uploadAccreditationImage'])->name('settings.upload-accreditation-image');
     Route::delete('/settings/landing/accreditation-image', [SetupController::class, 'deleteAccreditationImage'])->name('settings.delete-accreditation-image');
+    Route::post('/settings/favicon', [SetupController::class, 'uploadFavicon'])->name('settings.upload-favicon');
+    Route::delete('/settings/favicon', [SetupController::class, 'deleteFavicon'])->name('settings.delete-favicon');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

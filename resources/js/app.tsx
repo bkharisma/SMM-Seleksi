@@ -2,7 +2,7 @@ import { createInertiaApp  } from '@inertiajs/react';
 import type {ResolvedComponent} from '@inertiajs/react';
 import { hydrateRoot } from 'react-dom/client';
 
-const appName = import.meta.env.VITE_APP_NAME || 'SMMPTP Poltekpar Palembang';
+const appName = import.meta.env.VITE_APP_NAME || 'SMM Poltekpar Palembang';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

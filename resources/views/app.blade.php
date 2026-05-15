@@ -13,8 +13,16 @@
             })();
         </script>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        @php
+            $faviconPath = \App\Models\Setup::get('favicon_path');
+            $faviconUrl = $faviconPath ? asset('storage/' . $faviconPath) : null;
+        @endphp
+        @if($faviconUrl)
+            <link rel="icon" href="{{ $faviconUrl }}" type="image/png">
+        @else
+            <link rel="icon" href="/favicon.ico" sizes="any">
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        @endif
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>

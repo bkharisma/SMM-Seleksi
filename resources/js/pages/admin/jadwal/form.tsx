@@ -99,6 +99,7 @@ return '';
                                 { value: 'wawancara', label: 'Wawancara' },
                                 { value: 'kesehatan', label: 'Kesehatan' },
                                 { value: 'daftar', label: 'Pendaftaran' },
+                                { value: 'pengumuman', label: 'Pengumuman' },
                                 { value: 'lainnya', label: 'Lainnya' },
                             ]}
                             placeholder="Pilih Jenis"

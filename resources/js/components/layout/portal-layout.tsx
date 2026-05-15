@@ -11,7 +11,7 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
             <header className="border-b bg-surface-container-lowest shadow-sm border-outline-variant">
                 <div className="mx-auto flex max-w-[1200px] items-center justify-between px-gutter h-20">
                     <Link href="/" className="text-h3 font-h3 text-primary">
-                        SMMPTP Poltekpar
+                        SMM Poltekpar
                     </Link>
                     <nav className="flex items-center gap-sm">
                         <Link href="/" className="text-label-md text-secondary hover:text-primary transition-colors">
@@ -36,7 +36,7 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
             </main>
             <footer className="mt-cxl pt-cl border-t border-outline-variant">
                 <div className="mx-auto max-w-[1200px] px-gutter py-cl text-center text-label-md text-secondary">
-                    <p>&copy; {new Date().getFullYear()} SMMPTP Politeknik Pariwisata Palembang. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} SMM Politeknik Pariwisata Palembang. All rights reserved.</p>
                 </div>
             </footer>
         </div>

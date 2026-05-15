@@ -20,6 +20,9 @@ class HandleInertiaRequests extends Middleware
         $logoPath = \App\Models\Setup::get('logo_path');
         $logoUrl = $logoPath ? asset('storage/' . $logoPath) : null;
 
+        $faviconPath = \App\Models\Setup::get('favicon_path');
+        $faviconUrl = $faviconPath ? asset('storage/' . $faviconPath) : null;
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -38,6 +41,7 @@ class HandleInertiaRequests extends Middleware
             'app' => [
                 'name' => config('app.name'),
                 'logo_url' => $logoUrl,
+                'favicon_url' => $faviconUrl,
             ],
         ];
     }

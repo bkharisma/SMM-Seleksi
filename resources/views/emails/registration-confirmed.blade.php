@@ -1,5 +1,5 @@
 @component('mail::message')
-# Konfirmasi Pendaftaran SMMPTP
+# Konfirmasi Pendaftaran SMM
 
 Halo **{{ $peminat->nama }}**,
 
@@ -47,5 +47,5 @@ Login Member
 Jika Anda memiliki pertanyaan, silakan hubungi kami.
 
 Salam,<br>
-**Panitia SMMPTP Poltekpar Palembang**
+**Panitia SMM Poltekpar Palembang**
 @endcomponent

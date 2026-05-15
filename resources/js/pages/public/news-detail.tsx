@@ -44,7 +44,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
 
     return (
         <div className="min-h-screen bg-background">
-            <Head title={`${news.title} - SMMPTP Poltekpar Palembang`} />
+            <Head title={`${news.title} - SMM Poltekpar Palembang`} />
 
             <nav className="bg-surface-container-lowest border-b border-outline-variant docked full-width top-0 shadow-sm sticky z-50">
                 <div className="flex justify-between items-center w-full px-gutter max-w-[1200px] mx-auto h-20">
@@ -174,8 +174,8 @@ export default function NewsDetail({ news }: NewsDetailProps) {
             <footer className="bg-surface-container-highest border-t border-outline-variant">
                 <div className="flex flex-col md:flex-row justify-between items-center w-full px-gutter py-cl max-w-[1200px] mx-auto">
                     <div className="mb-cl md:mb-0">
-                        <div className="text-h3 font-h3 text-on-surface mb-xs">Poltekpar Palembang</div>
-                        <p className="text-on-surface-variant font-label-md max-w-[300px]">Kampus Unggulan Pariwisata Indonesia Timur. Mencetak profesional hospitality dunia.</p>
+                        <div className="text-lg md:text-h3 font-h3 text-on-surface mb-xs">Politeknik Pariwisata Palembang</div>
+                        <p className="text-on-surface-variant font-label-md max-w-[350px] text-sm">Kampus Perguruan tinggi vokasi di bidang keparwisataan yang berkomitmen untuk menjadi perguruan tinggi yang berstandar international, unggul, dan berkepribadian indonesia.</p>
                     </div>
                     <div className="flex flex-col items-center md:items-end gap-sm">
                         <div className="flex gap-cs mb-xs">
@@ -183,7 +183,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
                             <Link href="/kebijakan-privasi" className="text-on-surface-variant hover:text-primary transition-colors underline font-label-md">Kebijakan Privasi</Link>
                             <Link href="/syarat-ketentuan" className="text-on-surface-variant hover:text-primary transition-colors underline font-label-md">Syarat & Ketentuan</Link>
                         </div>
-                        <p className="text-on-surface-variant font-label-md opacity-70">© 2024 Poltekpar Palembang. Seleksi Mandiri Masuk.</p>
+                        <p className="text-on-surface-variant font-label-md opacity-70 text-sm">© {new Date().getFullYear()} Seleksi Mandiri Masuk Poltekpar Palembang.</p>
                     </div>
                 </div>
             </footer>

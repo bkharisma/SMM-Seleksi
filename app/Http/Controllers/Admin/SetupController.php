@@ -30,6 +30,7 @@ class SetupController extends Controller
             'dashboard_lengkap' => $settings->get('dashboard_lengkap')?->int_val ?? 1,
             'dashboard_upload_syarat' => $settings->get('dashboard_upload_syarat')?->int_val ?? 0,
             'logo_path' => $settings->get('logo_path')?->char_val ?? '',
+            'favicon_path' => $settings->get('favicon_path')?->char_val ?? '',
         ];
 
         return Inertia::render('admin/settings/index', [
@@ -232,5 +233,53 @@ class SetupController extends Controller
         Setup::where('code', 'accreditation_image_path')->delete();
 
         return redirect()->route('admin.settings.landing')->with('success', 'Foto akreditasi berhasil dihapus.');
+    }
+
+    public function uploadFavicon(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'favicon' => 'required|file|mimes:png,jpg,jpeg,svg,ico,webp|max:2048',
+        ]);
+
+        $oldPath = Setup::get('favicon_path');
+
+        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $file = $request->file('favicon');
+        $extension = $file->getClientOriginalExtension() ?: 'png';
+        $filename = 'favicon_' . time() . '.' . $extension;
+        $storedPath = $file->storeAs('favicons', $filename, 'public');
+
+        if (!$storedPath) {
+            \Illuminate\Support\Facades\Log::error('Favicon upload failed', [
+                'filename' => $filename,
+                'extension' => $extension,
+                'original_name' => $file->getClientOriginalName(),
+            ]);
+            return redirect()->route('admin.settings')->withErrors(['favicon' => 'Gagal mengupload favicon. Periksa permission folder storage.']);
+        }
+
+        Setup::set('favicon_path', 'favicons/' . $filename);
+
+        \Illuminate\Support\Facades\Log::info('Favicon uploaded successfully', [
+            'path' => 'favicons/' . $filename,
+        ]);
+
+        return redirect()->route('admin.settings')->with('success', 'Favicon berhasil diupload.');
+    }
+
+    public function deleteFavicon(): RedirectResponse
+    {
+        $faviconPath = Setup::get('favicon_path');
+
+        if ($faviconPath && Storage::disk('public')->exists($faviconPath)) {
+            Storage::disk('public')->delete($faviconPath);
+        }
+
+        Setup::where('code', 'favicon_path')->delete();
+
+        return redirect()->route('admin.settings')->with('success', 'Favicon berhasil dihapus.');
     }
 }

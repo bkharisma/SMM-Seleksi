@@ -3,7 +3,7 @@
 
 Halo **{{ $peserta->nama }}**,
 
-Pembayaran pendaftaran Anda telah terkonfirmasi. Anda sekarang resmi menjadi **Peserta SMMPTP Poltekpar Palembang**.
+Pembayaran pendaftaran Anda telah terkonfirmasi. Anda sekarang resmi menjadi **Peserta SMM Poltekpar Palembang**.
 
 ## Data Peserta
 
@@ -27,5 +27,5 @@ Login Dashboard
 Selamat dan semoga sukses!
 
 Salam,<br>
-**Panitia SMMPTP Poltekpar Palembang**
+**Panitia SMM Poltekpar Palembang**
 @endcomponent

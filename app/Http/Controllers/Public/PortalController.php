@@ -26,7 +26,7 @@ class PortalController extends Controller
                 'published_at' => $item->published_at,
             ];
         });
-        $jadwal = Jadwal::active()->orderBy('urutan', 'asc')->take(5)->get()->map(function ($item) {
+        $jadwal = Jadwal::active()->orderBy('urutan', 'asc')->get()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'nama_jadwal' => $item->nama_jadwal,
@@ -42,12 +42,14 @@ class PortalController extends Controller
         $settings = Setup::all()->keyBy('code');
         $heroImagePath = $settings->get('hero_image_path')?->char_val ?? '';
         $accreditationImagePath = $settings->get('accreditation_image_path')?->char_val ?? '';
+        $tahunAkademik = $settings->get('tahun_akademik')?->char_val ?? '2024/2025';
 
         return Inertia::render('public/home', [
             'news' => $news,
             'jadwal' => $jadwal,
             'hero_image_url' => $heroImagePath ? "/storage/{$heroImagePath}" : null,
             'accreditation_image_url' => $accreditationImagePath ? "/storage/{$accreditationImagePath}" : null,
+            'tahun_akademik' => $tahunAkademik,
         ]);
     }
 
@@ -137,7 +139,7 @@ class PortalController extends Controller
 
     public function jadwal(): Response
     {
-        $jadwal = Jadwal::active()->latest('tgl_awal')->get()->map(function ($item) {
+        $jadwal = Jadwal::active()->orderBy('urutan', 'asc')->get()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'nama_jadwal' => $item->nama_jadwal,
@@ -157,7 +159,19 @@ class PortalController extends Controller
 
     public function kontak(): Response
     {
-        return Inertia::render('public/kontak');
+        $settings = Setup::all()->keyBy('code');
+
+        $data = [
+            'nama_ptp' => $settings->get('nama_ptp')?->char_val ?? '',
+            'alamat_ptp' => $settings->get('alamat_ptp')?->char_val ?? '',
+            'telepon_ptp' => $settings->get('telepon_ptp')?->char_val ?? '',
+            'email_ptp' => $settings->get('email_ptp')?->char_val ?? '',
+            'website_ptp' => $settings->get('website_ptp')?->char_val ?? '',
+        ];
+
+        return Inertia::render('public/kontak', [
+            'settings' => $data,
+        ]);
     }
 
     public function kebijakanPrivasi(): Response

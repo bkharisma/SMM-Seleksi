@@ -23,6 +23,7 @@ interface SettingsProps {
         dashboard_lengkap: number;
         dashboard_upload_syarat: number;
         logo_path: string;
+        favicon_path: string;
     };
 }
 
@@ -31,7 +32,12 @@ export default function Settings({ settings }: SettingsProps) {
     const [showAlert, setShowAlert] = useState(false);
     const [logoPreview, setLogoPreview] = useState<string | null>(app?.logo_url || null);
     const [logoProcessing, setLogoProcessing] = useState(false);
+    const [faviconPreview, setFaviconPreview] = useState<string | null>(
+        settings.favicon_path ? `/storage/${settings.favicon_path}` : (app?.favicon_url || null)
+    );
+    const [faviconProcessing, setFaviconProcessing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const faviconFileInputRef = useRef<HTMLInputElement>(null);
 
     const { data, setData, put, delete: destroy, processing, errors } = useForm({
         nama_ptp: settings.nama_ptp,
@@ -47,6 +53,7 @@ export default function Settings({ settings }: SettingsProps) {
         dashboard_lengkap: settings.dashboard_lengkap.toString(),
         dashboard_upload_syarat: settings.dashboard_upload_syarat.toString(),
         logo: null as File | null,
+        favicon: null as File | null,
     });
 
     useEffect(() => {
@@ -61,6 +68,12 @@ export default function Settings({ settings }: SettingsProps) {
     useEffect(() => {
         setTimeout(() => setLogoPreview(app?.logo_url || null), 0);
     }, [app?.logo_url]);
+
+    useEffect(() => {
+        setTimeout(() => setFaviconPreview(
+            settings.favicon_path ? `/storage/${settings.favicon_path}` : (app?.favicon_url || null)
+        ), 0);
+    }, [app?.favicon_url, settings.favicon_path]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -125,6 +138,51 @@ return;
     const handleDeleteLogo = () => {
         if (confirm('Apakah Anda yakin ingin menghapus logo?')) {
             destroy('/admin/settings/logo');
+        }
+    };
+
+    const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            setData('favicon', file);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setFaviconPreview(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadFavicon = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!data.favicon) {
+            return;
+        }
+
+        setFaviconProcessing(true);
+        const formData = new FormData();
+        formData.append('favicon', data.favicon);
+
+        router.post('/admin/settings/favicon', formData, {
+            onSuccess: () => {
+                setFaviconProcessing(false);
+                setData('favicon', null);
+
+                if (faviconFileInputRef.current) {
+                    faviconFileInputRef.current.value = '';
+                }
+            },
+            onError: () => {
+                setFaviconProcessing(false);
+            },
+        });
+    };
+
+    const handleDeleteFavicon = () => {
+        if (confirm('Apakah Anda yakin ingin menghapus favicon?')) {
+            destroy('/admin/settings/favicon');
         }
     };
 
@@ -281,6 +339,56 @@ return;
                                             onClick={handleDeleteLogo}
                                         >
                                             Hapus Logo
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-outline-variant pt-6">
+                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Favicon</h3>
+                        <p className="mb-4 text-sm text-on-surface-variant">
+                            Upload favicon yang akan ditampilkan pada browser tab. Format: PNG, JPG, JPEG, SVG, ICO. Maks: 2MB. Disarankan ukuran 32x32 atau 64x64 pixel.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-start gap-6">
+                            <div className="flex-shrink-0">
+                                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
+                                    {faviconPreview ? (
+                                        <img src={faviconPreview} alt="Favicon Preview" className="w-full h-full object-contain p-1" />
+                                    ) : (
+                                        <div className="text-center text-on-surface-variant">
+                                            <span className="material-symbols-outlined text-2xl mx-auto mb-1">image</span>
+                                            <p className="text-xs">Belum ada</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex-1 space-y-3">
+                                <input
+                                    ref={faviconFileInputRef}
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/x-icon"
+                                    onChange={handleFaviconChange}
+                                    className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
+                                />
+                                {errors.favicon && <p className="text-sm text-error">{errors.favicon}</p>}
+                                <div className="flex gap-sm">
+                                    <Button
+                                        type="button"
+                                        onClick={handleUploadFavicon}
+                                        isLoading={faviconProcessing}
+                                        disabled={!data.favicon}
+                                    >
+                                        Upload Favicon
+                                    </Button>
+                                    {faviconPreview && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleDeleteFavicon}
+                                        >
+                                            Hapus Favicon
                                         </Button>
                                     )}
                                 </div>
