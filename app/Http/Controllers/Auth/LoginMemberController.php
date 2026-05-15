@@ -27,23 +27,17 @@ class LoginMemberController extends Controller
 
         $peserta = Pendaftar::where('kode_pendaftar', $credentials['nup'])->first();
 
-        if (! $peserta) {
+        if (! $peserta || ! $peserta->user) {
             return back()->withErrors([
-                'nup' => 'NUP tidak ditemukan.',
+                'nup' => 'NUP atau password salah.',
             ])->onlyInput('nup');
         }
 
         $user = $peserta->user;
 
-        if (! $user) {
-            return back()->withErrors([
-                'nup' => 'Akun belum aktif. Silakan hubungi admin.',
-            ])->onlyInput('nup');
-        }
-
         if (! Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors([
-                'password' => 'Password salah.',
+                'nup' => 'NUP atau password salah.',
             ])->onlyInput('nup');
         }
 

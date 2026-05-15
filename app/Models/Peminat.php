@@ -11,6 +11,8 @@ class Peminat extends Model
 
     protected $table = 'peminat';
 
+    protected $hidden = ['pwd'];
+
     protected $fillable = [
         'nup', 'spmb', 'nama', 'pwd', 'email', 'hp', 'tgldaftar',
         'tgllahir', 'kwng', 'pil1', 'pil2', 'pil3', 'pil4',

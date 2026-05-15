@@ -59,6 +59,8 @@ class PaymentService
                 'nama_sekolah' => $peminat->nama_sekolah,
             ]);
 
+            $peminat->update(['pwd' => null]);
+
             try {
                 Mail::to($peserta->email)->queue(new PaymentConfirmed($peserta));
             } catch (\Exception $e) {

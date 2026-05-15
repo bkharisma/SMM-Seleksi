@@ -165,8 +165,13 @@ class RegistrationService
     protected function generateNup(): string
     {
         $year = date('y');
-        $lastPeminat = Peminat::orderBy('id', 'desc')->first();
-        $seq = $lastPeminat ? (intval(substr($lastPeminat->nup, -4)) + 1) : 1;
+        $lastNup = DB::table('peminat')
+            ->where('nup', 'like', $year.'%')
+            ->lockForUpdate()
+            ->orderByDesc('id')
+            ->value('nup');
+
+        $seq = $lastNup ? (intval(substr($lastNup, -4)) + 1) : 1;
 
         return sprintf('%s%04d', $year, $seq);
     }
