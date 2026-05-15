@@ -1,5 +1,6 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
+import { getStoredTheme, setStoredTheme } from '@/lib/theme';
 import Alert from '@/components/ui/alert';
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
@@ -65,7 +66,27 @@ interface DashboardUploadSyaratProps {
 export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardUploadSyaratProps) {
     const { flash } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
+    const [themeOpen, setThemeOpen] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>(getStoredTheme());
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const themeRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
+                setThemeOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
+        setStoredTheme(theme);
+        setCurrentTheme(theme);
+        setThemeOpen(false);
+    };
 
     const parametersRef = useRef<Parameter[]>(kesehatan?.parameters || []);
     parametersRef.current = kesehatan?.parameters || [];
@@ -184,9 +205,58 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 dark:from-gray-900 dark:to-gray-800">
             <Head title="Dashboard Upload Syarat" />
             <div className="mx-auto max-w-5xl">
-                <div className="mb-8 text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">SMMPTP</h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Dashboard Upload Syarat</p>
+                <div className="mb-8 text-center relative">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Seleksi Mandiri Masuk</h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Politeknik Pariwisata Palembang</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Dashboard Upload Syarat Peserta</p>
+
+                    <div className="absolute right-0 top-0" ref={themeRef}>
+                        <button
+                            onClick={() => setThemeOpen(!themeOpen)}
+                            className="rounded-full p-2 text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-all"
+                            title="Tema"
+                        >
+                            <span className="material-symbols-outlined text-lg">
+                                {currentTheme === 'light' && 'light_mode'}
+                                {currentTheme === 'dark' && 'dark_mode'}
+                                {currentTheme === 'system' && 'desktop_windows'}
+                            </span>
+                        </button>
+                        {themeOpen && (
+                            <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50">
+                                <button
+                                    onClick={() => handleThemeChange('light')}
+                                    className={`flex items-center gap-2 px-3 py-2 w-full text-left transition-all text-sm ${
+                                        currentTheme === 'light'
+                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">light_mode</span> Light
+                                </button>
+                                <button
+                                    onClick={() => handleThemeChange('dark')}
+                                    className={`flex items-center gap-2 px-3 py-2 w-full text-left transition-all text-sm ${
+                                        currentTheme === 'dark'
+                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">dark_mode</span> Dark
+                                </button>
+                                <button
+                                    onClick={() => handleThemeChange('system')}
+                                    className={`flex items-center gap-2 px-3 py-2 w-full text-left transition-all text-sm ${
+                                        currentTheme === 'system'
+                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-lg">desktop_windows</span> System
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {showAlert && flash?.success && (

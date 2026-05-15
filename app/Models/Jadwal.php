@@ -13,13 +13,14 @@ class Jadwal extends Model
 
     protected $fillable = [
         'nama_jadwal', 'keterangan', 'tgl_awal', 'tgl_akhir',
-        'jam_awal', 'jam_akhir', 'jenis', 'active',
+        'jam_awal', 'jam_akhir', 'jenis', 'active', 'urutan',
     ];
 
     protected $casts = [
         'tgl_awal' => 'date',
         'tgl_akhir' => 'date',
         'active' => 'boolean',
+        'urutan' => 'integer',
     ];
 
     public function scopeActive($query)

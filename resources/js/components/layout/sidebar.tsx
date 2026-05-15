@@ -42,6 +42,7 @@ const menuItems = [
     { href: '/admin/pembayaran/bsi', label: 'Pembayaran BSI', icon: 'payments' },
     { label: 'Pengaturan', divider: true },
     { href: '/admin/settings', label: 'Pengaturan Sistem', icon: 'settings' },
+    { href: '/admin/settings/landing', label: 'Pengaturan Landing', icon: 'web' },
     { href: '/admin/settings/dashboard-member', label: 'Dashboard Member', icon: 'dashboard' },
 ];
 

@@ -41,6 +41,13 @@ class NewsController extends Controller
         ]);
     }
 
+    public function show(News $news): Response
+    {
+        return Inertia::render('admin/news/show', [
+            'news' => $news->load('creator', 'publisher'),
+        ]);
+    }
+
     public function create(): Response
     {
         return Inertia::render('admin/news/form', [
@@ -57,12 +64,17 @@ class NewsController extends Controller
             'description' => 'required|string',
             'status' => 'required|in:draft,published',
             'img' => 'nullable|image|max:2048',
+            'pdf' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $validated['created_by'] = Auth::id();
 
         if ($request->hasFile('img')) {
-            $validated['img'] = $request->file('img')->store('news');
+            $validated['img'] = $request->file('img')->store('news', 'public');
+        }
+
+        if ($request->hasFile('pdf')) {
+            $validated['pdf'] = $request->file('pdf')->store('news/pdf', 'public');
         }
 
         if ($validated['status'] === 'published') {
@@ -91,6 +103,7 @@ class NewsController extends Controller
             'description' => 'required|string',
             'status' => 'required|in:draft,published',
             'img' => 'nullable|image|max:2048',
+            'pdf' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $validated['updated_by'] = Auth::id();
@@ -99,7 +112,14 @@ class NewsController extends Controller
             if ($news->img) {
                 Storage::disk('public')->delete($news->img);
             }
-            $validated['img'] = $request->file('img')->store('news');
+            $validated['img'] = $request->file('img')->store('news', 'public');
+        }
+
+        if ($request->hasFile('pdf')) {
+            if ($news->pdf) {
+                Storage::disk('public')->delete($news->pdf);
+            }
+            $validated['pdf'] = $request->file('pdf')->store('news/pdf', 'public');
         }
 
         if ($validated['status'] === 'published' && $news->status !== 'published') {
@@ -116,6 +136,10 @@ class NewsController extends Controller
     {
         if ($news->img) {
             Storage::disk('public')->delete($news->img);
+        }
+
+        if ($news->pdf) {
+            Storage::disk('public')->delete($news->pdf);
         }
 
         $news->delete();

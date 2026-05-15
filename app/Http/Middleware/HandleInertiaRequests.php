@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setup;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -16,6 +17,9 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
+        $logoPath = \App\Models\Setup::get('logo_path');
+        $logoUrl = $logoPath ? asset('storage/' . $logoPath) : null;
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -33,6 +37,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'app' => [
                 'name' => config('app.name'),
+                'logo_url' => $logoUrl,
             ],
         ];
     }

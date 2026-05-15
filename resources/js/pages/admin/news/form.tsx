@@ -16,6 +16,7 @@ interface News {
     title: string;
     description: string;
     img: string | null;
+    pdf: string | null;
     status: string;
 }
 
@@ -28,6 +29,8 @@ export default function NewsForm({ news }: NewsFormProps) {
     const [showAlert, setShowAlert] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(news?.img ? `/storage/${news.img}` : null);
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [pdfName, setPdfName] = useState<string | null>(news?.pdf ? news.pdf.split('/').pop() ?? null : null);
     const isEdit = !!news;
 
     const { data, setData, post, put, processing, errors } = useForm({
@@ -37,6 +40,7 @@ export default function NewsForm({ news }: NewsFormProps) {
         description: news?.description || '',
         status: news?.status || 'draft',
         img: null as File | null,
+        pdf: null as File | null,
     });
 
     useEffect(() => {
@@ -56,6 +60,15 @@ export default function NewsForm({ news }: NewsFormProps) {
                 setImagePreview(reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handlePdfChange = (file: File | null) => {
+        setPdfFile(file);
+
+        if (file) {
+            setData('pdf', file);
+            setPdfName(file.name);
         }
     };
 
@@ -136,6 +149,21 @@ export default function NewsForm({ news }: NewsFormProps) {
                         preview={imagePreview}
                         maxSize="2MB"
                     />
+                    <div>
+                        <FileUpload
+                            label="File PDF (opsional)"
+                            accept=".pdf"
+                            onChange={handlePdfChange}
+                            error={errors.pdf}
+                            maxSize="10MB"
+                        />
+                        {pdfName && !pdfFile && (
+                            <p className="mt-1 text-xs text-on-surface-variant">File saat ini: {pdfName}</p>
+                        )}
+                        {pdfName && pdfFile && (
+                            <p className="mt-1 text-xs text-on-surface-variant">File baru: {pdfName}</p>
+                        )}
+                    </div>
                     <div className="flex justify-end gap-2">
                         <Link href="/admin/news">
                             <Button variant="secondary" type="button">Batal</Button>

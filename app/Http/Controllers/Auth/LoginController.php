@@ -42,11 +42,16 @@ class LoginController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        $isMahasiswa = $user && $user->hasRole('mahasiswa');
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return $isMahasiswa
+            ? redirect()->route('login.member')
+            : redirect()->route('login');
     }
 }

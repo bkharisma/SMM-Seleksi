@@ -17,6 +17,7 @@ interface Jadwal {
     jam_akhir: string | null;
     jenis: string | null;
     active: boolean;
+    urutan: number;
 }
 
 interface JadwalFormProps {
@@ -45,6 +46,7 @@ return '';
         jam_akhir: jadwal?.jam_akhir || '',
         jenis: jadwal?.jenis || '',
         active: jadwal?.active ?? true,
+        urutan: jadwal?.urutan ?? 0,
     });
 
     useEffect(() => {
@@ -133,6 +135,15 @@ return '';
                         label="Keterangan"
                         value={data.keterangan}
                         onChange={(e) => setData('keterangan', e.target.value)}
+                    />
+                    <Input
+                        id="urutan"
+                        label="Urutan Tampilan"
+                        type="number"
+                        min="0"
+                        value={data.urutan.toString()}
+                        onChange={(e) => setData('urutan', parseInt(e.target.value) || 0)}
+                        helper="Semakin kecil angka, semakin awal ditampilkan"
                     />
                     <div className="flex items-center gap-2">
                         <input

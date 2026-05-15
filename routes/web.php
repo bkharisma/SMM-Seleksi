@@ -42,6 +42,12 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [PortalController::class, 'index'])->name('home');
+Route::get('/news', [PortalController::class, 'indexNews'])->name('news.index');
+Route::get('/news/{id}', [PortalController::class, 'showNews'])->name('news.show');
+Route::get('/jadwal', [PortalController::class, 'jadwal'])->name('jadwal');
+Route::get('/kontak', [PortalController::class, 'kontak'])->name('kontak');
+Route::get('/kebijakan-privasi', [PortalController::class, 'kebijakanPrivasi'])->name('kebijakan-privasi');
+Route::get('/syarat-ketentuan', [PortalController::class, 'syaratKetentuan'])->name('syarat-ketentuan');
 
 // Registration routes
 Route::get('/registrasi', [RegistrasiController::class, 'create'])->name('registrasi');
@@ -80,8 +86,15 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     // Settings
     Route::get('/settings', [SetupController::class, 'index'])->name('settings');
     Route::put('/settings', [SetupController::class, 'update'])->name('settings.update');
+    Route::post('/settings/logo', [SetupController::class, 'uploadLogo'])->name('settings.upload-logo');
+    Route::delete('/settings/logo', [SetupController::class, 'deleteLogo'])->name('settings.delete-logo');
     Route::get('/settings/dashboard-member', [SetupController::class, 'dashboardMember'])->name('settings.dashboard-member');
     Route::put('/settings/dashboard-member', [SetupController::class, 'updateDashboardMember'])->name('settings.update-dashboard-member');
+    Route::get('/settings/landing', [SetupController::class, 'landing'])->name('settings.landing');
+    Route::post('/settings/landing/hero-image', [SetupController::class, 'uploadHeroImage'])->name('settings.upload-hero-image');
+    Route::delete('/settings/landing/hero-image', [SetupController::class, 'deleteHeroImage'])->name('settings.delete-hero-image');
+    Route::post('/settings/landing/accreditation-image', [SetupController::class, 'uploadAccreditationImage'])->name('settings.upload-accreditation-image');
+    Route::delete('/settings/landing/accreditation-image', [SetupController::class, 'deleteAccreditationImage'])->name('settings.delete-accreditation-image');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -107,6 +120,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     // Jadwal
     Route::resource('jadwal', JadwalController::class)->except(['show']);
     Route::patch('/jadwal/{jadwal}/toggle-status', [JadwalController::class, 'toggleStatus'])->name('jadwal.toggle-status');
+    Route::post('/jadwal/reorder', [JadwalController::class, 'reorder'])->name('jadwal.reorder');
 
     // Ujian
     Route::resource('ujian', UjianController::class)->except(['show']);
@@ -121,7 +135,7 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::resource('education', EducationController::class)->except(['show']);
 
     // News
-    Route::resource('news', NewsController::class)->except(['show']);
+    Route::resource('news', NewsController::class);
 
     // Documents
     Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');

@@ -57,9 +57,11 @@ class JadwalController extends Controller
             'jam_akhir' => 'nullable|string|max:16',
             'jenis' => 'nullable|string|max:16',
             'active' => 'boolean',
+            'urutan' => 'nullable|integer|min:0',
         ]);
 
         $validated['active'] = $request->boolean('active', true);
+        $validated['urutan'] = $request->integer('urutan', 0);
 
         Jadwal::create($validated);
 
@@ -84,9 +86,11 @@ class JadwalController extends Controller
             'jam_akhir' => 'nullable|string|max:16',
             'jenis' => 'nullable|string|max:16',
             'active' => 'boolean',
+            'urutan' => 'nullable|integer|min:0',
         ]);
 
         $validated['active'] = $request->boolean('active', true);
+        $validated['urutan'] = $request->integer('urutan', 0);
 
         $jadwal->update($validated);
 
@@ -105,5 +109,20 @@ class JadwalController extends Controller
         $jadwal->update(['active' => ! $jadwal->active]);
 
         return redirect()->back()->with('success', 'Status jadwal berhasil diubah.');
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'orders' => 'required|array',
+            'orders.*.id' => 'required|integer|exists:jadwal,id',
+            'orders.*.urutan' => 'required|integer|min:0',
+        ]);
+
+        foreach ($validated['orders'] as $order) {
+            Jadwal::where('id', $order['id'])->update(['urutan' => $order['urutan']]);
+        }
+
+        return redirect()->back()->with('success', 'Urutan jadwal berhasil diperbarui.');
     }
 }

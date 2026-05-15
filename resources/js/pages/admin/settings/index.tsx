@@ -1,5 +1,5 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import Alert from '@/components/ui/alert';
 import Button from '@/components/ui/button';
@@ -22,14 +22,18 @@ interface SettingsProps {
         max_pilihan: number;
         dashboard_lengkap: number;
         dashboard_upload_syarat: number;
+        logo_path: string;
     };
 }
 
 export default function Settings({ settings }: SettingsProps) {
-    const { flash } = usePage().props as any;
+    const { flash, app } = usePage().props as any;
     const [showAlert, setShowAlert] = useState(false);
+    const [logoPreview, setLogoPreview] = useState<string | null>(app?.logo_url || null);
+    const [logoProcessing, setLogoProcessing] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, delete: destroy, processing, errors } = useForm({
         nama_ptp: settings.nama_ptp,
         alamat_ptp: settings.alamat_ptp,
         telepon_ptp: settings.telepon_ptp,
@@ -42,6 +46,7 @@ export default function Settings({ settings }: SettingsProps) {
         max_pilihan: settings.max_pilihan.toString(),
         dashboard_lengkap: settings.dashboard_lengkap.toString(),
         dashboard_upload_syarat: settings.dashboard_upload_syarat.toString(),
+        logo: null as File | null,
     });
 
     useEffect(() => {
@@ -50,6 +55,10 @@ export default function Settings({ settings }: SettingsProps) {
             setTimeout(() => setShowAlert(false), 3000);
         }
     }, [flash]);
+
+    useEffect(() => {
+        setLogoPreview(app?.logo_url || null);
+    }, [app?.logo_url]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,6 +78,46 @@ export default function Settings({ settings }: SettingsProps) {
 
         if (checked) {
             setData('dashboard_lengkap', '0');
+        }
+    };
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('logo', file);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setLogoPreview(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadLogo = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!data.logo) return;
+
+        setLogoProcessing(true);
+        const formData = new FormData();
+        formData.append('logo', data.logo);
+
+        router.post('/admin/settings/logo', formData, {
+            onSuccess: () => {
+                setLogoProcessing(false);
+                setData('logo', null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            },
+            onError: () => {
+                setLogoProcessing(false);
+            },
+        });
+    };
+
+    const handleDeleteLogo = () => {
+        if (confirm('Apakah Anda yakin ingin menghapus logo?')) {
+            destroy('/admin/settings/logo');
         }
     };
 
@@ -180,6 +229,56 @@ export default function Settings({ settings }: SettingsProps) {
                             className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         />
                         {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
+                    </div>
+
+                    <div className="border-t border-outline-variant pt-6">
+                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Logo Aplikasi</h3>
+                        <p className="mb-4 text-sm text-on-surface-variant">
+                            Upload logo yang akan ditampilkan pada navbar dashboard dan landing page. Format: PNG, JPG, JPEG, SVG. Maks: 2MB.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-start gap-6">
+                            <div className="flex-shrink-0">
+                                <div className="w-32 h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
+                                    {logoPreview ? (
+                                        <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain p-2" />
+                                    ) : (
+                                        <div className="text-center text-on-surface-variant">
+                                            <span className="material-symbols-outlined text-4xl mx-auto mb-1">image</span>
+                                            <p className="text-xs">Belum ada logo</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex-1 space-y-3">
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                                    onChange={handleLogoChange}
+                                    className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
+                                />
+                                {errors.logo && <p className="text-sm text-error">{errors.logo}</p>}
+                                <div className="flex gap-sm">
+                                    <Button
+                                        type="button"
+                                        onClick={handleUploadLogo}
+                                        isLoading={logoProcessing}
+                                        disabled={!data.logo}
+                                    >
+                                        Upload Logo
+                                    </Button>
+                                    {logoPreview && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleDeleteLogo}
+                                        >
+                                            Hapus Logo
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="border-t border-outline-variant pt-6">

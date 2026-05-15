@@ -17,6 +17,7 @@ interface Jadwal {
     jam_akhir: string | null;
     jenis: string | null;
     active: boolean;
+    urutan: number;
 }
 
 interface PaginatedData {
@@ -68,6 +69,22 @@ params.set('jenis', jenis);
         }
     };
 
+    const handleMoveUp = (item: Jadwal) => {
+        router.post('/admin/jadwal/reorder', {
+            orders: [
+                { id: item.id, urutan: item.urutan - 1 },
+            ],
+        });
+    };
+
+    const handleMoveDown = (item: Jadwal) => {
+        router.post('/admin/jadwal/reorder', {
+            orders: [
+                { id: item.id, urutan: item.urutan + 1 },
+            ],
+        });
+    };
+
     const formatDate = (date: string | null) => {
         if (!date) {
 return '-';
@@ -77,6 +94,25 @@ return '-';
     };
 
     const columns = [
+        { key: 'urutan', label: 'Urutan', render: (item: Jadwal) => (
+            <div className="flex items-center gap-1">
+                <span className="font-medium">{item.urutan}</span>
+                <button
+                    onClick={() => handleMoveUp(item)}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                    title="Naik"
+                >
+                    <span className="material-symbols-outlined text-sm">arrow_upward</span>
+                </button>
+                <button
+                    onClick={() => handleMoveDown(item)}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                    title="Turun"
+                >
+                    <span className="material-symbols-outlined text-sm">arrow_downward</span>
+                </button>
+            </div>
+        )},
         { key: 'nama_jadwal', label: 'Nama Jadwal', sortable: true },
         { key: 'jenis', label: 'Jenis' },
         { key: 'tgl_awal', label: 'Tanggal', render: (item: Jadwal) => `${formatDate(item.tgl_awal)} - ${formatDate(item.tgl_akhir)}` },

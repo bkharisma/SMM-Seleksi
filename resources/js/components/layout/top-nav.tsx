@@ -73,18 +73,24 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
         items: [
             { href: '/admin/users', label: 'Manajemen User', icon: 'group' },
             { href: '/admin/settings', label: 'Pengaturan Sistem', icon: 'settings' },
+            { href: '/admin/settings/landing', label: 'Pengaturan Landing', icon: 'web' },
         ],
     },
 ];
 
 export default function TopNav() {
-    const { url, auth } = usePage() as any;
+    const { url, auth, app } = usePage() as any;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<number | null>(null);
     const [mobileDropdowns, setMobileDropdowns] = useState<Record<number, boolean>>({});
     const [themeOpen, setThemeOpen] = useState(false);
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>(getStoredTheme());
+    const [logoUrl, setLogoUrl] = useState<string | null>(app?.logo_url || null);
     const navRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setLogoUrl(app?.logo_url || null);
+    }, [app?.logo_url]);
 
     useEffect(() => {
         setCurrentTheme(getStoredTheme());
@@ -121,9 +127,18 @@ export default function TopNav() {
         <nav ref={navRef} className="bg-surface-container-low border-b border-outline-variant sticky top-0 z-50 w-full">
             <div className="max-w-[1400px] mx-auto px-gutter h-14 flex items-center justify-between gap-md">
                 <div className="flex items-center gap-sm shrink-0">
-                    <div>
-                        <h1 className="text-label-md font-h3 font-medium text-primary leading-none">SMMPTP Poltekpar</h1>
-                        <p className="text-[9px] uppercase tracking-wider font-medium text-secondary">Admin Portal</p>
+                    <div className="flex items-center gap-sm">
+                        {(app?.logo_url || logoUrl) ? (
+                            <img src={app?.logo_url || logoUrl} alt="Logo" className="h-10 w-auto object-contain" />
+                        ) : (
+                            <div className="h-10 w-10 rounded-lg bg-primary-container flex items-center justify-center">
+                                <span className="material-symbols-outlined text-primary text-xl">school</span>
+                            </div>
+                        )}
+                        <div>
+                            <h1 className="text-label-md font-h3 font-medium text-primary leading-none">SMM</h1>
+                            <p className="text-[9px] uppercase tracking-wider font-medium text-secondary">Admin Portal</p>
+                        </div>
                     </div>
                 </div>
 
