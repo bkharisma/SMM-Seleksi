@@ -70,19 +70,19 @@ export default function SeleksiIndex({ tahap, jalur, prodi, filters }: SeleksiIn
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!tahapId || !jalurId || !prodiId) {
+        if (!tahapId || jalurId === '' || !prodiId) {
             return;
         }
 
         router.post('/admin/seleksi/preview', {
             tahap_id: tahapId,
-            jalur_id: jalurId,
+            jalur_id: jalurId === 'all' ? null : jalurId,
             prodi_id: prodiId,
             pilihan: pilihan || null,
         });
     };
 
-    const isFormValid = tahapId && jalurId && prodiId;
+    const isFormValid = tahapId && jalurId !== '' && prodiId;
 
     return (
         <AdminLayout title="Seleksi Kelulusan">
@@ -129,7 +129,11 @@ export default function SeleksiIndex({ tahap, jalur, prodi, filters }: SeleksiIn
                                         disabled={!tahapId}
                                         value={jalurId}
                                         onChange={(e) => handleJalurChange(e.target.value)}
-                                        options={[{ value: '', label: '-- Pilih Jalur --' }, ...jalur.map((j) => ({ value: j.id, label: `${j.kode_jalur} - ${j.nama_jalur}` }))]}
+                                        options={[
+                                            { value: '', label: '-- Pilih Jalur --' },
+                                            { value: 'all', label: 'Semua Jalur' },
+                                            ...jalur.map((j) => ({ value: j.id, label: `${j.kode_jalur} - ${j.nama_jalur}` })),
+                                        ]}
                                     />
                                 </div>
                             </div>

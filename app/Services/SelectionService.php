@@ -90,11 +90,14 @@ class SelectionService
             return $result;
         }
 
+        $hasTesCriteria = false;
+
         foreach ($kriteria->kriteriaUjian as $ku) {
             $ujianId = $ku->ujian_id;
             $nilai = $nilaiList->firstWhere('ujian_id', $ujianId);
 
             if ($ku->jenis === 'tes' && $ku->nilai_standar !== null) {
+                $hasTesCriteria = true;
                 $skor = $nilai?->skor_akhir;
                 $result['scores'][$ku->ujian->nama ?? $ujianId] = $skor;
                 if (! $useWeighted) {
@@ -106,6 +109,11 @@ class SelectionService
                     $result['reasons'][] = "Nilai {$ku->ujian->nama} ({$skor}) di bawah standar ({$ku->nilai_standar})";
                 }
             }
+        }
+
+        if (! $hasTesCriteria) {
+            $result['lulus'] = false;
+            $result['reasons'][] = 'Belum ada kriteria penilaian yang dikonfigurasi';
         }
 
         if ($useWeighted) {
@@ -602,5 +610,10 @@ class SelectionService
     public function isFinalized(): bool
     {
         return Pendaftar::where('finalisasi', true)->exists();
+    }
+
+    public function isFinalizedTahap1(): bool
+    {
+        return Pendaftar::whereNull('lulus')->where('finalisasi', true)->exists();
     }
 }

@@ -6,6 +6,7 @@ import Button from '@/components/ui/button';
 import Card from '@/components/ui/card';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
+import Tabs from '@/components/ui/tabs';
 import Toggle from '@/components/ui/toggle';
 
 interface SettingsProps {
@@ -24,6 +25,8 @@ interface SettingsProps {
         dashboard_upload_syarat: number;
         logo_path: string;
         favicon_path: string;
+        kelulusan_tahap_1_dibuka: number;
+        kelulusan_tahap_2_dibuka: number;
     };
 }
 
@@ -36,6 +39,14 @@ export default function Settings({ settings }: SettingsProps) {
         settings.favicon_path ? `/storage/${settings.favicon_path}` : (app?.favicon_url || null)
     );
     const [faviconProcessing, setFaviconProcessing] = useState(false);
+    const [activeTab, setActiveTab] = useState('pengaturan-aplikasi');
+
+    const tabs = [
+        { key: 'pengaturan-aplikasi', label: 'Pengaturan Aplikasi' },
+        { key: 'logo-aplikasi', label: 'Logo Aplikasi' },
+        { key: 'dashboard-member', label: 'Dashboard Member' },
+        { key: 'pengumuman-kelulusan', label: 'Pengumuman Kelulusan' },
+    ];
     const fileInputRef = useRef<HTMLInputElement>(null);
     const faviconFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +63,8 @@ export default function Settings({ settings }: SettingsProps) {
         max_pilihan: settings.max_pilihan.toString(),
         dashboard_lengkap: settings.dashboard_lengkap.toString(),
         dashboard_upload_syarat: settings.dashboard_upload_syarat.toString(),
+        kelulusan_tahap_1_dibuka: settings.kelulusan_tahap_1_dibuka.toString(),
+        kelulusan_tahap_2_dibuka: settings.kelulusan_tahap_2_dibuka.toString(),
         logo: null as File | null,
         favicon: null as File | null,
     });
@@ -198,240 +211,289 @@ return;
 
             <Card title="Pengaturan Sistem">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <Input
-                            id="nama_ptp"
-                            label="Nama PTP"
-                            value={data.nama_ptp}
-                            onChange={(e) => setData('nama_ptp', e.target.value)}
-                            error={errors.nama_ptp}
-                            required
-                        />
-                        <Input
-                            id="tahun_akademik"
-                            label="Tahun Akademik"
-                            value={data.tahun_akademik}
-                            onChange={(e) => setData('tahun_akademik', e.target.value)}
-                            error={errors.tahun_akademik}
-                            required
-                        />
-                        <Input
-                            id="email_ptp"
-                            label="Email PTP"
-                            type="email"
-                            value={data.email_ptp}
-                            onChange={(e) => setData('email_ptp', e.target.value)}
-                            error={errors.email_ptp}
-                        />
-                        <Input
-                            id="telepon_ptp"
-                            label="Telepon PTP"
-                            value={data.telepon_ptp}
-                            onChange={(e) => setData('telepon_ptp', e.target.value)}
-                            error={errors.telepon_ptp}
-                        />
-                        <Input
-                            id="website_ptp"
-                            label="Website PTP"
-                            value={data.website_ptp}
-                            onChange={(e) => setData('website_ptp', e.target.value)}
-                            error={errors.website_ptp}
-                        />
-                        <Input
-                            id="biaya_pendaftaran"
-                            label="Biaya Pendaftaran (Rp)"
-                            type="number"
-                            value={data.biaya_pendaftaran}
-                            onChange={(e) => setData('biaya_pendaftaran', e.target.value)}
-                            error={errors.biaya_pendaftaran}
-                            required
-                        />
-                        <Input
-                            id="max_pilihan"
-                            label="Maksimum Pilihan Prodi"
-                            type="number"
-                            min="1"
-                            max="4"
-                            value={data.max_pilihan}
-                            onChange={(e) => setData('max_pilihan', e.target.value)}
-                            error={errors.max_pilihan}
-                            required
-                        />
-                        <Select
-                            id="aktif"
-                            label="Status Pendaftaran"
-                            value={data.aktif}
-                            onChange={(e) => setData('aktif', e.target.value)}
-                            options={[
-                                { value: '1', label: 'Aktif' },
-                                { value: '0', label: 'Tidak Aktif' },
-                            ]}
-                            error={errors.aktif}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="alamat_ptp" className="mb-1 block text-sm font-medium text-on-surface-container">
-                            Alamat PTP
-                        </label>
-                        <textarea
-                            id="alamat_ptp"
-                            value={data.alamat_ptp}
-                            onChange={(e) => setData('alamat_ptp', e.target.value)}
-                            rows={3}
-                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
-                        {errors.alamat_ptp && <p className="mt-1 text-sm text-error">{errors.alamat_ptp}</p>}
-                    </div>
-                    <div>
-                        <label htmlFor="pengumuman_url" className="mb-1 block text-sm font-medium text-on-surface-container">
-                            URL Pengumuman
-                        </label>
-                        <input
-                            id="pengumuman_url"
-                            type="url"
-                            value={data.pengumuman_url}
-                            onChange={(e) => setData('pengumuman_url', e.target.value)}
-                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
-                        {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
-                    </div>
+                    <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-                    <div className="border-t border-outline-variant pt-6">
-                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Logo Aplikasi</h3>
-                        <p className="mb-4 text-sm text-on-surface-variant">
-                            Upload logo yang akan ditampilkan pada navbar dashboard dan landing page. Format: PNG, JPG, JPEG, SVG. Maks: 2MB.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-start gap-6">
-                            <div className="flex-shrink-0">
-                                <div className="w-32 h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
-                                    {logoPreview ? (
-                                        <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain p-2" />
-                                    ) : (
-                                        <div className="text-center text-on-surface-variant">
-                                            <span className="material-symbols-outlined text-4xl mx-auto mb-1">image</span>
-                                            <p className="text-xs">Belum ada logo</p>
-                                        </div>
-                                    )}
-                                </div>
+                    {activeTab === 'pengaturan-aplikasi' && (
+                        <div className="space-y-6">
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <Input
+                                    id="nama_ptp"
+                                    label="Nama PTP"
+                                    value={data.nama_ptp}
+                                    onChange={(e) => setData('nama_ptp', e.target.value)}
+                                    error={errors.nama_ptp}
+                                    required
+                                />
+                                <Input
+                                    id="tahun_akademik"
+                                    label="Tahun Akademik"
+                                    value={data.tahun_akademik}
+                                    onChange={(e) => setData('tahun_akademik', e.target.value)}
+                                    error={errors.tahun_akademik}
+                                    required
+                                />
+                                <Input
+                                    id="email_ptp"
+                                    label="Email PTP"
+                                    type="email"
+                                    value={data.email_ptp}
+                                    onChange={(e) => setData('email_ptp', e.target.value)}
+                                    error={errors.email_ptp}
+                                />
+                                <Input
+                                    id="telepon_ptp"
+                                    label="Telepon PTP"
+                                    value={data.telepon_ptp}
+                                    onChange={(e) => setData('telepon_ptp', e.target.value)}
+                                    error={errors.telepon_ptp}
+                                />
+                                <Input
+                                    id="website_ptp"
+                                    label="Website PTP"
+                                    value={data.website_ptp}
+                                    onChange={(e) => setData('website_ptp', e.target.value)}
+                                    error={errors.website_ptp}
+                                />
+                                <Input
+                                    id="biaya_pendaftaran"
+                                    label="Biaya Pendaftaran (Rp)"
+                                    type="number"
+                                    value={data.biaya_pendaftaran}
+                                    onChange={(e) => setData('biaya_pendaftaran', e.target.value)}
+                                    error={errors.biaya_pendaftaran}
+                                    required
+                                />
+                                <Input
+                                    id="max_pilihan"
+                                    label="Maksimum Pilihan Prodi"
+                                    type="number"
+                                    min="1"
+                                    max="4"
+                                    value={data.max_pilihan}
+                                    onChange={(e) => setData('max_pilihan', e.target.value)}
+                                    error={errors.max_pilihan}
+                                    required
+                                />
+                                <Select
+                                    id="aktif"
+                                    label="Status Pendaftaran"
+                                    value={data.aktif}
+                                    onChange={(e) => setData('aktif', e.target.value)}
+                                    options={[
+                                        { value: '1', label: 'Aktif' },
+                                        { value: '0', label: 'Tidak Aktif' },
+                                    ]}
+                                    error={errors.aktif}
+                                />
                             </div>
-                            <div className="flex-1 space-y-3">
+                            <div>
+                                <label htmlFor="alamat_ptp" className="mb-1 block text-sm font-medium text-on-surface-container">
+                                    Alamat PTP
+                                </label>
+                                <textarea
+                                    id="alamat_ptp"
+                                    value={data.alamat_ptp}
+                                    onChange={(e) => setData('alamat_ptp', e.target.value)}
+                                    rows={3}
+                                    className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                />
+                                {errors.alamat_ptp && <p className="mt-1 text-sm text-error">{errors.alamat_ptp}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="pengumuman_url" className="mb-1 block text-sm font-medium text-on-surface-container">
+                                    URL Pengumuman
+                                </label>
                                 <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml"
-                                    onChange={handleLogoChange}
-                                    className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
+                                    id="pengumuman_url"
+                                    type="url"
+                                    value={data.pengumuman_url}
+                                    onChange={(e) => setData('pengumuman_url', e.target.value)}
+                                    className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                                 />
-                                {errors.logo && <p className="text-sm text-error">{errors.logo}</p>}
-                                <div className="flex gap-sm">
-                                    <Button
-                                        type="button"
-                                        onClick={handleUploadLogo}
-                                        isLoading={logoProcessing}
-                                        disabled={!data.logo}
-                                    >
-                                        Upload Logo
-                                    </Button>
-                                    {logoPreview && (
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={handleDeleteLogo}
-                                        >
-                                            Hapus Logo
-                                        </Button>
-                                    )}
-                                </div>
+                                {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    <div className="border-t border-outline-variant pt-6">
-                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Favicon</h3>
-                        <p className="mb-4 text-sm text-on-surface-variant">
-                            Upload favicon yang akan ditampilkan pada browser tab. Format: PNG, JPG, JPEG, SVG, ICO. Maks: 2MB. Disarankan ukuran 32x32 atau 64x64 pixel.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-start gap-6">
-                            <div className="flex-shrink-0">
-                                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
-                                    {faviconPreview ? (
-                                        <img src={faviconPreview} alt="Favicon Preview" className="w-full h-full object-contain p-1" />
-                                    ) : (
-                                        <div className="text-center text-on-surface-variant">
-                                            <span className="material-symbols-outlined text-2xl mx-auto mb-1">image</span>
-                                            <p className="text-xs">Belum ada</p>
+                    {activeTab === 'logo-aplikasi' && (
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="mb-4 text-lg font-semibold text-on-surface">Logo Aplikasi</h3>
+                                <p className="mb-4 text-sm text-on-surface-variant">
+                                    Upload logo yang akan ditampilkan pada navbar dashboard dan landing page. Format: PNG, JPG, JPEG, SVG. Maks: 2MB.
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-start gap-6">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-32 h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
+                                            {logoPreview ? (
+                                                <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain p-2" />
+                                            ) : (
+                                                <div className="text-center text-on-surface-variant">
+                                                    <span className="material-symbols-outlined text-4xl mx-auto mb-1">image</span>
+                                                    <p className="text-xs">Belum ada logo</p>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
+                                    <div className="flex-1 space-y-3">
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                                            onChange={handleLogoChange}
+                                            className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
+                                        />
+                                        {errors.logo && <p className="text-sm text-error">{errors.logo}</p>}
+                                        <div className="flex gap-sm">
+                                            <Button
+                                                type="button"
+                                                onClick={handleUploadLogo}
+                                                isLoading={logoProcessing}
+                                                disabled={!data.logo}
+                                            >
+                                                Upload Logo
+                                            </Button>
+                                            {logoPreview && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={handleDeleteLogo}
+                                                >
+                                                    Hapus Logo
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex-1 space-y-3">
-                                <input
-                                    ref={faviconFileInputRef}
-                                    type="file"
-                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/x-icon"
-                                    onChange={handleFaviconChange}
-                                    className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
-                                />
-                                {errors.favicon && <p className="text-sm text-error">{errors.favicon}</p>}
-                                <div className="flex gap-sm">
-                                    <Button
-                                        type="button"
-                                        onClick={handleUploadFavicon}
-                                        isLoading={faviconProcessing}
-                                        disabled={!data.favicon}
-                                    >
-                                        Upload Favicon
-                                    </Button>
-                                    {faviconPreview && (
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={handleDeleteFavicon}
-                                        >
-                                            Hapus Favicon
-                                        </Button>
-                                    )}
+                            <div>
+                                <h3 className="mb-4 text-lg font-semibold text-on-surface">Favicon</h3>
+                                <p className="mb-4 text-sm text-on-surface-variant">
+                                    Upload favicon yang akan ditampilkan pada browser tab. Format: PNG, JPG, JPEG, SVG, ICO. Maks: 2MB. Disarankan ukuran 32x32 atau 64x64 pixel.
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-start gap-6">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-16 h-16 rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center overflow-hidden">
+                                            {faviconPreview ? (
+                                                <img src={faviconPreview} alt="Favicon Preview" className="w-full h-full object-contain p-1" />
+                                            ) : (
+                                                <div className="text-center text-on-surface-variant">
+                                                    <span className="material-symbols-outlined text-2xl mx-auto mb-1">image</span>
+                                                    <p className="text-xs">Belum ada</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 space-y-3">
+                                        <input
+                                            ref={faviconFileInputRef}
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/x-icon"
+                                            onChange={handleFaviconChange}
+                                            className="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:opacity-90"
+                                        />
+                                        {errors.favicon && <p className="text-sm text-error">{errors.favicon}</p>}
+                                        <div className="flex gap-sm">
+                                            <Button
+                                                type="button"
+                                                onClick={handleUploadFavicon}
+                                                isLoading={faviconProcessing}
+                                                disabled={!data.favicon}
+                                            >
+                                                Upload Favicon
+                                            </Button>
+                                            {faviconPreview && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={handleDeleteFavicon}
+                                                >
+                                                    Hapus Favicon
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    <div className="border-t border-outline-variant pt-6">
-                        <h3 className="mb-4 text-lg font-semibold text-on-surface">Dashboard Member</h3>
-                        <p className="mb-4 text-sm text-on-surface-variant">
-                            Pilih tipe dashboard yang akan ditampilkan untuk member. Hanya satu dashboard yang dapat aktif dalam satu waktu.
-                        </p>
-                        <div className="space-y-4 rounded-lg bg-surface-container-low p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-on-surface">Dashboard Lengkap</p>
-                                    <p className="text-sm text-on-surface-variant">
-                                        Menampilkan profil, nilai, jadwal, hasil seleksi, dan kelulusan
-                                    </p>
+                    {activeTab === 'dashboard-member' && (
+                        <div>
+                            <p className="mb-4 text-sm text-on-surface-variant">
+                                Pilih tipe dashboard yang akan ditampilkan untuk member. Hanya satu dashboard yang dapat aktif dalam satu waktu.
+                            </p>
+                            <div className="space-y-4 rounded-lg bg-surface-container-low p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-on-surface">Dashboard Lengkap</p>
+                                        <p className="text-sm text-on-surface-variant">
+                                            Menampilkan profil, nilai, jadwal, hasil seleksi, dan kelulusan
+                                        </p>
+                                    </div>
+                                    <Toggle
+                                        id="dashboard_lengkap"
+                                        checked={data.dashboard_lengkap === '1'}
+                                        onChange={handleDashboardLengkapToggle}
+                                        label={data.dashboard_lengkap === '1' ? 'Aktif' : 'Nonaktif'}
+                                    />
                                 </div>
-                                <Toggle
-                                    id="dashboard_lengkap"
-                                    checked={data.dashboard_lengkap === '1'}
-                                    onChange={handleDashboardLengkapToggle}
-                                    label={data.dashboard_lengkap === '1' ? 'Aktif' : 'Nonaktif'}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-on-surface">Dashboard Upload Syarat</p>
-                                    <p className="text-sm text-on-surface-variant">
-                                        Menampilkan form upload dokumen persyaratan (kesehatan, rapor, foto)
-                                    </p>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-on-surface">Dashboard Upload Syarat</p>
+                                        <p className="text-sm text-on-surface-variant">
+                                            Menampilkan form upload dokumen persyaratan (kesehatan, rapor, foto)
+                                        </p>
+                                    </div>
+                                    <Toggle
+                                        id="dashboard_upload_syarat"
+                                        checked={data.dashboard_upload_syarat === '1'}
+                                        onChange={handleDashboardUploadSyaratToggle}
+                                        label={data.dashboard_upload_syarat === '1' ? 'Aktif' : 'Nonaktif'}
+                                    />
                                 </div>
-                                <Toggle
-                                    id="dashboard_upload_syarat"
-                                    checked={data.dashboard_upload_syarat === '1'}
-                                    onChange={handleDashboardUploadSyaratToggle}
-                                    label={data.dashboard_upload_syarat === '1' ? 'Aktif' : 'Nonaktif'}
-                                />
                             </div>
                         </div>
-                    </div>
+                    )}
+
+                    {activeTab === 'pengumuman-kelulusan' && (
+                        <div>
+                            <p className="mb-4 text-sm text-on-surface-variant">
+                                Atur visibilitas halaman pengumuman kelulusan untuk peserta.
+                            </p>
+                            <div className="space-y-4 rounded-lg bg-surface-container-low p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-on-surface">Kelulusan Tahap 1</p>
+                                        <p className="text-sm text-on-surface-variant">
+                                            Buka halaman pengumuman hasil seleksi Tahap 1 (berdasarkan nilai tes) untuk peserta
+                                        </p>
+                                    </div>
+                                    <Toggle
+                                        id="kelulusan_tahap_1_dibuka"
+                                        checked={data.kelulusan_tahap_1_dibuka === '1'}
+                                        onChange={(checked) => setData('kelulusan_tahap_1_dibuka', checked ? '1' : '0')}
+                                        label={data.kelulusan_tahap_1_dibuka === '1' ? 'Terbuka' : 'Tertutup'}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-on-surface">Kelulusan Tahap 2</p>
+                                        <p className="text-sm text-on-surface-variant">
+                                            Buka halaman pengumuman hasil seleksi Tahap 2 (seleksi akhir) untuk peserta
+                                        </p>
+                                    </div>
+                                    <Toggle
+                                        id="kelulusan_tahap_2_dibuka"
+                                        checked={data.kelulusan_tahap_2_dibuka === '1'}
+                                        onChange={(checked) => setData('kelulusan_tahap_2_dibuka', checked ? '1' : '0')}
+                                        label={data.kelulusan_tahap_2_dibuka === '1' ? 'Terbuka' : 'Tertutup'}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex justify-end">
                         <Button type="submit" isLoading={processing}>
                             Simpan Pengaturan

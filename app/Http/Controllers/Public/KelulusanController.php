@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
+use App\Models\Setup;
 use App\Models\TahapSeleksi;
+use App\Services\KelulusanRekapService;
 use App\Services\SelectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,17 +18,15 @@ class KelulusanController extends Controller
 {
     protected SelectionService $selectionService;
 
-    public function __construct(SelectionService $selectionService)
+    protected KelulusanRekapService $kelulusanRekapService;
+
+    public function __construct(SelectionService $selectionService, KelulusanRekapService $kelulusanRekapService)
     {
         $this->selectionService = $selectionService;
+        $this->kelulusanRekapService = $kelulusanRekapService;
     }
 
-    public function index(): Response
-    {
-        return Inertia::render('public/kelulusan');
-    }
-
-    public function check(Request $request)
+    protected function validatePeserta(Request $request): ?Pendaftar
     {
         $validated = $request->validate([
             'nup' => 'required|string',
@@ -38,6 +38,45 @@ class KelulusanController extends Controller
             ->first();
 
         if (! $peserta) {
+            return null;
+        }
+
+        $user = $peserta->user;
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+            return null;
+        }
+
+        return $peserta;
+    }
+
+    public function index(): Response
+    {
+        $tahap1Dibuka = (bool) Setup::get('kelulusan_tahap_1_dibuka', 0);
+        $tahap2Dibuka = (bool) Setup::get('kelulusan_tahap_2_dibuka', 0);
+
+        return Inertia::render('public/kelulusan', [
+            'tahap1_dibuka' => $tahap1Dibuka,
+            'tahap2_dibuka' => $tahap2Dibuka,
+        ]);
+    }
+
+    public function tahap1(): Response
+    {
+        return Inertia::render('public/kelulusan-tahap1');
+    }
+
+    public function checkTahap1(Request $request)
+    {
+        $validated = $request->validate([
+            'nup' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $peserta = Pendaftar::where('kode_pendaftar', $validated['nup'])
+            ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian', 'lulusTahap'])
+            ->first();
+
+        if (! $peserta) {
             return back()->withErrors(['nup' => 'NUP tidak ditemukan.']);
         }
 
@@ -46,24 +85,132 @@ class KelulusanController extends Controller
             return back()->withErrors(['password' => 'Password salah.']);
         }
 
+        if (! (bool) Setup::get('kelulusan_tahap_1_dibuka', 0)) {
+            return back()->withErrors(['nup' => 'Pengumuman kelulusan Tahap 1 belum tersedia.']);
+        }
+
         $peserta->touch();
 
-        $detailsPerTahap = $this->getDetailsPerTahap($peserta);
+        $tahap1 = TahapSeleksi::where('urutan', 1)->where('active', true)->first();
 
-        return Inertia::render('public/kelulusan', [
+        $tahap1Result = $this->evaluateTahap($peserta, $tahap1);
+
+        if ($peserta->finalisasi) {
+            if ($peserta->lulus !== null && $tahap1 && $peserta->lulus_tahap == $tahap1->id) {
+                $lulusTahap1 = true;
+                $statusKelulusan = 'lulus';
+            } else {
+                $lulusTahap1 = false;
+                $statusKelulusan = 'tidak_lulus';
+            }
+        } else {
+            $lulusTahap1 = false;
+            $statusKelulusan = 'belum_diproses';
+        }
+
+        $lulusProdi = $peserta->lulusProdi?->nama_prodi;
+        $lulusTahapNama = $peserta->lulusTahap?->nama;
+
+        return Inertia::render('public/kelulusan-tahap1', [
             'peserta' => [
                 'nup' => $peserta->kode_pendaftar,
                 'nama' => $peserta->nama,
-                'foto' => $peserta->foto,
                 'pil1' => $peserta->pil1Prodi?->nama_prodi,
                 'lulus' => $peserta->lulus,
-                'lulus_prodi' => $peserta->lulusProdi?->nama_prodi,
-                'lulus_tahap' => $peserta->lulus_tahap,
+                'lulus_prodi' => $lulusProdi,
+                'lulus_tahap_nama' => $lulusTahapNama,
+                'lulus_tahap_1' => $lulusTahap1,
+                'status_kelulusan' => $statusKelulusan,
                 'nilai' => $this->getNilaiSummary($peserta),
-                'details_per_tahap' => $detailsPerTahap,
-                'tgl_cek_lulus' => $peserta->updated_at,
+                'detail' => $tahap1Result,
+                'tgl_cek' => $peserta->updated_at,
             ],
         ]);
+    }
+
+    public function tahap2(): Response
+    {
+        return Inertia::render('public/kelulusan-tahap2');
+    }
+
+    public function checkTahap2(Request $request)
+    {
+        $validated = $request->validate([
+            'nup' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $peserta = Pendaftar::where('kode_pendaftar', $validated['nup'])
+            ->with(['lulusProdi', 'pil1Prodi', 'nilai.ujian', 'lulusTahap'])
+            ->first();
+
+        if (! $peserta) {
+            return back()->withErrors(['nup' => 'NUP tidak ditemukan.']);
+        }
+
+        $user = $peserta->user;
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+            return back()->withErrors(['password' => 'Password salah.']);
+        }
+
+        if (! (bool) Setup::get('kelulusan_tahap_2_dibuka', 0)) {
+            return back()->withErrors(['nup' => 'Pengumuman kelulusan Tahap 2 belum tersedia.']);
+        }
+
+        $peserta->touch();
+
+        $tahap2 = TahapSeleksi::where('urutan', 2)->where('active', true)->first();
+
+        $tahap2Result = $this->evaluateTahap($peserta, $tahap2);
+
+        if ($peserta->finalisasi) {
+            if ($peserta->lulus_tahap && $tahap2 && $peserta->lulus_tahap == $tahap2->id) {
+                $lulusTahap2 = true;
+                $statusKelulusan = 'lulus';
+            } else {
+                $lulusTahap2 = false;
+                $statusKelulusan = 'tidak_lulus';
+            }
+        } else {
+            $lulusTahap2 = false;
+            $statusKelulusan = 'belum_diproses';
+        }
+
+        $lulusProdi = $peserta->lulusProdi?->nama_prodi;
+        $lulusTahapNama = $peserta->lulusTahap?->nama;
+
+        return Inertia::render('public/kelulusan-tahap2', [
+            'peserta' => [
+                'nup' => $peserta->kode_pendaftar,
+                'nama' => $peserta->nama,
+                'pil1' => $peserta->pil1Prodi?->nama_prodi,
+                'lulus' => $peserta->lulus,
+                'lulus_prodi' => $lulusProdi,
+                'lulus_tahap_nama' => $lulusTahapNama,
+                'lulus_tahap_2' => $lulusTahap2,
+                'status_kelulusan' => $statusKelulusan,
+                'nilai' => $this->getNilaiSummary($peserta),
+                'detail' => $tahap2Result,
+                'tgl_cek' => $peserta->updated_at,
+            ],
+        ]);
+    }
+
+    protected function evaluateTahap(Pendaftar $peserta, TahapSeleksi $tahap): ?array
+    {
+        $kriteria = $this->selectionService->getKriteriaForProdiTahap($peserta->pil1 ?? 0, $tahap->id);
+
+        if (! $kriteria) {
+            $kriteria = KriteriaKelulusan::where('tahap_seleksi_id', $tahap->id)
+                ->where('active', true)
+                ->first();
+        }
+
+        if (! $kriteria || ! $peserta->nilai) {
+            return null;
+        }
+
+        return $this->selectionService->evaluatePeserta($peserta, $kriteria);
     }
 
     protected function getNilaiSummary(Pendaftar $peserta): array
@@ -76,40 +223,5 @@ class KelulusanController extends Controller
             'wawancara' => $nilaiList->firstWhere('type', 'wawancara')?->skor_akhir,
             'kesehatan' => $nilaiList->firstWhere('type', 'kesehatan')?->skor_akhir,
         ];
-    }
-
-    protected function getDetailsPerTahap(Pendaftar $peserta): array
-    {
-        $tahapList = TahapSeleksi::active()->orderBy('urutan')->get();
-        $details = [];
-
-        foreach ($tahapList as $tahap) {
-            $kriteria = $this->selectionService->getKriteriaForProdiTahap($peserta->pil1 ?? 0, $tahap->id);
-
-            if (! $kriteria) {
-                $kriteria = KriteriaKelulusan::where('tahap_seleksi_id', $tahap->id)
-                    ->where('active', true)
-                    ->first();
-            }
-
-            $detail = [
-                'tahap_nama' => $tahap->nama,
-                'urutan' => $tahap->urutan,
-                'lulus' => false,
-                'scores' => [],
-                'reasons' => [],
-            ];
-
-            if ($kriteria && $peserta->nilai) {
-                $eval = $this->selectionService->evaluatePeserta($peserta, $kriteria);
-                $detail['lulus'] = $eval['lulus'];
-                $detail['scores'] = $eval['scores'];
-                $detail['reasons'] = $eval['reasons'] ?? [];
-            }
-
-            $details[] = $detail;
-        }
-
-        return $details;
     }
 }

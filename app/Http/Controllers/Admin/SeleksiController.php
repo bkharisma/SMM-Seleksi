@@ -43,16 +43,18 @@ class SeleksiController extends Controller
     {
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
-            'jalur_id' => 'required|exists:jalur_pendaftaran,id',
+            'jalur_id' => 'nullable|string',
             'prodi_id' => 'required|exists:prodi,id',
             'pilihan' => 'nullable|integer|min:1|max:3',
         ]);
+
+        $jalurId = !$validated['jalur_id'] || $validated['jalur_id'] === 'all' ? null : (int) $validated['jalur_id'];
 
         $result = $this->selectionService->previewSelection(
             (int) $validated['tahap_id'],
             (int) $validated['prodi_id'],
             $validated['pilihan'] ?? null,
-            (int) $validated['jalur_id']
+            $jalurId
         );
 
         $tahap = TahapSeleksi::active()->orderBy('urutan')->get();
@@ -72,19 +74,21 @@ class SeleksiController extends Controller
     {
         $validated = $request->validate([
             'tahap_id' => 'required|exists:tahap_seleksi,id',
-            'jalur_id' => 'required|exists:jalur_pendaftaran,id',
+            'jalur_id' => 'nullable|string',
             'prodi_id' => 'required|exists:prodi,id',
             'pilihan' => 'nullable|integer|min:1|max:3',
             'selected_nup' => 'required|array|min:1',
             'selected_nup.*' => 'required|string',
         ]);
 
+        $jalurId = !$validated['jalur_id'] || $validated['jalur_id'] === 'all' ? null : (int) $validated['jalur_id'];
+
         $result = $this->selectionService->saveSelection(
             (int) $validated['tahap_id'],
             (int) $validated['prodi_id'],
             $validated['selected_nup'],
             $validated['pilihan'] ?? null,
-            (int) $validated['jalur_id']
+            $jalurId
         );
 
         if ($result['success']) {

@@ -17,8 +17,11 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
                         <Link href="/" className="text-label-md text-secondary hover:text-primary transition-colors">
                             Beranda
                         </Link>
-                        <Link href="/kelulusan" className="text-label-md text-secondary hover:text-primary transition-colors">
-                            Cek Kelulusan
+                        <Link href="/kelulusan/tahap-1" className="text-label-md text-secondary hover:text-primary transition-colors">
+                            Hasil Tahap 1
+                        </Link>
+                        <Link href="/kelulusan/tahap-2" className="text-label-md text-secondary hover:text-primary transition-colors">
+                            Hasil Tahap 2
                         </Link>
                         <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">
                             Daftar Sekarang

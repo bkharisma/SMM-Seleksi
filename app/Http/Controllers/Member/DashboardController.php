@@ -8,6 +8,7 @@ use App\Models\KriteriaKelulusan;
 use App\Models\Pendaftar;
 use App\Models\TahapSeleksi;
 use App\Models\Setup;
+use App\Services\KelulusanRekapService;
 use App\Services\SelectionService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,9 +18,12 @@ class DashboardController extends Controller
 {
     protected SelectionService $selectionService;
 
-    public function __construct(SelectionService $selectionService)
+    protected KelulusanRekapService $kelulusanRekapService;
+
+    public function __construct(SelectionService $selectionService, KelulusanRekapService $kelulusanRekapService)
     {
         $this->selectionService = $selectionService;
+        $this->kelulusanRekapService = $kelulusanRekapService;
     }
 
     public function index(Request $request): Response
@@ -163,6 +167,15 @@ class DashboardController extends Controller
             }
         }
 
+        $lulusTahap2 = false;
+        $isFinalizedTahap2 = $this->kelulusanRekapService->isFinalizedTahap2();
+        if ($peserta) {
+            $tahap2 = TahapSeleksi::where('urutan', 2)->where('active', true)->first();
+            if ($tahap2 && $peserta->lulus_tahap == $tahap2->id) {
+                $lulusTahap2 = true;
+            }
+        }
+
         return Inertia::render('member/dashboard', [
             'peserta' => $peserta ? [
                 'id' => $peserta->id,
@@ -189,7 +202,9 @@ class DashboardController extends Controller
                 'kesehatan_catatan' => $peserta->kesehatan?->catatan,
                 'lulus_tahap_1' => $lulusTahap1,
                 'lulus_tahap_1_prodi' => $lulusTahap1Prodi,
+                'lulus_tahap_2' => $lulusTahap2,
                 'is_finalized' => $isFinalized,
+                'is_finalized_tahap2' => $isFinalizedTahap2,
             ] : null,
             'kesehatan' => $peserta ? array_merge($kesehatanData ?? [], [
                 'full' => $peserta->kesehatan,

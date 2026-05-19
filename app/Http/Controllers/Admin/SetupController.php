@@ -31,6 +31,8 @@ class SetupController extends Controller
             'dashboard_upload_syarat' => $settings->get('dashboard_upload_syarat')?->int_val ?? 0,
             'logo_path' => $settings->get('logo_path')?->char_val ?? '',
             'favicon_path' => $settings->get('favicon_path')?->char_val ?? '',
+            'kelulusan_tahap_1_dibuka' => $settings->get('kelulusan_tahap_1_dibuka')?->int_val ?? 0,
+            'kelulusan_tahap_2_dibuka' => $settings->get('kelulusan_tahap_2_dibuka')?->int_val ?? 0,
         ];
 
         return Inertia::render('admin/settings/index', [
@@ -53,6 +55,8 @@ class SetupController extends Controller
             'max_pilihan' => 'required|integer|min:1|max:4',
             'dashboard_lengkap' => 'required|integer|in:0,1',
             'dashboard_upload_syarat' => 'required|integer|in:0,1',
+            'kelulusan_tahap_1_dibuka' => 'required|integer|in:0,1',
+            'kelulusan_tahap_2_dibuka' => 'required|integer|in:0,1',
         ]);
 
         if ($validated['dashboard_upload_syarat'] == 1) {

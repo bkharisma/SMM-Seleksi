@@ -32,6 +32,9 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
     const { app } = usePage().props as any;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const [pengumumanOpen, setPengumumanOpen] = useState(false);
+    const pengumumanRef = useRef<HTMLDivElement>(null);
+    const [mobilePengumumanOpen, setMobilePengumumanOpen] = useState(false);
 
     const formatDate = (date: string | null) => {
         if (!date) {
@@ -77,6 +80,10 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                 setThemeOpen(false);
             }
 
+            if (pengumumanRef.current && !pengumumanRef.current.contains(e.target as Node)) {
+                setPengumumanOpen(false);
+            }
+
             if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
                 const hamburger = document.getElementById('hamburger-btn');
 
@@ -117,6 +124,33 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                         <Link href="#" className="text-primary font-bold border-b-2 border-primary pb-1 transition-colors">Beranda</Link>
                         <Link href="#informasi-seleksi" className="text-secondary font-body-md hover:text-primary-container transition-colors">Informasi</Link>
                         <Link href="#berita" className="text-secondary font-body-md hover:text-primary-container transition-colors">Berita</Link>
+                        <div ref={pengumumanRef} className="relative">
+                            <button
+                                onClick={() => setPengumumanOpen(!pengumumanOpen)}
+                                className="flex items-center gap-1 text-secondary font-body-md hover:text-primary-container transition-colors"
+                            >
+                                Pengumuman
+                                <span className="material-symbols-outlined text-base">{pengumumanOpen ? 'expand_less' : 'expand_more'}</span>
+                            </button>
+                            {pengumumanOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant py-1 z-50">
+                                    <Link
+                                        href="/kelulusan/tahap-1"
+                                        className="block px-4 py-2 text-label-md text-on-surface-variant hover:bg-surface-variant transition-colors"
+                                        onClick={() => setPengumumanOpen(false)}
+                                    >
+                                        Pengumuman Tahap 1
+                                    </Link>
+                                    <Link
+                                        href="/kelulusan/tahap-2"
+                                        className="block px-4 py-2 text-label-md text-on-surface-variant hover:bg-surface-variant transition-colors"
+                                        onClick={() => setPengumumanOpen(false)}
+                                    >
+                                        Pengumuman Tahap 2
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-sm">
@@ -204,6 +238,26 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                                 <span className="material-symbols-outlined text-lg">newspaper</span>
                                 Berita
                             </Link>
+                            <button
+                                onClick={() => setMobilePengumumanOpen(!mobilePengumumanOpen)}
+                                className="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors w-full text-left"
+                            >
+                                <span className="material-symbols-outlined text-lg">campaign</span>
+                                Pengumuman
+                                <span className="material-symbols-outlined text-lg ml-auto">{mobilePengumumanOpen ? 'expand_less' : 'expand_more'}</span>
+                            </button>
+                            {mobilePengumumanOpen && (
+                                <div className="ml-6 space-y-xs">
+                                    <Link href="/kelulusan/tahap-1" className="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                        <span className="material-symbols-outlined text-lg">chevron_right</span>
+                                        Pengumuman Tahap 1
+                                    </Link>
+                                    <Link href="/kelulusan/tahap-2" className="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                                        <span className="material-symbols-outlined text-lg">chevron_right</span>
+                                        Pengumuman Tahap 2
+                                    </Link>
+                                </div>
+                            )}
                             <div className="border-t border-outline-variant pt-sm mt-sm">
                                 <Link href="/login-member" className="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     <span className="material-symbols-outlined text-lg">login</span>

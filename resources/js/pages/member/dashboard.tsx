@@ -76,6 +76,8 @@ interface MemberDashboardProps {
         kesehatan_catatan: string | null;
         lulus_tahap_1: boolean;
         lulus_tahap_1_prodi: string | null;
+        lulus_tahap_2: boolean;
+        is_finalized_tahap2: boolean;
     } | null;
     kesehatan: KesehatanData | null;
     profile_completeness: number;
@@ -370,10 +372,16 @@ export default function Dashboard({ peserta, kesehatan, profile_completeness, pr
                                 </Link>
                             )}
                             <Link
-                                href="/kelulusan"
+                                href="/kelulusan/tahap-1"
                                 className="block rounded-lg border border-gray-300 px-4 py-3 text-center font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                             >
-                                Cek Kelulusan
+                                {peserta.lulus_tahap_1 ? '✓ ' : ''}Hasil Tahap 1
+                            </Link>
+                            <Link
+                                href="/kelulusan/tahap-2"
+                                className="block rounded-lg border border-gray-300 px-4 py-3 text-center font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                            >
+                                {peserta.lulus_tahap_2 ? '✓ ' : ''}Hasil Tahap 2
                             </Link>
                         </div>
 

@@ -57,7 +57,10 @@ Route::get('/bukti-daftar/{nup}', [RegistrasiController::class, 'buktiDaftar'])-
 
 // Kelulusan routes
 Route::get('/kelulusan', [KelulusanController::class, 'index'])->name('kelulusan');
-Route::post('/kelulusan', [KelulusanController::class, 'check']);
+Route::get('/kelulusan/tahap-1', [KelulusanController::class, 'tahap1'])->name('kelulusan.tahap-1');
+Route::post('/kelulusan/tahap-1', [KelulusanController::class, 'checkTahap1'])->middleware('throttle:10,5');
+Route::get('/kelulusan/tahap-2', [KelulusanController::class, 'tahap2'])->name('kelulusan.tahap-2');
+Route::post('/kelulusan/tahap-2', [KelulusanController::class, 'checkTahap2'])->middleware('throttle:10,5');
 
 // Verifikasi routes
 Route::get('/verifikasi/{noujian}', [PortalController::class, 'verify'])->name('verifikasi');
