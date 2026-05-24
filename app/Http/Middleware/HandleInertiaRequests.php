@@ -23,6 +23,9 @@ class HandleInertiaRequests extends Middleware
         $faviconPath = \App\Models\Setup::get('favicon_path');
         $faviconUrl = $faviconPath ? asset('storage/' . $faviconPath) : null;
 
+        $customRegistrationEnabled = \App\Models\Setup::get('custom_registration_enabled', 0);
+        $customRegistrationUrl = \App\Models\Setup::get('custom_registration_url', '');
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -42,6 +45,8 @@ class HandleInertiaRequests extends Middleware
                 'name' => config('app.name'),
                 'logo_url' => $logoUrl,
                 'favicon_url' => $faviconUrl,
+                'custom_registration_enabled' => $customRegistrationEnabled,
+                'custom_registration_url' => $customRegistrationUrl,
             ],
         ];
     }

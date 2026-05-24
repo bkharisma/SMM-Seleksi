@@ -33,6 +33,8 @@ class SetupController extends Controller
             'favicon_path' => $settings->get('favicon_path')?->char_val ?? '',
             'kelulusan_tahap_1_dibuka' => $settings->get('kelulusan_tahap_1_dibuka')?->int_val ?? 0,
             'kelulusan_tahap_2_dibuka' => $settings->get('kelulusan_tahap_2_dibuka')?->int_val ?? 0,
+            'custom_registration_enabled' => $settings->get('custom_registration_enabled')?->int_val ?? 0,
+            'custom_registration_url' => $settings->get('custom_registration_url')?->char_val ?? '',
         ];
 
         return Inertia::render('admin/settings/index', [
@@ -57,6 +59,8 @@ class SetupController extends Controller
             'dashboard_upload_syarat' => 'required|integer|in:0,1',
             'kelulusan_tahap_1_dibuka' => 'required|integer|in:0,1',
             'kelulusan_tahap_2_dibuka' => 'required|integer|in:0,1',
+            'custom_registration_enabled' => 'required|integer|in:0,1',
+            'custom_registration_url' => 'nullable|string|max:255',
         ]);
 
         if ($validated['dashboard_upload_syarat'] == 1) {

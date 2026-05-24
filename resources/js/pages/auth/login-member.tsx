@@ -1,5 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import AuthLayout from '@/components/layout/auth-layout';
+import RegistrationLink from '@/components/ui/registration-link';
 
 export default function LoginMember() {
     const { data, setData, post, processing, errors } = useForm({
@@ -73,9 +74,9 @@ export default function LoginMember() {
                     </a>
                 </div>
                 <div className="text-center text-label-md">
-                    <a href="/registrasi" className="text-primary hover:underline">
+                    <RegistrationLink className="text-primary hover:underline">
                         Belum punya akun? Daftar di sini
-                    </a>
+                    </RegistrationLink>
                 </div>
             </form>
         </AuthLayout>

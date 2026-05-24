@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { getStoredTheme, setStoredTheme } from '@/lib/theme';
+import RegistrationLink from '@/components/ui/registration-link';
 
 interface Jadwal {
     id: number;
@@ -162,7 +163,7 @@ export default function JadwalPage({ jadwal }: JadwalPageProps) {
                         </div>
                         <div className="hidden md:flex items-center gap-sm">
                             <Link href="/login-member" className="font-button text-button px-sm py-xs text-primary hover:bg-surface-container transition-colors">Masuk</Link>
-                            <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</Link>
+                            <RegistrationLink className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</RegistrationLink>
                         </div>
                         <button
                             id="hamburger-btn"
@@ -192,9 +193,9 @@ export default function JadwalPage({ jadwal }: JadwalPageProps) {
                                 <Link href="/login-member" className="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     <span className="material-symbols-outlined text-lg">login</span> Masuk
                                 </Link>
-                                <Link href="/registrasi" className="flex items-center justify-center gap-sm px-sm py-2 mt-xs bg-primary-container text-on-primary-container font-medium rounded-lg shadow-sm hover:opacity-90 transition-all" onClick={() => setMobileMenuOpen(false)}>
+                                <RegistrationLink className="flex items-center justify-center gap-sm px-sm py-2 mt-xs bg-primary-container text-on-primary-container font-medium rounded-lg shadow-sm hover:opacity-90 transition-all" onClick={() => setMobileMenuOpen(false)}>
                                     <span className="material-symbols-outlined text-lg">person_add</span> Daftar Sekarang
-                                </Link>
+                                </RegistrationLink>
                             </div>
                         </div>
                     </div>

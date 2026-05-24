@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import RegistrationLink from '@/components/ui/registration-link';
 
 interface PortalLayoutProps {
     children: React.ReactNode;
@@ -23,9 +24,9 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
                         <Link href="/kelulusan/tahap-2" className="text-label-md text-secondary hover:text-primary transition-colors">
                             Hasil Tahap 2
                         </Link>
-                        <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">
+                        <RegistrationLink className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">
                             Daftar Sekarang
-                        </Link>
+                        </RegistrationLink>
                     </nav>
                 </div>
             </header>

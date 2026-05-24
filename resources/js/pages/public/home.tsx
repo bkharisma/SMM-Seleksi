@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { getStoredTheme, setStoredTheme } from '@/lib/theme';
+import RegistrationLink from '@/components/ui/registration-link';
 
 interface HomeProps {
     news: Array<{
@@ -207,7 +208,7 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
 
                         <div className="hidden md:flex items-center gap-sm">
                             <Link href="/login-member" className="font-button text-button px-sm py-xs text-primary hover:bg-surface-container transition-colors">Masuk</Link>
-                            <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</Link>
+                            <RegistrationLink className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</RegistrationLink>
                         </div>
 
                         <button
@@ -263,10 +264,10 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                                     <span className="material-symbols-outlined text-lg">login</span>
                                     Masuk
                                 </Link>
-                                <Link href="/registrasi" className="flex items-center justify-center gap-sm px-sm py-2 mt-xs bg-primary-container text-on-primary-container font-medium rounded-lg shadow-sm hover:opacity-90 transition-all" onClick={() => setMobileMenuOpen(false)}>
+                                <RegistrationLink className="flex items-center justify-center gap-sm px-sm py-2 mt-xs bg-primary-container text-on-primary-container font-medium rounded-lg shadow-sm hover:opacity-90 transition-all" onClick={() => setMobileMenuOpen(false)}>
                                     <span className="material-symbols-outlined text-lg">person_add</span>
                                     Daftar Sekarang
-                                </Link>
+                                </RegistrationLink>
                             </div>
                         </div>
                     </div>
@@ -281,7 +282,7 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                             <h1 className="text-2xl md:text-[40px] font-h1 text-on-surface mb-cs leading-tight">Wujudkan Karir Gemilang di Industri Hospitality Dunia</h1>
                             <p className="text-sm md:text-body-lg text-secondary mb-cl max-w-[500px]">Bergabunglah dengan Politeknik Pariwisata Palembang, institusi pendidikan pariwisata unggulan yang mencetak profesional berstandar internasional.</p>
                             <div className="flex flex-wrap gap-sm">
-                                <Link href="/registrasi" className="inline-block bg-primary-container text-on-primary-container font-button text-button px-sm md:px-cxl py-xs md:py-cs rounded-lg shadow-md hover:opacity-90 transition-all">Daftar Sekarang</Link>
+                                <RegistrationLink className="inline-block bg-primary-container text-on-primary-container font-button text-button px-sm md:px-cxl py-xs md:py-cs rounded-lg shadow-md hover:opacity-90 transition-all">Daftar Sekarang</RegistrationLink>
                             </div>
                         </div>
                         <div className="relative">
@@ -432,9 +433,9 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-cs">
                             {news.length > 0 ? news.map((item) => (
                                 <Link key={item.id} href={`/news/${item.id}`} className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer block">
-                                    <div className="h-36 md:h-48 overflow-hidden">
+                                    <div className="aspect-video overflow-hidden bg-surface-container">
                                         {item.img ? (
-                                            <img src={`/storage/${item.img}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                            <img src={`/storage/${item.img}`} alt={item.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                                         ) : (
                                             <div className="w-full h-full bg-surface-container flex items-center justify-center">
                                                 <span className="material-symbols-outlined text-4xl md:text-6xl text-secondary">article</span>
@@ -463,7 +464,7 @@ export default function Home({ news, jadwal, hero_image_url, accreditation_image
                         <div className="relative z-10">
                             <h2 className="text-xl md:text-[32px] font-h2 mb-cs leading-tight">Siap Memulai Perjalanan Anda?</h2>
                             <p className="text-sm md:text-body-lg mb-cl opacity-80 max-w-[700px] mx-auto">Jangan lewatkan kesempatan untuk menjadi bagian dari generasi pemimpin pariwisata masa depan. Daftar sekarang dan raih impianmu.</p>
-                            <Link href="/registrasi" className="inline-block bg-primary-container text-on-primary-container font-button text-button px-sm md:px-cxl py-xs md:py-cs rounded-lg shadow-lg hover:bg-primary-fixed-dim transition-all">Mulai Pendaftaran Online</Link>
+                            <RegistrationLink className="inline-block bg-primary-container text-on-primary-container font-button text-button px-sm md:px-cxl py-xs md:py-cs rounded-lg shadow-lg hover:bg-primary-fixed-dim transition-all">Mulai Pendaftaran Online</RegistrationLink>
                         </div>
                         <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-primary opacity-10 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-tertiary opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>

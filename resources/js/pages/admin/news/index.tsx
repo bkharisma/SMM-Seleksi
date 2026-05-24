@@ -201,7 +201,7 @@ export default function NewsIndex({ news, filters }: NewsIndexProps) {
                                     <img
                                         src={`/storage/${selectedNews.img}`}
                                         alt={selectedNews.title}
-                                        className="max-h-64 rounded-lg object-cover"
+                                        className="rounded-lg object-contain max-h-96 bg-surface-container"
                                     />
                                 </div>
                             </div>

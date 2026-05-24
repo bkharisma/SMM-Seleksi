@@ -27,6 +27,8 @@ interface SettingsProps {
         favicon_path: string;
         kelulusan_tahap_1_dibuka: number;
         kelulusan_tahap_2_dibuka: number;
+        custom_registration_enabled: number;
+        custom_registration_url: string;
     };
 }
 
@@ -65,6 +67,8 @@ export default function Settings({ settings }: SettingsProps) {
         dashboard_upload_syarat: settings.dashboard_upload_syarat.toString(),
         kelulusan_tahap_1_dibuka: settings.kelulusan_tahap_1_dibuka.toString(),
         kelulusan_tahap_2_dibuka: settings.kelulusan_tahap_2_dibuka.toString(),
+        custom_registration_enabled: settings.custom_registration_enabled.toString(),
+        custom_registration_url: settings.custom_registration_url,
         logo: null as File | null,
         favicon: null as File | null,
     });
@@ -312,7 +316,46 @@ return;
                                 />
                                 {errors.pengumuman_url && <p className="mt-1 text-sm text-red-600">{errors.pengumuman_url}</p>}
                             </div>
+
+                        <div className="border-t border-outline-variant pt-6">
+                            <h3 className="mb-4 text-lg font-semibold text-on-surface">Custom Link Pendaftaran</h3>
+                            <p className="mb-4 text-sm text-on-surface-variant">
+                                Aktifkan untuk mengarahkan semua tombol <strong>Daftar</strong>, <strong>Daftar Sekarang</strong>, dan <strong>Mulai Pendaftaran Online</strong> di halaman publik ke URL eksternal.
+                            </p>
+                            <div className="space-y-4 rounded-lg bg-surface-container-low p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-on-surface">Aktifkan Custom Link</p>
+                                        <p className="text-sm text-on-surface-variant">
+                                            Alihkan tautan pendaftaran ke URL kustom
+                                        </p>
+                                    </div>
+                                    <Toggle
+                                        id="custom_registration_enabled"
+                                        checked={data.custom_registration_enabled === '1'}
+                                        onChange={(checked) => setData('custom_registration_enabled', checked ? '1' : '0')}
+                                        label={data.custom_registration_enabled === '1' ? 'Aktif' : 'Nonaktif'}
+                                    />
+                                </div>
+                                {data.custom_registration_enabled === '1' && (
+                                    <div>
+                                        <label htmlFor="custom_registration_url" className="mb-1 block text-sm font-medium text-on-surface-container">
+                                            URL Pendaftaran Kustom
+                                        </label>
+                                        <input
+                                            id="custom_registration_url"
+                                            type="url"
+                                            value={data.custom_registration_url}
+                                            onChange={(e) => setData('custom_registration_url', e.target.value)}
+                                            placeholder="https://pmb.example.com"
+                                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                        />
+                                        {errors.custom_registration_url && <p className="mt-1 text-sm text-red-600">{errors.custom_registration_url}</p>}
+                                    </div>
+                                )}
+                            </div>
                         </div>
+                    </div>
                     )}
 
                     {activeTab === 'logo-aplikasi' && (

@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { getStoredTheme, setStoredTheme } from '@/lib/theme';
+import RegistrationLink from '@/components/ui/registration-link';
 
 interface NewsDetailProps {
     news: {
@@ -116,7 +117,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
                             )}
                         </div>
                         <Link href="/login-member" className="font-button text-button px-sm py-xs text-primary hover:bg-surface-container transition-colors">Masuk</Link>
-                        <Link href="/registrasi" className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</Link>
+                        <RegistrationLink className="font-button text-button px-cs py-xs bg-primary-container text-on-primary-container rounded-lg shadow-sm hover:opacity-90 transition-all">Daftar</RegistrationLink>
                     </div>
                 </div>
             </nav>
@@ -145,7 +146,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
                             <img
                                 src={`/storage/${news.img}`}
                                 alt={news.title}
-                                className="w-full rounded-xl object-cover max-h-[400px]"
+                                className="w-full rounded-xl object-contain max-h-[500px] bg-surface-container"
                             />
                         </div>
                     )}
