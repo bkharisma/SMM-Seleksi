@@ -30,3 +30,7 @@ yarn-error.log
 *.xls
 *.xlsx
 /storage/debugbar
+
+**/caddy
+frankenphp
+frankenphp-worker.php
