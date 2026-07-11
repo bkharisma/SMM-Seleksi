@@ -29,6 +29,9 @@ interface NilaiRecord {
     psi_bobot: number | null;
     bing_nil: number | null;
     waw_nil: number | null;
+    waw_bersedia_pindah: boolean | null;
+    waw_rekomendasi_prodi_id: number | null;
+    waw_catatan: string | null;
     kes_tb: number | null;
     kes_bw: number | null;
     kes_obe: number | null;
@@ -73,6 +76,9 @@ const FIELD_LABELS: Record<string, string> = {
     psi_bobot: 'Psikotes',
     bing_nil: 'Literasi Bahasa Inggris',
     waw_nil: 'Wawancara',
+    waw_bersedia_pindah: 'Bersedia Pindah Prodi',
+    waw_rekomendasi_prodi_id: 'Rekomendasi Prodi',
+    waw_catatan: 'Catatan Wawancara',
     kes_hasil: 'Tes Kesehatan',
     kes_tb: 'Tinggi Badan',
     kes_bw: 'Buta Warna',
@@ -82,7 +88,7 @@ const FIELD_LABELS: Record<string, string> = {
     skor_akhir: 'Skor Akhir',
 };
 
-const BOOL_FIELDS = ['kes_hasil', 'kes_bw', 'kes_scol', 'kes_hamil'];
+const BOOL_FIELDS = ['kes_hasil', 'kes_bw', 'kes_scol', 'kes_hamil', 'waw_bersedia_pindah'];
 
 function getNilaiDisplay(val: number | null | undefined, isBool: boolean): React.ReactNode {
     if (val === null || val === undefined) {
@@ -281,7 +287,7 @@ return;
     };
 
     const baseColumns = [
-        { key: 'nup', label: 'NUP', sortable: true },
+        { key: 'nup', label: 'No Pendaftar', sortable: true },
         { key: 'nus', label: 'No. Ujian' },
         {
             key: 'pendaftar',
@@ -320,7 +326,7 @@ return;
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="Cari nama, NUP, no ujian..."
+                        placeholder="Cari nama, No Pendaftar, no ujian..."
                         className="rounded-lg border border-outline-variant px-3 py-2 text-sm text-on-background bg-surface-container-lowest focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                     <Button onClick={handleSearch} size="sm">Cari</Button>
@@ -399,7 +405,7 @@ return;
                     <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div className="rounded-lg bg-surface-container p-3">
-                                <span className="text-xs text-on-surface-container">NUP</span>
+                                <span className="text-xs text-on-surface-container">No Pendaftar</span>
                                 <p className="font-medium">{editItem.nup}</p>
                             </div>
                             <div className="rounded-lg bg-surface-container p-3">

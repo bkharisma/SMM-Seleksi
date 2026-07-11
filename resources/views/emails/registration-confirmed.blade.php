@@ -9,7 +9,7 @@ Terima kasih telah mendaftar di Seleksi Mandiri Masuk Politeknik Pariwisata Pale
 
 | Item | Keterangan |
 |------|-----------|
-| **NUP** | {{ $peminat->nup }} |
+| **No Pendaftar** | {{ $peminat->nup }} |
 | **Nama** | {{ $peminat->nama }} |
 | **Email** | {{ $peminat->email }} |
 | **Password** | {{ $password }} |
@@ -35,7 +35,7 @@ Silakan lakukan pembayaran melalui Virtual Account BSI:
 
 ## Langkah Selanjutnya
 
-1. Simpan NUP dan Password Anda untuk login
+1. Simpan No Pendaftar dan Password Anda untuk login
 2. Lakukan pembayaran melalui VA BSI sebelum batas waktu
 3. Setelah pembayaran dikonfirmasi, Anda akan menjadi peserta terdaftar
 4. Login ke dashboard untuk melengkapi profil dan upload dokumen

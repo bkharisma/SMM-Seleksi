@@ -247,14 +247,7 @@ return '-';
                     <DetailItem label="Ruang" value={pendaftar.ruang?.nomor_ruang || '-'} />
                     <DetailItem label="Kelompok" value={pendaftar.ruang_kelompok || '-'} />
                     <DetailItem label="Status Kelulusan" value={getLulusStatus()} />
-                    {pendaftar.is_referensi && (
-                        <>
-                            <DetailItem label="Referensi" value={<Badge variant="warning">Ya</Badge>} />
-                            {pendaftar.catatan_referensi && (
-                                <DetailItem label="Catatan Referensi" value={pendaftar.catatan_referensi} />
-                            )}
-                        </>
-                    )}
+
                     {pendaftar.lulus_tahap && (
                         <DetailItem label="Lulus Tahap" value={pendaftar.lulus_tahap.nama_tahap || pendaftar.lulus_tahap.nama || '-'} />
                     )}
@@ -345,7 +338,7 @@ return '-';
                                         {nilai.type && <span className="ml-2"><Badge variant="info">{nilai.type}</Badge></span>}
                                     </h5>
                                     <div className="rounded-lg border border-outline-variant p-3">
-                                        <DetailItem label="NUP" value={nilai.nup || '-'} />
+                                        <DetailItem label="No Pendaftar" value={nilai.nup || '-'} />
                                         <DetailItem label="No. Seleksi" value={nilai.nus || '-'} />
                                         {allFields.map((field: string) => {
                                             const val = (nilai as any)[field];

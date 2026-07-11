@@ -111,7 +111,7 @@ export default function PesertaShow({ peserta }: PesertaShowProps) {
             <div className="grid gap-4 md:grid-cols-2">
                 <Card title="Data Pribadi">
                     <div className="space-y-1">
-                        <InfoRow label="NUP" value={peserta.nup} />
+                        <InfoRow label="No Pendaftar" value={peserta.nup} />
                         <InfoRow label="No. Ujian" value={peserta.noujian} />
                         <InfoRow label="NIK" value={peserta.nik} />
                         <InfoRow label="Nama" value={peserta.nama} />

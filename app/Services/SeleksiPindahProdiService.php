@@ -150,6 +150,15 @@ class SeleksiPindahProdiService
             ];
         }
 
+        $tahap1 = TahapSeleksi::where('urutan', 1)->where('active', true)->first();
+        if (!$tahap1) {
+            return [
+                'success' => false,
+                'message' => 'Tahap seleksi 1 tidak ditemukan atau tidak aktif.',
+                'errors' => $errors,
+            ];
+        }
+
         DB::beginTransaction();
         try {
             $updated = 0;
@@ -169,7 +178,7 @@ class SeleksiPindahProdiService
 
                 $peserta->update([
                     'lulus' => $prodi->id,
-                    'lulus_tahap' => null,
+                    'lulus_tahap' => $tahap1->id,
                     'param_lulus' => $paramLulus,
                 ]);
 

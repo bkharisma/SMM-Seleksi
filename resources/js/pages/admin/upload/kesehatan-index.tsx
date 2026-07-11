@@ -128,7 +128,7 @@ params.set('status', status);
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="Cari nama, NUP, no ujian..."
+                        placeholder="Cari nama, No Pendaftar, no ujian..."
                     />
                     <Select
                         value={status}

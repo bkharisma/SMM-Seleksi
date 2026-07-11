@@ -183,7 +183,7 @@ class KelulusanRekapService
             foreach ($pesertaWithLengkapBerkas as $p) {
                 $p->update([
                     'lulus_tahap' => $tahap2->id,
-                    'finalisasi' => false,
+                    'finalisasi' => true,
                 ]);
                 $finalizedLulus++;
             }

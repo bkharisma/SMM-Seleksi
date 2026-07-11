@@ -78,16 +78,16 @@ export default function KelulusanTahap1({ peserta }: Tahap1Props) {
                     <Card title="Cek Kelulusan Tahap 1">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Masukkan NUP dan password Anda untuk melihat hasil kelulusan Tahap 1.
+                                Masukkan No Pendaftar dan password Anda untuk melihat hasil kelulusan Tahap 1.
                             </p>
                             <Input
                                 id="nup"
-                                label="NUP (Nomor Ujian Peserta)"
+                                label="No Pendaftar"
                                 value={data.nup}
                                 onChange={(e) => setData('nup', e.target.value)}
                                 error={errors?.nup}
                                 required
-                                placeholder="Masukkan NUP"
+                                placeholder="Masukkan No Pendaftar"
                             />
                             <Input
                                 id="password"
@@ -111,7 +111,7 @@ export default function KelulusanTahap1({ peserta }: Tahap1Props) {
                         <Card>
                             <div className="text-center">
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">{peserta.nama}</h2>
-                                <p className="text-sm text-gray-500">NUP: {peserta.nup}</p>
+                                <p className="text-sm text-gray-500">No Pendaftar: {peserta.nup}</p>
                                 {peserta.pil1 && (
                                     <p className="text-sm text-gray-500">Pilihan 1: {peserta.pil1}</p>
                                 )}
@@ -161,38 +161,6 @@ export default function KelulusanTahap1({ peserta }: Tahap1Props) {
                                 )}
                             </div>
                         </Card>
-
-                        {peserta.detail && (
-                            <Card title="Hasil Evaluasi Tahap 1">
-                                {Object.keys(peserta.detail.scores).length > 0 && (
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                        {Object.entries(peserta.detail.scores).map(([key, val]) => (
-                                            <div key={key} className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-700">
-                                                <span className="text-sm text-gray-600 dark:text-gray-400">{key}</span>
-                                                <span className="font-bold text-gray-900 dark:text-white">
-                                                    {val !== null ? val : '-'}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {peserta.detail.total_skor > 0 && (
-                                    <div className="mt-3 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-3 dark:bg-blue-900/20">
-                                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Skor</span>
-                                        <span className="font-bold text-blue-700 dark:text-blue-300">{peserta.detail.total_skor}</span>
-                                    </div>
-                                )}
-
-                                {peserta.detail.reasons && peserta.detail.reasons.filter(r => !r.includes('Peserta Referensi')).length > 0 && (
-                                    <div className="mt-3 space-y-1 text-xs text-red-600 dark:text-red-400">
-                                        {peserta.detail.reasons.filter(r => !r.includes('Peserta Referensi')).map((reason, rIdx) => (
-                                            <div key={rIdx}>• {reason}</div>
-                                        ))}
-                                    </div>
-                                )}
-                            </Card>
-                        )}
 
                         <div className="text-center">
                             <button

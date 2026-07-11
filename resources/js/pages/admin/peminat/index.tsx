@@ -98,7 +98,7 @@ params.set('status', status);
     };
 
     const columns = [
-        { key: 'nup', label: 'NUP', sortable: true },
+        { key: 'nup', label: 'No Pendaftar', sortable: true },
         { key: 'nama', label: 'Nama', sortable: true },
         { key: 'email', label: 'Email' },
         { key: 'hp', label: 'HP' },
@@ -140,7 +140,7 @@ params.set('status', status);
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="Cari nama, NUP, email..."
+                        placeholder="Cari nama, No Pendaftar, email..."
                         className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     />
                     <select

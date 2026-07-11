@@ -9,7 +9,7 @@ interface NavItem {
     children?: NavItem[];
 }
 
-const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
+const menuGroups: { title?: string; items: NavItem[]; icon?: string; roles?: string[] }[] = [
     {
         items: [
             { href: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -56,6 +56,7 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
     {
         title: 'Seleksi',
         icon: 'playlist_add_check',
+        roles: ['superadmin'],
         items: [
             { href: '/admin/kriteria', label: 'Kriteria Kelulusan', icon: 'my_location' },
             { href: '/admin/pembobotan', label: 'Pembobotan', icon: 'percent' },
@@ -79,7 +80,11 @@ const menuGroups: { title?: string; items: NavItem[]; icon?: string }[] = [
 ];
 
 export default function TopNav() {
-    const { url, auth, app } = usePage() as any;
+    const { url, props: { auth, app } } = usePage() as any;
+    const userRoles: string[] = auth?.user?.roles ?? [];
+    const visibleMenuGroups = menuGroups.filter(
+        (group) => !group.roles || group.roles.some((r) => userRoles.includes(r))
+    );
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<number | null>(null);
     const [mobileDropdowns, setMobileDropdowns] = useState<Record<number, boolean>>({});
@@ -146,7 +151,7 @@ export default function TopNav() {
                 </div>
 
                 <div className="hidden lg:flex items-center gap-xs">
-                    {menuGroups.map((group, groupIndex) => (
+                    {visibleMenuGroups.map((group, groupIndex) => (
                         <div
                             key={groupIndex}
                             className="relative"
@@ -309,7 +314,7 @@ export default function TopNav() {
             {mobileOpen && (
                 <div className="border-t border-outline-variant lg:hidden px-gutter py-cs">
                     <div className="flex flex-col gap-sm">
-                        {menuGroups.map((group, groupIndex) => (
+                        {visibleMenuGroups.map((group, groupIndex) => (
                             <div key={groupIndex}>
                                 {group.items.length === 1 && group.items[0].href ? (
                                     <Link

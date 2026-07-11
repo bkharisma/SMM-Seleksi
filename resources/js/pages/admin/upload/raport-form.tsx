@@ -119,7 +119,7 @@ export default function RaportForm({ raport }: RaportFormProps) {
                 <Card title="Data Peserta">
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">NUP</span>
+                            <span className="text-gray-500">No Pendaftar</span>
                             <span className="font-medium">{raport.peserta?.nup}</span>
                         </div>
                         <div className="flex justify-between text-sm">

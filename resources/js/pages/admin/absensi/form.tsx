@@ -166,7 +166,7 @@ export default function AbsensiForm({ ruang, peserta }: AbsensiFormProps) {
                                                 className="rounded border-gray-300"
                                             />
                                         </th>
-                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">NUP</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">No Pendaftar</th>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">No. Ujian</th>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Nama</th>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Ruang</th>

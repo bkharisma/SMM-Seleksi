@@ -305,7 +305,7 @@ return;
                                 <table className="min-w-full divide-y divide-outline-variant">
                                     <thead className="bg-surface-container">
                                         <tr>
-                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">NUP</th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No Pendaftar</th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nama</th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No. Ujian</th>
                                             {preview.results[0] && Object.keys(preview.results[0].scores || {}).map((key) => (

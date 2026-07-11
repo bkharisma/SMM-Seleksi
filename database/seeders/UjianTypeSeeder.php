@@ -32,7 +32,7 @@ class UjianTypeSeeder extends Seeder
                 'nama' => 'Wawancara',
                 'kode' => 'WW',
                 'deskripsi' => 'Tes Wawancara',
-                'fields_config' => ['fields' => ['waw_nil']],
+                'fields_config' => ['fields' => ['waw_nil', 'waw_bersedia_pindah', 'waw_rekomendasi_prodi_id', 'waw_catatan']],
             ],
             [
                 'nama' => 'Cek Kesehatan',

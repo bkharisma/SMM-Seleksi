@@ -45,7 +45,7 @@
             <tr>
                 <th>No</th>
                 <th>No. Ujian</th>
-                <th>NUP</th>
+                <th>No Pendaftar</th>
                 <th>Nama</th>
                 <th>Pilihan 1</th>
                 <th>Tanda Tangan</th>

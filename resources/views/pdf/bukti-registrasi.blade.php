@@ -31,7 +31,7 @@
 
     <table>
         <tr>
-            <td>NUP</td>
+            <td>No Pendaftar</td>
             <td>: {{ $peminat->nup }}</td>
         </tr>
         <tr>

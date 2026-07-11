@@ -35,7 +35,7 @@
     <div class="section">
         <h3>Data Pribadi</h3>
         <table class="info-table">
-            <tr><td>NUP</td><td>:</td><td>{{ $peserta->nup }}</td></tr>
+            <tr><td>No Pendaftar</td><td>:</td><td>{{ $peserta->nup }}</td></tr>
             <tr><td>No. Ujian</td><td>:</td><td>{{ $peserta->noujian ?? '-' }}</td></tr>
             <tr><td>Nama Lengkap</td><td>:</td><td>{{ $peserta->nama }}</td></tr>
             <tr><td>NIK</td><td>:</td><td>{{ $peserta->nik ?? '-' }}</td></tr>

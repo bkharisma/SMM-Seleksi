@@ -121,7 +121,7 @@ params.set('status', status);
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="Cari nama, NUP, no ujian..."
+                        placeholder="Cari nama, No Pendaftar, no ujian..."
                         className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     />
                     <select

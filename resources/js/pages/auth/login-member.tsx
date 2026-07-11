@@ -20,7 +20,7 @@ export default function LoginMember() {
             <form onSubmit={submit} className="space-y-5">
                 <div>
                     <label htmlFor="nup" className="mb-2 block text-body-md font-medium text-on-surface-container">
-                        NUP (Nomor Urut Peminat)
+                        No Pendaftar
                     </label>
                     <input
                         id="nup"
@@ -30,7 +30,7 @@ export default function LoginMember() {
                         className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-on-background focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         required
                         autoFocus
-                        placeholder="Contoh: 25000001"
+                        placeholder="Contoh: 115261001"
                     />
                     {errors.nup && <p className="mt-1 text-label-md text-error">{errors.nup}</p>}
                 </div>

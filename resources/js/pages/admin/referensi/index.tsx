@@ -235,7 +235,7 @@ return null;
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                                placeholder="Cari nama, NUP, atau no. ujian..."
+                                placeholder="Cari nama, No Pendaftar, atau no. ujian..."
                             />
                             <Select
                                 value={prodiId}
@@ -267,7 +267,7 @@ return null;
                             <thead className="bg-surface-container">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container w-8"></th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">NUP</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No Pendaftar</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">No. Ujian</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Nama</th>
                                     <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-wider text-on-surface-container">Pil 1</th>
@@ -342,7 +342,7 @@ return null;
                                                     <div className="space-y-3">
                                                         <div className="flex items-center gap-4 text-sm">
                                                             <span className="font-semibold text-on-background">{item.nama}</span>
-                                                            <span className="text-on-surface-container">NUP: <span className="font-mono">{item.kode_pendaftar}</span></span>
+                                                            <span className="text-on-surface-container">No Pendaftar: <span className="font-mono">{item.kode_pendaftar}</span></span>
                                                             {item.noujian && <span className="text-on-surface-container">No. Ujian: <span className="font-mono">{item.noujian}</span></span>}
                                                         </div>
                                                         {nilaiLoading === item.id && (

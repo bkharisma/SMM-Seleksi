@@ -255,7 +255,7 @@ return [];
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         <button type="button" onClick={() => handleSort('nup')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
-                                            NUP
+                                            No Pendaftar
                                             {sortColumn === 'nup' ? (
                                                 sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                                             ) : (

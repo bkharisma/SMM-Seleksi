@@ -19,6 +19,13 @@ class PendaftarNilai extends Model
     ];
 
     protected $casts = [
+        'waw_nil' => 'float',
+        'psi_iq' => 'float',
+        'psi_bobot' => 'float',
+        'bing_nil' => 'float',
+        'kes_tb' => 'float',
+        'minat_dominan' => 'float',
+        'skor_akhir' => 'float',
         'kes_bw' => 'boolean',
         'kes_paru' => 'boolean',
         'kes_scol' => 'boolean',

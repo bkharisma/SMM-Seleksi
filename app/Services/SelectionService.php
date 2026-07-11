@@ -565,14 +565,14 @@ class SelectionService
 
             $count = Pendaftar::whereNull('lulus')->whereNull('noujian')->count();
 
-            Pendaftar::whereNull('lulus')->update(['finalisasi' => true]);
+            Pendaftar::query()->update(['finalisasi' => true]);
             $updated = Pendaftar::where('finalisasi', true)->count();
 
             DB::commit();
 
             return [
                 'success' => true,
-                'message' => "Finalisasi berhasil. {$updated} peserta yang tidak lulus telah ditandai.",
+                'message' => "Finalisasi berhasil. {$updated} peserta telah ditandai.",
                 'updated' => $updated,
             ];
         } catch (\Exception $e) {

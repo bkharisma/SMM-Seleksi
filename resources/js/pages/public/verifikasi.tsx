@@ -77,7 +77,7 @@ export default function Verifikasi({ peserta }: VerifikasiProps) {
                                 <div>
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">{peserta.nama}</h3>
                                     <p className="text-sm text-gray-500">No. Ujian: {peserta.noujian || '-'}</p>
-                                    <p className="text-sm text-gray-500">NUP: {peserta.nup}</p>
+                                    <p className="text-sm text-gray-500">No Pendaftar: {peserta.nup}</p>
                                 </div>
                             </div>
 

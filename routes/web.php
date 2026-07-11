@@ -185,63 +185,66 @@ Route::middleware(['auth', 'role:superadmin|admin|operator'])->prefix('admin')->
     Route::post('/upload/kesehatan/{kesehatan}/status', [PendaftarUploadController::class, 'updateKesehatanStatus'])->name('upload.kesehatan-status');
     Route::get('/upload/kesehatan/export', [PendaftarUploadController::class, 'exportKesehatan'])->name('upload.kesehatan-export');
 
-    // Kriteria Kelulusan
-    Route::get('/kriteria', [KriteriaKelulusanController::class, 'index'])->name('kriteria.index');
-    Route::get('/kriteria/create', [KriteriaKelulusanController::class, 'create'])->name('kriteria.create');
-    Route::post('/kriteria', [KriteriaKelulusanController::class, 'store'])->name('kriteria.store');
-    Route::get('/kriteria/{kriteria}/edit', [KriteriaKelulusanController::class, 'edit'])->name('kriteria.edit');
-    Route::put('/kriteria/{kriteria}', [KriteriaKelulusanController::class, 'update'])->name('kriteria.update');
-    Route::delete('/kriteria/{kriteria}', [KriteriaKelulusanController::class, 'destroy'])->name('kriteria.destroy');
+    // Menu Seleksi (hanya superadmin)
+    Route::middleware(['role:superadmin'])->group(function () {
+        // Kriteria Kelulusan
+        Route::get('/kriteria', [KriteriaKelulusanController::class, 'index'])->name('kriteria.index');
+        Route::get('/kriteria/create', [KriteriaKelulusanController::class, 'create'])->name('kriteria.create');
+        Route::post('/kriteria', [KriteriaKelulusanController::class, 'store'])->name('kriteria.store');
+        Route::get('/kriteria/{kriteria}/edit', [KriteriaKelulusanController::class, 'edit'])->name('kriteria.edit');
+        Route::put('/kriteria/{kriteria}', [KriteriaKelulusanController::class, 'update'])->name('kriteria.update');
+        Route::delete('/kriteria/{kriteria}', [KriteriaKelulusanController::class, 'destroy'])->name('kriteria.destroy');
 
-    // Nilai Ujian
-    Route::get('/nilai', [NilaiUjianController::class, 'selectUjian'])->name('nilai.select');
-    Route::get('/nilai/import-errors/{key}', [NilaiUjianController::class, 'downloadImportErrors'])->name('nilai.import-errors');
-    Route::get('/nilai/{ujian}', [NilaiUjianController::class, 'index'])->name('nilai.index');
-    Route::post('/nilai/{ujian}/upload', [NilaiUjianController::class, 'upload'])->name('nilai.upload');
-    Route::get('/nilai/{ujian}/template', [NilaiUjianController::class, 'downloadTemplate'])->name('nilai.template');
-    Route::get('/nilai/{ujian}/export', [NilaiUjianController::class, 'export'])->name('nilai.export');
-    Route::put('/nilai/{nilai}', [NilaiUjianController::class, 'update'])->name('nilai.update');
-    Route::delete('/nilai/{nilai}', [NilaiUjianController::class, 'destroy'])->name('nilai.destroy');
-    Route::delete('/nilai-bulk', [NilaiUjianController::class, 'bulkDestroy'])->name('nilai.bulk-destroy');
+        // Nilai Ujian
+        Route::get('/nilai', [NilaiUjianController::class, 'selectUjian'])->name('nilai.select');
+        Route::get('/nilai/import-errors/{key}', [NilaiUjianController::class, 'downloadImportErrors'])->name('nilai.import-errors');
+        Route::get('/nilai/{ujian}', [NilaiUjianController::class, 'index'])->name('nilai.index');
+        Route::post('/nilai/{ujian}/upload', [NilaiUjianController::class, 'upload'])->name('nilai.upload');
+        Route::get('/nilai/{ujian}/template', [NilaiUjianController::class, 'downloadTemplate'])->name('nilai.template');
+        Route::get('/nilai/{ujian}/export', [NilaiUjianController::class, 'export'])->name('nilai.export');
+        Route::put('/nilai/{nilai}', [NilaiUjianController::class, 'update'])->name('nilai.update');
+        Route::delete('/nilai/{nilai}', [NilaiUjianController::class, 'destroy'])->name('nilai.destroy');
+        Route::delete('/nilai-bulk', [NilaiUjianController::class, 'bulkDestroy'])->name('nilai.bulk-destroy');
 
-    // Absensi
-    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-    Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
-    Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
-    Route::get('/absensi/{absensi}', [AbsensiController::class, 'show'])->name('absensi.show');
-    Route::post('/absensi/{absensi}/save', [AbsensiController::class, 'saveAttendance'])->name('absensi.save');
-    Route::get('/absensi/{absensi}/cetak/{ruangId}', [AbsensiController::class, 'cetak'])->name('absensi.cetak');
-    Route::post('/absensi/distribusi', [AbsensiController::class, 'distribusi'])->name('absensi.distribusi');
-    Route::delete('/absensi/{absensi}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
+        // Absensi
+        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
+        Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
+        Route::get('/absensi/{absensi}', [AbsensiController::class, 'show'])->name('absensi.show');
+        Route::post('/absensi/{absensi}/save', [AbsensiController::class, 'saveAttendance'])->name('absensi.save');
+        Route::get('/absensi/{absensi}/cetak/{ruangId}', [AbsensiController::class, 'cetak'])->name('absensi.cetak');
+        Route::post('/absensi/distribusi', [AbsensiController::class, 'distribusi'])->name('absensi.distribusi');
+        Route::delete('/absensi/{absensi}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
 
-    // Seleksi
-    Route::get('/seleksi', [SeleksiController::class, 'index'])->name('seleksi.index');
-    Route::post('/seleksi/preview', [SeleksiController::class, 'preview'])->name('seleksi.preview');
-    Route::post('/seleksi/save', [SeleksiController::class, 'save'])->name('seleksi.save');
-    Route::get('/seleksi/rekap', [SeleksiController::class, 'rekap'])->name('seleksi.rekap');
-    Route::get('/seleksi/rekap/{prodi}/export', [SeleksiController::class, 'rekapDetailExport'])->name('seleksi.rekap.detail.export');
-    Route::get('/seleksi/rekap/{prodi}', [SeleksiController::class, 'rekapDetail'])->name('seleksi.rekap.detail');
-    Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
-    Route::delete('/seleksi/bulk-revoke', [SeleksiController::class, 'bulkRevokeLulus'])->name('seleksi.bulk-revoke');
-    Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
-    Route::post('/seleksi/finalisasi', [SeleksiController::class, 'finalisasi'])->name('seleksi.finalisasi');
-    Route::post('/seleksi/revert-finalisasi', [SeleksiController::class, 'revertFinalisasi'])->name('seleksi.revert-finalisasi');
+        // Seleksi
+        Route::get('/seleksi', [SeleksiController::class, 'index'])->name('seleksi.index');
+        Route::post('/seleksi/preview', [SeleksiController::class, 'preview'])->name('seleksi.preview');
+        Route::post('/seleksi/save', [SeleksiController::class, 'save'])->name('seleksi.save');
+        Route::get('/seleksi/rekap', [SeleksiController::class, 'rekap'])->name('seleksi.rekap');
+        Route::get('/seleksi/rekap/{prodi}/export', [SeleksiController::class, 'rekapDetailExport'])->name('seleksi.rekap.detail.export');
+        Route::get('/seleksi/rekap/{prodi}', [SeleksiController::class, 'rekapDetail'])->name('seleksi.rekap.detail');
+        Route::delete('/seleksi/revoke/{pendaftar}', [SeleksiController::class, 'revokeLulus'])->name('seleksi.revoke');
+        Route::delete('/seleksi/bulk-revoke', [SeleksiController::class, 'bulkRevokeLulus'])->name('seleksi.bulk-revoke');
+        Route::get('/seleksi/export', [SeleksiController::class, 'export'])->name('seleksi.export');
+        Route::post('/seleksi/finalisasi', [SeleksiController::class, 'finalisasi'])->name('seleksi.finalisasi');
+        Route::post('/seleksi/revert-finalisasi', [SeleksiController::class, 'revertFinalisasi'])->name('seleksi.revert-finalisasi');
 
-    // Seleksi Pindah Prodi
-    Route::get('/seleksi-pindah-prodi', [SeleksiPindahProdiController::class, 'index'])->name('seleksi-pindah-prodi.index');
-    Route::post('/seleksi-pindah-prodi/save', [SeleksiPindahProdiController::class, 'saveKeputusan'])->name('seleksi-pindah-prodi.save');
+        // Seleksi Pindah Prodi
+        Route::get('/seleksi-pindah-prodi', [SeleksiPindahProdiController::class, 'index'])->name('seleksi-pindah-prodi.index');
+        Route::post('/seleksi-pindah-prodi/save', [SeleksiPindahProdiController::class, 'saveKeputusan'])->name('seleksi-pindah-prodi.save');
 
-    // Pembobotan
-    Route::get('/pembobotan', [PembobotanController::class, 'index'])->name('pembobotan.index');
-    Route::get('/pembobotan/{tahap}', [PembobotanController::class, 'edit'])->name('pembobotan.edit');
-    Route::put('/pembobotan/{tahap}', [PembobotanController::class, 'update'])->name('pembobotan.update');
-    Route::post('/pembobotan/{tahap}/hitung', [PembobotanController::class, 'hitung'])->name('pembobotan.hitung');
-    Route::delete('/pembobotan/{tahap}/reset-nilai-akhir', [PembobotanController::class, 'resetNilaiAkhir'])->name('pembobotan.reset-nilai-akhir');
+        // Pembobotan
+        Route::get('/pembobotan', [PembobotanController::class, 'index'])->name('pembobotan.index');
+        Route::get('/pembobotan/{tahap}', [PembobotanController::class, 'edit'])->name('pembobotan.edit');
+        Route::put('/pembobotan/{tahap}', [PembobotanController::class, 'update'])->name('pembobotan.update');
+        Route::post('/pembobotan/{tahap}/hitung', [PembobotanController::class, 'hitung'])->name('pembobotan.hitung');
+        Route::delete('/pembobotan/{tahap}/reset-nilai-akhir', [PembobotanController::class, 'resetNilaiAkhir'])->name('pembobotan.reset-nilai-akhir');
 
-    // Referensi
-    Route::get('/referensi', [AdminReferensiController::class, 'index'])->name('referensi.index');
-    Route::post('/referensi/{pendaftar}/toggle', [AdminReferensiController::class, 'toggle'])->name('referensi.toggle');
-    Route::get('/referensi/{pendaftar}/nilai', [AdminReferensiController::class, 'nilai'])->name('referensi.nilai');
+        // Referensi
+        Route::get('/referensi', [AdminReferensiController::class, 'index'])->name('referensi.index');
+        Route::post('/referensi/{pendaftar}/toggle', [AdminReferensiController::class, 'toggle'])->name('referensi.toggle');
+        Route::get('/referensi/{pendaftar}/nilai', [AdminReferensiController::class, 'nilai'])->name('referensi.nilai');
+    });
 });
 
 // Member routes

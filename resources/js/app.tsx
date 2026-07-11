@@ -1,6 +1,6 @@
 import { createInertiaApp  } from '@inertiajs/react';
 import type {ResolvedComponent} from '@inertiajs/react';
-import { hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 const appName = import.meta.env.VITE_APP_NAME || 'SMM Poltekpar Palembang';
 
@@ -18,7 +18,7 @@ createInertiaApp({
     },
     setup({ el, App, props }) {
         if (el) {
-            hydrateRoot(el, <App {...props} />);
+            createRoot(el).render(<App {...props} />);
         }
     },
     progress: {

@@ -290,7 +290,7 @@ export default function DashboardUploadSyarat({ peserta, kesehatan }: DashboardU
                                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                                             Selamat datang, {peserta.nama}
                                         </h2>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">NUP: {peserta.nup}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">No Pendaftar: {peserta.nup}</p>
                                     </div>
                                 </div>
                                 <Badge variant={peserta.status ? 'success' : 'danger'}>

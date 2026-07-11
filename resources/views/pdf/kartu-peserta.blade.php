@@ -37,7 +37,7 @@
             <div class="info">
                 <table>
                     <tr><td>No. Ujian</td><td><strong>{{ $peserta->noujian }}</strong></td></tr>
-                    <tr><td>NUP</td><td>{{ $peserta->nup }}</td></tr>
+                    <tr><td>No Pendaftar</td><td>{{ $peserta->nup }}</td></tr>
                     <tr><td>Nama</td><td>{{ $peserta->nama }}</td></tr>
                     <tr><td>TTL</td><td>{{ $peserta->tempatlahir }}, {{ $peserta->tgllahir?->format('d-m-Y') }}</td></tr>
                     <tr><td>Pilihan 1</td><td>{{ $peserta->pil1Prodi?->nama_prodi }}</td></tr>

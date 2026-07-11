@@ -51,7 +51,7 @@ export default function RegistrasiSuccess({ peminat, va }: RegistrasiSuccessProp
                             <h3 className="mb-2 font-medium text-gray-900 dark:text-white">Data Pendaftaran</h3>
                             <dl className="space-y-2 text-sm">
                                 <div className="flex justify-between">
-                                    <dt className="text-gray-500 dark:text-gray-400">NUP:</dt>
+                                    <dt className="text-gray-500 dark:text-gray-400">No Pendaftar:</dt>
                                     <dd className="font-mono font-bold text-gray-900 dark:text-white">{peminat.nup}</dd>
                                 </div>
                                 <div className="flex justify-between">

@@ -57,7 +57,7 @@ export default function PesertaDetail({ pendaftar }: PesertaDetailProps) {
             <Card title="Data Peserta" className="mb-6">
                 <div className="grid gap-2 md:grid-cols-3">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">NUP</span>
+                        <span className="text-gray-500">No Pendaftar</span>
                         <span className="font-medium">{pendaftar.nup}</span>
                     </div>
                     <div className="flex justify-between text-sm">

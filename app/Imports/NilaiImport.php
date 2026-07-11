@@ -134,12 +134,28 @@ class NilaiImport implements ToModel, WithHeadingRow, WithStartRow
 
     protected function toInt($value): ?int
     {
-        return $value !== null && $value !== '' ? (int) $value : null;
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $value = str_replace(',', '.', $value);
+        }
+
+        return (int) $value;
     }
 
     protected function toFloat($value): ?float
     {
-        return $value !== null && $value !== '' ? (float) $value : null;
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $value = str_replace(',', '.', $value);
+        }
+
+        return (float) $value;
     }
 
     protected function toBool($value): ?bool

@@ -9,7 +9,7 @@ Pembayaran pendaftaran Anda telah terkonfirmasi. Anda sekarang resmi menjadi **P
 
 | Item | Keterangan |
 |------|-----------|
-| **NUP** | {{ $peserta->nup }} |
+| **No Pendaftar** | {{ $peserta->nup }} |
 | **Nama** | {{ $peserta->nama }} |
 | **Email** | {{ $peserta->email }} |
 

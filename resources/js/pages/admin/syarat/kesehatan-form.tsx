@@ -121,7 +121,7 @@ export default function SyaratKesehatanForm({ kesehatan }: KesehatanFormProps) {
             )}
 
             <div className="mb-4 flex items-center gap-2">
-                <Link href="/admin/syarat/kesehatan">
+                <Link href="/admin/syarat">
                     <Button variant="secondary" size="sm">← Kembali</Button>
                 </Link>
                 <Link href={`/admin/syarat/peserta/${kesehatan.peserta?.nup}`}>
@@ -134,7 +134,7 @@ export default function SyaratKesehatanForm({ kesehatan }: KesehatanFormProps) {
                     <Card title="Data Peserta">
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">NUP</span>
+                                <span className="text-gray-500">No Pendaftar</span>
                                 <span className="font-medium">{kesehatan.peserta?.nup}</span>
                             </div>
                             <div className="flex justify-between text-sm">

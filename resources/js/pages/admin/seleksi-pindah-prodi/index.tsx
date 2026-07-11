@@ -283,7 +283,7 @@ return;
                             <div className="flex-1">
                                 <Input
                                     type="text"
-                                    placeholder="Cari berdasarkan NUP, No Ujian, atau Nama..."
+                                    placeholder="Cari berdasarkan No Pendaftar, No Ujian, atau Nama..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     icon={<Search className="h-4 w-4" />}
@@ -307,7 +307,7 @@ return;
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
                                         <button type="button" onClick={() => handleSort('nup')} className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
-                                            NUP
+                                            No Pendaftar
                                             <SortIcon column="nup" sortColumn={sortColumn} sortDirection={sortDirection} />
                                         </button>
                                     </th>
@@ -433,7 +433,7 @@ return;
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs text-gray-500">NUP</label>
+                                        <label className="text-xs text-gray-500">No Pendaftar</label>
                                         <p className="font-medium">{detailPeserta.nup}</p>
                                     </div>
                                     <div>

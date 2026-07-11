@@ -218,10 +218,10 @@ class KelulusanController extends Controller
         $nilaiList = $peserta->nilai;
 
         return [
-            'psikotes' => $nilaiList->firstWhere('type', 'psikotes')?->skor_akhir,
-            'inggris' => $nilaiList->firstWhere('type', 'bhs_inggris')?->skor_akhir,
-            'wawancara' => $nilaiList->firstWhere('type', 'wawancara')?->skor_akhir,
-            'kesehatan' => $nilaiList->firstWhere('type', 'kesehatan')?->skor_akhir,
+            'psikotes' => $nilaiList->firstWhere('type', 'PSI')?->skor_akhir,
+            'inggris' => $nilaiList->firstWhere('type', 'LBI')?->skor_akhir,
+            'wawancara' => $nilaiList->firstWhere('type', 'WW')?->skor_akhir,
+            'kesehatan' => $nilaiList->firstWhere('type', 'KSH')?->skor_akhir,
         ];
     }
 }
