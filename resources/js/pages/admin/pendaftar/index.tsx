@@ -157,6 +157,16 @@ params.set('lulus', lulus);
 params.set('noujian', noujian);
 }
 
+        const url = new URL(window.location.href);
+        const currentSort = url.searchParams.get('sort');
+        const currentOrder = url.searchParams.get('order');
+        if (currentSort) {
+params.set('sort', currentSort);
+}
+        if (currentOrder) {
+params.set('order', currentOrder);
+}
+
         router.get(`/admin/pendaftar?${params.toString()}`, {}, { preserveState: true });
     };
 
@@ -201,6 +211,7 @@ params.set('noujian', noujian);
         {
             key: 'kode_pendaftar',
             label: 'Kode',
+            sortable: true,
             render: (item: Pendaftar) => (
                 <span className="font-mono text-sm">{item.kode_pendaftar}</span>
             ),
@@ -208,6 +219,7 @@ params.set('noujian', noujian);
         {
             key: 'noujian',
             label: 'No. Ujian',
+            sortable: true,
             render: (item: Pendaftar) => (
                 <span className="font-mono text-sm">{item.noujian || '-'}</span>
             ),
@@ -215,6 +227,7 @@ params.set('noujian', noujian);
         {
             key: 'nama',
             label: 'Nama',
+            sortable: true,
         },
         {
             key: 'jenis_kelamin',

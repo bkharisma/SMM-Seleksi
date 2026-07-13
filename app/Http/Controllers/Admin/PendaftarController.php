@@ -72,8 +72,9 @@ class PendaftarController extends Controller
             }
         }
 
-        $sort = $request->get('sort', 'id');
-        $order = $request->get('order', 'desc');
+        $allowedSort = ['id', 'nama', 'kode_pendaftar', 'noujian', 'tanggal_lahir', 'jenis_kelamin'];
+        $sort = in_array($request->get('sort'), $allowedSort) ? $request->get('sort') : 'id';
+        $order = in_array($request->get('order'), ['asc', 'desc']) ? $request->get('order') : 'desc';
         $query->orderBy($sort, $order);
 
         $pendaftar = $query->paginate(15)->withQueryString();
